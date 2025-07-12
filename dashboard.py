@@ -1,91 +1,90 @@
 from flask import Blueprint, render_template_string
-import json
+import csv
 import os
 
-dashboard_app = Blueprint('dashboard_app', __name__, template_folder='templates')
+dashboard = Blueprint('dashboard', __name__)
 
-@dashboard_app.route('/')
-def dashboard():
-    if os.path.exists('trade_history.csv'):
-        with open('trade_history.csv', 'r') as f:
-            lines = f.readlines()
-        headers = lines[0].strip().split(',')
-        trades = [line.strip().split(',') for line in lines[1:]]
-    else:
-        headers = []
-        trades = []
+@dashboard.route("/")
+def index():
+    trades = []
+    csv_path = 'trade_history.csv'
+    if os.path.exists(csv_path):
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+            trades = list(reader)
 
-    return render_template_string("""
+    html = """
     <!DOCTYPE html>
     <html>
     <head>
-        <title>🧠 Jarvis Quant System Dashboard</title>
+        <title>🧠 JARVIS AI Trade Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
             body {
-                font-family: 'Segoe UI', sans-serif;
-                background-color: #0f0f0f;
-                color: #00ffcc;
-                margin: 0;
+                background-color: #0f1115;
+                color: #e0e0e0;
+                font-family: 'Segoe UI', Tahoma, sans-serif;
                 padding: 20px;
+                margin: 0;
             }
             h1 {
+                color: #00c7b7;
                 text-align: center;
-                color: #00ffff;
-                font-size: 32px;
+                margin-bottom: 30px;
+                text-shadow: 0 0 10px #00c7b770;
             }
             table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 30px;
+                background-color: #1a1f27;
+                box-shadow: 0 0 12px rgba(0, 255, 255, 0.1);
             }
             th, td {
-                padding: 12px;
+                padding: 10px;
+                border: 1px solid #2b2f3a;
                 text-align: center;
-                border-bottom: 1px solid #333;
-            }
-            tr:nth-child(even) {
-                background-color: #1a1a1a;
-            }
-            tr:hover {
-                background-color: #222;
             }
             th {
-                background-color: #1f1f1f;
-                color: #00ffcc;
+                background-color: #202833;
+                color: #63f5d6;
             }
-            .container {
-                max-width: 1000px;
-                margin: auto;
+            tr:nth-child(even) {
+                background-color: #161b22;
+            }
+            tr:hover {
+                background-color: #2a2f3a;
+                transition: 0.2s;
+            }
+            .empty {
+                text-align: center;
+                font-size: 18px;
+                margin-top: 40px;
+                color: #aaa;
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>Jarvis Quant Trading Dashboard</h1>
-            {% if trades %}
-                <table>
-                    <thead>
-                        <tr>
-                            {% for header in headers %}
-                                <th>{{ header }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for trade in trades %}
-                            <tr>
-                                {% for value in trade %}
-                                    <td>{{ value }}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No trades found.</p>
-            {% endif %}
-        </div>
+        <h1>📊 JARVIS Quant Trading Dashboard</h1>
+        {% if trades %}
+        <table>
+            <tr>
+                {% for key in trades[0].keys() %}
+                <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+            {% for trade in trades %}
+            <tr>
+                {% for value in trade.values() %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="empty">No trade data found yet. Send trades to populate the dashboard.</div>
+        {% endif %}
     </body>
     </html>
-    """, headers=headers, trades=trades)
+    """
+    return render_template_string(html, trades=trades)
 
