@@ -49,3 +49,38 @@ def predict_trade(trade):
     X = np.array([[trade["entry"], trade["stop_loss"], trade["take_profit"], trade["confidence"], rr, direction]])
     X_scaled = scaler.transform(X)
     return float(model.predict_proba(X_scaled)[0][1])  # probability of win
+import json
+from sklearn.ensemble import RandomForestClassifier
+import pandas as pd
+
+model = None
+
+def analyze_and_learn():
+    global model
+    try:
+        with open("trade_journal.json", "r") as file:
+            trades = json.load(file)
+    except Exception as e:
+        print(f"Error loading journal: {e}")
+        return
+
+    if not trades:
+        print("No trades to learn from.")
+        return
+
+    df = pd.DataFrame(trades)
+    df = df[df["result"].isin(["win", "loss"])]
+
+    if df.empty:
+        print("No valid win/loss trades.")
+        return
+
+    df["label"] = df["result"].map({"win": 1, "loss": 0})
+    features = df[["entry", "stop_loss", "take_profit", "confidence"]]
+    labels = df["label"]
+
+    model = RandomForestClassifier(n_estimators=100)
+    model.fit(features, labels)
+
+    print("Model trained on trade history.")
+
