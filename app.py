@@ -5,7 +5,7 @@ from flask import Flask
 from jarvis_ui import jarvis_ui
 
 app = Flask(__name__)
-app.register_blueprint(jarvis_ui, url_prefix="/")
+app.register_blueprint(jarvis_ui)
 
 if __name__ == "__main__":
     app.run()
