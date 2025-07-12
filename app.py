@@ -9,12 +9,11 @@ app.register_blueprint(dashboard_app, url_prefix="/", name="dashboard_unique")
 
 
 
-@app.route('/webhook', methods=['POST'])
+@app.route("/webhook", methods=["POST"])
 def webhook():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
-            result = process_trade(data)
+    data = request.get_json()
+    result = process_trade(data)
+    return jsonify(result)
             return jsonify({"status": "success", "details": result}), 200
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)}), 500
