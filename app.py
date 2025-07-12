@@ -20,3 +20,5 @@ if __name__ == "__main__":
 @app.route('/', methods=['GET'])
 def index():
     return "Trading Bot is Live!"
+from dashboard import app as dashboard_app
+app.register_blueprint(dashboard_app, url_prefix="/")
