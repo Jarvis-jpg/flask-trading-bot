@@ -1,3 +1,4 @@
+from ai_learning import train_ai
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
 from dashboard import dashboard_app
@@ -26,3 +27,7 @@ if __name__ == "__main__":
 def index():
     return "Trading Bot is Live!"
 app.register_blueprint(dashboard_app, url_prefix="/")
+@app.route("/learn", methods=["GET"])
+def learn():
+    result = train_ai()
+    return jsonify({"status": "ok", "message": result})
