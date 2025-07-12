@@ -16,7 +16,6 @@ app = Flask(__name__)
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    try:
         data = request.get_json()
         result = process_trade(data)
         return jsonify({"status": "success", "details": result}), 200
