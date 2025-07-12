@@ -1,36 +1,91 @@
 from flask import Blueprint, render_template_string
-import pandas as pd
+import json
 import os
 
-dashboard_app = Blueprint("dashboard_app", __name__, template_folder="templates")
+dashboard_app = Blueprint('dashboard_app', __name__, template_folder='templates')
 
-@dashboard_app.route("/")
+@dashboard_app.route('/')
 def dashboard():
-    if not os.path.exists("trade_history.csv"):
-        return "<h2>No trade history found.</h2>"
+    if os.path.exists('trade_history.csv'):
+        with open('trade_history.csv', 'r') as f:
+            lines = f.readlines()
+        headers = lines[0].strip().split(',')
+        trades = [line.strip().split(',') for line in lines[1:]]
+    else:
+        headers = []
+        trades = []
 
-    df = pd.read_csv("trade_history.csv")
-    total = len(df)
-    wins = len(df[df["result"] == "win"])
-    losses = len(df[df["result"] == "loss"])
-    win_rate = round((wins / total) * 100, 2) if total > 0 else 0
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>🧠 Jarvis Quant System Dashboard</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', sans-serif;
+                background-color: #0f0f0f;
+                color: #00ffcc;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+                color: #00ffff;
+                font-size: 32px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 30px;
+            }
+            th, td {
+                padding: 12px;
+                text-align: center;
+                border-bottom: 1px solid #333;
+            }
+            tr:nth-child(even) {
+                background-color: #1a1a1a;
+            }
+            tr:hover {
+                background-color: #222;
+            }
+            th {
+                background-color: #1f1f1f;
+                color: #00ffcc;
+            }
+            .container {
+                max-width: 1000px;
+                margin: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Jarvis Quant Trading Dashboard</h1>
+            {% if trades %}
+                <table>
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trade in trades %}
+                            <tr>
+                                {% for value in trade %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No trades found.</p>
+            {% endif %}
+        </div>
+    </body>
+    </html>
+    """, headers=headers, trades=trades)
 
-    html = f"""
-    <h1>Trading Bot Dashboard</h1>
-    <p><strong>Total Trades:</strong> {total}</p>
-    <p><strong>Wins:</strong> {wins}</p>
-    <p><strong>Losses:</strong> {losses}</p>
-    <p><strong>Win Rate:</strong> {win_rate}%</p>
-    <h3>Last 5 Trades:</h3>
-    {df.tail(5).to_html(index=False)}
-    """
-    return render_template_string(html)
-
-
-@dashboard_app.route("/api/trades")
-def trades_api():
-    if os.path.exists("trades.json"):
-        with open("trades.json", "r") as f:
-            trades = json.load(f)
-        return jsonify(trades)
-    return jsonify([])
