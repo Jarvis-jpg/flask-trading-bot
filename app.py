@@ -2,10 +2,10 @@ from ai_learning import train_ai
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
 from learner import analyze_and_learn
-from dashboard import dashboard_app as dashboard_blueprint
+from dashboard import dashboard_app
 
 app = Flask(__name__)
-app.register_blueprint(dashboard_blueprint, url_prefix="/", name="dashboard_blueprint")
+app.register_blueprint(dashboard_app, url_prefix="/dashboard")
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
