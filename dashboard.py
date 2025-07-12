@@ -1,81 +1,55 @@
 from flask import Blueprint, render_template_string
-import pandas as pd
-import os
+import csv
 
-# ✅ Use unique blueprint name: 'jarvis'
-jarvis = Blueprint("jarvis", __name__, url_prefix="/")
+jarvis_ui = Blueprint("jarvis_ui", __name__)  # ✅ Unique name
 
-DASHBOARD_TEMPLATE = """
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Jarvis - Trade Dashboard</title>
-  <style>
-    body {
-      background: #0d1117;
-      color: #c9d1d9;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 2rem;
-    }
-    h1 {
-      color: #58a6ff;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #161b22;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #30363d;
-      text-align: center;
-    }
-    th {
-      background-color: #21262d;
-      color: #58a6ff;
-    }
-    tr:nth-child(even) {
-      background-color: #0d1117;
-    }
-    tr:hover {
-      background-color: #21262d;
-    }
-  </style>
-</head>
-<body>
-  <h1>Jarvis Real-Time Trade Dashboard</h1>
-  {% if trades %}
-  <table>
-    <tr>
-      {% for col in trades[0].keys() %}
-        <th>{{ col }}</th>
-      {% endfor %}
-    </tr>
-    {% for trade in trades %}
-      <tr>
-        {% for value in trade.values() %}
-          <td>{{ value }}</td>
-        {% endfor %}
-      </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-    <p>No trades found.</p>
-  {% endif %}
-</body>
-</html>
-"""
-
-@jarvis.route("/")
+@jarvis_ui.route("/")
 def dashboard():
     trades = []
-    if os.path.exists("trade_history.csv"):
-        try:
-            df = pd.read_csv("trade_history.csv")
-            trades = df.to_dict(orient="records")
-        except Exception as e:
-            trades = [{"Error": f"Could not load trades: {str(e)}"}]
-    return render_template_string(DASHBOARD_TEMPLATE, trades=trades)
+    try:
+        with open("trade_history.csv", "r") as f:
+            reader = csv.DictReader(f)
+            trades = list(reader)
+    except FileNotFoundError:
+        trades = []
+
+    trades = trades[::-1]  # Most recent first
+
+    html = """
+    <html>
+        <head>
+            <title>Jarvis Trading Dashboard</title>
+            <style>
+                body { font-family: Arial; background-color: #0f111a; color: #fff; padding: 20px; }
+                h1 { color: #00ffcc; }
+                table { width: 100%; border-collapse: collapse; background-color: #1e1f2f; }
+                th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+                th { background-color: #2a2d40; color: #00ffcc; }
+                tr:nth-child(even) { background-color: #15161e; }
+            </style>
+        </head>
+        <body>
+            <h1>🚀 Jarvis AI Trading Dashboard</h1>
+            <table>
+                <tr>
+                    <th>Timestamp</th><th>Pair</th><th>Action</th><th>Entry</th>
+                    <th>Stop Loss</th><th>Take Profit</th><th>Confidence</th><th>AI</th><th>Result</th>
+                </tr>
+                {% for trade in trades %}
+                <tr>
+                    <td>{{ trade.timestamp }}</td>
+                    <td>{{ trade.pair }}</td>
+                    <td>{{ trade.action }}</td>
+                    <td>{{ trade.entry }}</td>
+                    <td>{{ trade.stop_loss }}</td>
+                    <td>{{ trade.take_profit }}</td>
+                    <td>{{ trade.confidence }}</td>
+                    <td>{{ trade.ai_confidence or 'N/A' }}</td>
+                    <td>{{ trade.result or 'Pending' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </body>
+    </html>
+    """
+    return render_template_string(html, trades=trades)

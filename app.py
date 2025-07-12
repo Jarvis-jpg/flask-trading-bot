@@ -1,12 +1,11 @@
-from ai_learning import train_ai
 from learner import analyze_and_learn
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
-from dashboard import jarvis
-
+from ai_learning import train_ai
+from dashboard import jarvis_ui  # ✅ updated name
 
 app = Flask(__name__)
-app.register_blueprint(jarvis, url_prefix="/")
+app.register_blueprint(jarvis_ui, url_prefix="/")  # ✅ only register once
 
 
 @app.route("/webhook", methods=["POST"])
