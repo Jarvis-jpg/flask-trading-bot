@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
-from dashboard import dashboard  # Make sure dashboard.py exists
+from dashboard import dashboard as dashboard_app
+  # Make sure dashboard.py exists
 
 app = Flask(__name__)
 app.register_blueprint(dashboard, url_prefix="/")
