@@ -1,22 +1,21 @@
-from dashboard import dashboard
 from flask import Flask, request, jsonify
-from trade_logic import AdaptiveTradeLogic  # Must exist
+from trade_logic import process_trade
+from dashboard import dashboard  # Make sure dashboard.py exists
 
 app = Flask(__name__)
 app.register_blueprint(dashboard, url_prefix="/")
 
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid or missing JSON"}), 400
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            result = process_trade(data)
+            return jsonify({"status": "success", "details": result}), 200
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "error", "message": "Invalid method"}), 400
 
-    try:
-        trade_result = AdaptiveTradeLogic.execute_trade(data)
-        return jsonify({"status": "success", "details": trade_result}), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
