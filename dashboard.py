@@ -1,34 +1,31 @@
-from flask import Blueprint, render_template_string, jsonify
-import json
+from flask import Blueprint, render_template_string
+import pandas as pd
 import os
 
-dashboard_app = Blueprint("dashboard_app", __name__)
+dashboard_app = Blueprint("dashboard_app", __name__, template_folder="templates")
 
-@dashboard_app.route("/dashboard")
+@dashboard_app.route("/")
 def dashboard():
-    trades = []
-    if os.path.exists("trades.json"):
-        with open("trades.json", "r") as f:
-            trades = json.load(f)
-    return render_template_string("""
-        <h1>📊 Trade Dashboard</h1>
-        <table border="1">
-            <tr>
-                <th>Pair</th><th>Action</th><th>Entry</th><th>SL</th><th>TP</th><th>Result</th><th>Confidence</th>
-            </tr>
-            {% for trade in trades %}
-            <tr>
-                <td>{{ trade.pair }}</td>
-                <td>{{ trade.action }}</td>
-                <td>{{ trade.entry }}</td>
-                <td>{{ trade.stop_loss }}</td>
-                <td>{{ trade.take_profit }}</td>
-                <td>{{ trade.result }}</td>
-                <td>{{ trade.get('ai_confidence', 'N/A') }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    """, trades=trades)
+    if not os.path.exists("trade_history.csv"):
+        return "<h2>No trade history found.</h2>"
+
+    df = pd.read_csv("trade_history.csv")
+    total = len(df)
+    wins = len(df[df["result"] == "win"])
+    losses = len(df[df["result"] == "loss"])
+    win_rate = round((wins / total) * 100, 2) if total > 0 else 0
+
+    html = f"""
+    <h1>Trading Bot Dashboard</h1>
+    <p><strong>Total Trades:</strong> {total}</p>
+    <p><strong>Wins:</strong> {wins}</p>
+    <p><strong>Losses:</strong> {losses}</p>
+    <p><strong>Win Rate:</strong> {win_rate}%</p>
+    <h3>Last 5 Trades:</h3>
+    {df.tail(5).to_html(index=False)}
+    """
+    return render_template_string(html)
+
 
 @dashboard_app.route("/api/trades")
 def trades_api():
