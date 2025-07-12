@@ -1,8 +1,9 @@
+from dashboard import dashboard_app
 from learner import analyze_and_learn
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
 from ai_learning import train_ai
-from dashboard import dashboard_app
+
 
 app = Flask(__name__)
 app.register_blueprint(dashboard_app, url_prefix="/")
@@ -34,3 +35,4 @@ def index():
 def learn():
     result = train_ai()
     return jsonify({"status": "ok", "message": result})
+app.register_blueprint(dashboard_app, url_prefix="/")

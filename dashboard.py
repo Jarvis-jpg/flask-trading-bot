@@ -1,90 +1,82 @@
 from flask import Blueprint, render_template_string
 import csv
-import os
 
-dashboard = Blueprint('dashboard', __name__)
+dashboard_app = Blueprint("dashboard_app", __name__)  # Make sure this name matches your import in app.py
 
-@dashboard.route("/")
-def index():
+@dashboard_app.route("/")
+def dashboard():
     trades = []
-    csv_path = 'trade_history.csv'
-    if os.path.exists(csv_path):
-        with open(csv_path, 'r') as f:
-            reader = csv.DictReader(f)
+    try:
+        with open("trade_history.csv", newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
             trades = list(reader)
+    except FileNotFoundError:
+        trades = []
+
+    trades.reverse()  # newest first
 
     html = """
     <!DOCTYPE html>
     <html>
     <head>
-        <title>🧠 JARVIS AI Trade Dashboard</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AI Trade Dashboard</title>
         <style>
             body {
-                background-color: #0f1115;
-                color: #e0e0e0;
-                font-family: 'Segoe UI', Tahoma, sans-serif;
-                padding: 20px;
-                margin: 0;
+                font-family: 'Segoe UI', sans-serif;
+                background-color: #0d1117;
+                color: #c9d1d9;
+                padding: 40px;
             }
             h1 {
-                color: #00c7b7;
                 text-align: center;
-                margin-bottom: 30px;
-                text-shadow: 0 0 10px #00c7b770;
+                color: #58a6ff;
             }
             table {
                 width: 100%;
                 border-collapse: collapse;
-                background-color: #1a1f27;
-                box-shadow: 0 0 12px rgba(0, 255, 255, 0.1);
+                margin-top: 30px;
+                background-color: #161b22;
             }
             th, td {
-                padding: 10px;
-                border: 1px solid #2b2f3a;
+                padding: 12px;
+                border: 1px solid #30363d;
                 text-align: center;
             }
             th {
-                background-color: #202833;
-                color: #63f5d6;
-            }
-            tr:nth-child(even) {
-                background-color: #161b22;
+                background-color: #21262d;
             }
             tr:hover {
-                background-color: #2a2f3a;
-                transition: 0.2s;
-            }
-            .empty {
-                text-align: center;
-                font-size: 18px;
-                margin-top: 40px;
-                color: #aaa;
+                background-color: #1f6feb33;
             }
         </style>
     </head>
     <body>
-        <h1>📊 JARVIS Quant Trading Dashboard</h1>
-        {% if trades %}
+        <h1>📊 AI Trade Dashboard</h1>
         <table>
             <tr>
-                {% for key in trades[0].keys() %}
-                <th>{{ key }}</th>
-                {% endfor %}
+                <th>Timestamp</th>
+                <th>Pair</th>
+                <th>Action</th>
+                <th>Entry</th>
+                <th>Stop Loss</th>
+                <th>Take Profit</th>
+                <th>Confidence</th>
+                <th>Result</th>
             </tr>
             {% for trade in trades %}
             <tr>
-                {% for value in trade.values() %}
-                <td>{{ value }}</td>
-                {% endfor %}
+                <td>{{ trade.timestamp }}</td>
+                <td>{{ trade.pair }}</td>
+                <td>{{ trade.action }}</td>
+                <td>{{ trade.entry }}</td>
+                <td>{{ trade.stop_loss }}</td>
+                <td>{{ trade.take_profit }}</td>
+                <td>{{ trade.ai_confidence }}</td>
+                <td>{{ trade.result or "Pending" }}</td>
             </tr>
             {% endfor %}
         </table>
-        {% else %}
-        <div class="empty">No trade data found yet. Send trades to populate the dashboard.</div>
-        {% endif %}
     </body>
     </html>
     """
     return render_template_string(html, trades=trades)
-
