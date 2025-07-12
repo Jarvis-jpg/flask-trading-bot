@@ -3,3 +3,6 @@ timestamp,pair,action,entry,stop_loss,take_profit,result
 2025-07-02T10:30:00Z,USD_JPY,sell,151.30,151.70,150.60,loss
 2025-07-03T09:00:00Z,GBP_USD,buy,1.2710,1.2680,1.2780,win
 2025-07-04T15:00:00Z,AUD_USD,sell,0.6670,0.6700,0.6610,loss
+curl -X POST https://jarvis-quant-sys.onrender.com/webhook ^
+ -H "Content-Type: application/json" ^
+ -d "{\"pair\":\"EUR_USD\",\"action\":\"buy\",\"entry\":1.0850,\"stop_loss\":1.0820,\"take_profit\":1.0910,\"confidence\":0.87,\"timestamp\":\"2025-07-10T14:35:00Z\"}"
