@@ -1,11 +1,11 @@
-from ai_learning import train_ai
 from learner import analyze_and_learn
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
+from ai_learning import train_ai
 from dashboard import dashboard_app
 
 app = Flask(__name__)
-app.register_blueprint(dashboard_app, url_prefix="/dashboard")
+app.register_blueprint(dashboard_app, url_prefix="/")
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -16,11 +16,17 @@ def webhook():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route("/train", methods=["POST"])
+def trigger_training():
+    try:
+        result = train_ai()
+        return jsonify({"status": "training complete", "details": result}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-    app.run(debug=True)
 @app.route('/', methods=['GET'])
 def index():
     return "Trading Bot is Live!"

@@ -1,39 +1,37 @@
 import json
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-import numpy as np
 import joblib
 
-def load_data():
-    try:
-        with open("trade_journal.json", "r") as f:
-            trades = json.load(f)
-    except:
-        return [], []
-
-    X, y = [], []
-    for t in trades:
-        features = [t["entry"], t["stop_loss"], t["take_profit"], t["confidence"]]
-        X.append(features)
-        y.append(1 if t["result"] == "win" else 0)
-    return X, y
-
 def train_ai():
-    X, y = load_data()
-    if len(X) < 10:
-        return
-    model = RandomForestClassifier(n_estimators=100)
-    model.fit(X, y)
-    joblib.dump(model, "ai_model.pkl")
+    try:
+        df = pd.read_csv("trade_history.csv")
+
+        if len(df) < 50:
+            return "Not enough trade data to train."
+
+        df["label"] = df["result"].apply(lambda r: 1 if r == "win" else 0)
+        X = df[["confidence", "entry", "stop_loss", "take_profit"]]
+        y = df["label"]
+
+        model = RandomForestClassifier(n_estimators=100, max_depth=6, random_state=42)
+        model.fit(X, y)
+        joblib.dump(model, "ai_model.pkl")
+
+        return f"AI model trained on {len(df)} trades."
+    except Exception as e:
+        return f"Training failed: {str(e)}"
 
 def predict_trade(trade):
     try:
         model = joblib.load("ai_model.pkl")
-        features = [[
+        X = [[
+            trade.get("confidence", 0),
             trade["entry"],
             trade["stop_loss"],
-            trade["take_profit"],
-            trade["confidence"]
+            trade["take_profit"]
         ]]
-        return model.predict_proba(features)[0][1]  # Probability of win
-    except:
-        return 0.5  # Default fallback
+        prob = model.predict_proba(X)[0][1]
+        return round(prob, 2)
+    except Exception as e:
+        return 0.5  # Neutral confidence if model isn't ready
