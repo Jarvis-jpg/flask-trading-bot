@@ -1,11 +1,14 @@
 from learner import analyze_and_learn
-from flask import Flask, request, jsonify
 from trade_logic import process_trade
 from ai_learning import train_ai
-from dashboard import jarvis_ui  # ✅ Import the correct blueprint name
+from flask import Flask
+from jarvis_ui import jarvis_ui
 
 app = Flask(__name__)
-app.register_blueprint(jarvis_ui, url_prefix="/")  # ✅ Correct registration
+app.register_blueprint(jarvis_ui, url_prefix="/")
+
+if __name__ == "__main__":
+    app.run()
 
 
 
@@ -35,5 +38,5 @@ def index():
 def learn():
     result = train_ai()
     return jsonify({"status": "ok", "message": result})
-app.register_blueprint(jarvis_ui, url_prefix="/")
+
 
