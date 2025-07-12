@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from trade_logic import AdaptiveTradeLogic  # Must exist
 
 app = Flask(__name__)
+
 app.register_blueprint(dashboard, url_prefix="/")
 
 
