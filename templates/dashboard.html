@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trade Journal Dashboard</title>
+</head>
+<body>
+    <h1>Trade Journal</h1>
+    <table border="1">
+        <tr>
+            <th>Pair</th><th>Action</th><th>Entry</th><th>SL</th><th>TP</th><th>PnL</th><th>Result</th><th>Time</th>
+        </tr>
+        {% for trade in trades %}
+        <tr>
+            <td>{{ trade.pair }}</td>
+            <td>{{ trade.action }}</td>
+            <td>{{ trade.entry }}</td>
+            <td>{{ trade.stop_loss }}</td>
+            <td>{{ trade.take_profit }}</td>
+            <td>{{ trade.pnl }}</td>
+            <td>{{ trade.result }}</td>
+            <td>{{ trade.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
