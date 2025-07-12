@@ -1,16 +1,21 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template
 import json
 import os
 
-dashboard = Blueprint('dashboard_app', __name__)
+dashboard_app = Blueprint("dashboard_app", __name__)
 
-@dashboard.route('/')
-def index():
-    journal_path = 'trade_journal.json'
+@dashboard_app.route("/")
+def dashboard():
+    journal_path = "trade_journal.json"
+    trades = []
+
     if os.path.exists(journal_path):
-        with open(journal_path) as f:
-            trades = json.load(f)
-    else:
-        trades = []
+        with open(journal_path, "r") as file:
+            for line in file:
+                try:
+                    trades.append(json.loads(line.strip()))
+                except:
+                    continue
 
-    return render_template('dashboard.html', trades=trades)
+    return render_template("dashboard.html", trades=trades)
+
