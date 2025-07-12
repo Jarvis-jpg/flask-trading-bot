@@ -9,15 +9,20 @@ app.register_blueprint(dashboard_app, url_prefix="/", name="dashboard_unique")
 
 
 
+from flask import Flask, request, jsonify
+from trade_logic import process_trade
+
+app = Flask(__name__)
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.get_json()
-    result = process_trade(data)
-    return jsonify(result)
-            return jsonify({"status": "success", "details": result}), 200
-        except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
-    return jsonify({"status": "error", "message": "Invalid method"}), 400
+    try:
+        data = request.get_json()
+        result = process_trade(data)
+        return jsonify({"status": "success", "details": result}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
 
 
 if __name__ == "__main__":
