@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify
 import json
 import os
 
-dashboard = Blueprint('dashboard', __name__)
+dashboard = Blueprint('dashboard_app', __name__)
 
 @dashboard.route('/')
 def index():

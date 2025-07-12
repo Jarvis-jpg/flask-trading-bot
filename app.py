@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
-from dashboard import dashboard as dashboard_app
+from dashboard import dashboard_app
   # Make sure dashboard.py exists
 
 app = Flask(__name__)
