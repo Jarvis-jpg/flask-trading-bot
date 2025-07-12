@@ -6,7 +6,7 @@ from dashboard import jarvis
 
 
 app = Flask(__name__)
-app.register_blueprint(jarvis), url_prefix="/")
+app.register_blueprint(jarvis, url_prefix="/")
 
 
 @app.route("/webhook", methods=["POST"])
@@ -35,5 +35,5 @@ def index():
 def learn():
     result = train_ai()
     return jsonify({"status": "ok", "message": result})
-app.register_blueprint(jarvis), url_prefix="/")
+app.register_blueprint(jarvis, url_prefix="/")
 
