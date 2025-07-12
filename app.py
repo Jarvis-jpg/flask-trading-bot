@@ -2,10 +2,11 @@ from learner import analyze_and_learn
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
 from ai_learning import train_ai
-from dashboard import jarvis_ui  # ✅ updated name
+from dashboard import jarvis_ui  # ✅ Import the correct blueprint name
 
 app = Flask(__name__)
-app.register_blueprint(jarvis_ui, url_prefix="/")  # ✅ only register once
+app.register_blueprint(jarvis_ui, url_prefix="/")  # ✅ Correct registration
+
 
 
 @app.route("/webhook", methods=["POST"])
@@ -34,5 +35,5 @@ def index():
 def learn():
     result = train_ai()
     return jsonify({"status": "ok", "message": result})
-app.register_blueprint(jarvis, url_prefix="/")
+app.register_blueprint(jarvis_ui, url_prefix="/")
 
