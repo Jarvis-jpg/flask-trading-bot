@@ -2,11 +2,12 @@ from flask import Blueprint, render_template
 import json
 import os
 
-dashboard_app = Blueprint("dashboard_app", __name__)
+dashboard_app = Blueprint("dashboard_unique", __name__)
 
 @dashboard_app.route("/")
 def dashboard():
     journal_path = "trade_journal.json"
+return "<h1>Trading Dashboard</h1>"
     trades = []
 
     if os.path.exists(journal_path):

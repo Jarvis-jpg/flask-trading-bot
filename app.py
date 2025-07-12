@@ -31,7 +31,6 @@ if __name__ == '__main__':
 @app.route('/', methods=['GET'])
 def index():
     return "Trading Bot is Live!"
-app.register_blueprint(dashboard_app, url_prefix="/")
 @app.route("/learn", methods=["GET"])
 def learn():
     result = train_ai()
