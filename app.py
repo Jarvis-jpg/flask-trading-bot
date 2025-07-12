@@ -4,7 +4,8 @@ from dashboard import dashboard_app
   # Make sure dashboard.py exists
 
 app = Flask(__name__)
-app.register_blueprint(dashboard_app, url_prefix="/")
+app.register_blueprint(dashboard_app, url_prefix="/", name="dashboard_unique")
+
 
 
 @app.route('/webhook', methods=['POST'])
