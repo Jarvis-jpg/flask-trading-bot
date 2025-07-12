@@ -1,32 +1,30 @@
-from dashboard import dashboard_app
+from ai_learning import train_ai
 from learner import analyze_and_learn
 from flask import Flask, request, jsonify
 from trade_logic import process_trade
-from ai_learning import train_ai
-
+from dashboard import dashboard_app_ui
 
 app = Flask(__name__)
-app.register_blueprint(dashboard_app, url_prefix="/")
+app.register_blueprint(dashboard_app_ui, url_prefix="/")
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
     try:
-        data = request.get_json()
-        result = process_trade(data)
+        trade_data = request.get_json()
+        result = process_trade(trade_data)
         return jsonify({"status": "success", "details": result}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/train", methods=["POST"])
-def trigger_training():
+def train():
+    from ai_learning import train_ai
     try:
-        result = train_ai()
-        return jsonify({"status": "training complete", "details": result}), 200
+        train_ai()
+        return jsonify({"status": "training complete"}), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "details": str(e)}), 500
 
-if __name__ == "__main__":
-    app.run(debug=True)
 
 @app.route('/', methods=['GET'])
 def index():
