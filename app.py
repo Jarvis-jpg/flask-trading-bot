@@ -33,4 +33,4 @@ def index():
 def learn():
     result = train_ai()
     return jsonify({"status": "ok", "message": result})
-app.register_blueprint(dashboard_app, url_prefix="/")
+app.register_blueprint(dashboard_app_ui, url_prefix="/")
