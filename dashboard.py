@@ -1,53 +1,66 @@
 from flask import Blueprint, render_template_string
-import csv
+import pandas as pd
 import os
 
-dashboard_app_ui = Blueprint("dashboard_ui", __name__)
+dashboard_app_ui_v2 = Blueprint("dashboard_ui_v2", __name__)
 
-@dashboard_app_ui.route("/")
+DASHBOARD_TEMPLATE = """
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>📊 Trade Dashboard</title>
+  <style>
+    body {
+      background: #0f0f0f; color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif; padding: 2rem;
+    }
+    h1 { color: #00ffcc; text-align: center; }
+    table {
+      border-collapse: collapse; width: 100%;
+      background: #1a1a1a;
+    }
+    th, td {
+      border: 1px solid #333; padding: 10px; text-align: center;
+    }
+    th {
+      background: #00ffcc; color: #000;
+    }
+    tr:nth-child(even) { background-color: #2a2a2a; }
+    tr:hover { background-color: #444; }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Trade Dashboard</h1>
+  {% if trades %}
+  <table>
+    <tr>
+      {% for col in trades[0].keys() %}
+        <th>{{ col }}</th>
+      {% endfor %}
+    </tr>
+    {% for trade in trades %}
+      <tr>
+        {% for value in trade.values() %}
+          <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p>No trade data found.</p>
+  {% endif %}
+</body>
+</html>
+"""
+
+@dashboard_app_ui_v2.route("/")
 def dashboard():
     trades = []
-    file_path = "trade_history.csv"
-    if os.path.exists(file_path):
-        with open(file_path, newline="") as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                trades.append(row)
-
-    # Reverse to show latest first
-    trades = trades[::-1]
-
-    html = """
-    <html>
-    <head>
-        <title>Trading Dashboard</title>
-        <style>
-            body { font-family: 'Segoe UI', sans-serif; background-color: #111; color: #eee; padding: 20px; }
-            h1 { text-align: center; color: #4ef; }
-            table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-            th, td { padding: 10px; border: 1px solid #555; text-align: center; }
-            th { background-color: #222; color: #4ef; }
-            tr:nth-child(even) { background-color: #1a1a1a; }
-            tr:hover { background-color: #333; }
-        </style>
-    </head>
-    <body>
-        <h1>📊 Real-Time Trade Dashboard</h1>
-        <table>
-            <tr>
-                {% for key in trades[0].keys() %}
-                <th>{{ key }}</th>
-                {% endfor %}
-            </tr>
-            {% for trade in trades %}
-            <tr>
-                {% for value in trade.values() %}
-                <td>{{ value }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
-    </body>
-    </html>
-    """
-    return render_template_string(html, trades=trades)
+    if os.path.exists("trade_history.csv"):
+        try:
+            df = pd.read_csv("trade_history.csv")
+            trades = df.to_dict(orient="records")
+        except Exception as e:
+            trades = [{"Error": f"Could not load trades: {str(e)}"}]
+    return render_template_string(DASHBOARD_TEMPLATE, trades=trades)
