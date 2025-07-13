@@ -1,20 +1,24 @@
 from flask import Flask, render_template
-import pandas as pd
+import json
 import os
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__)
 
-@app.route('/')
-def show_dashboard():
-    if os.path.exists("trade_journal.csv"):
+@app.route("/")
+@app.route("/dashboard")
+def dashboard():
+    trades = []
+    journal_path = os.path.join(os.getcwd(), "trade_journal.json")
+
+    if os.path.exists(journal_path):
         try:
-            df = pd.read_csv("trade_journal.csv")
-            trades = df.to_dict(orient="records")
-        except Exception:
-            trades = []
-    else:
-        trades = []
+            with open(journal_path, "r") as f:
+                trades = json.load(f)
+        except Exception as e:
+            print("Error loading journal:", e)
     return render_template("dashboard.html", trades=trades)
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
