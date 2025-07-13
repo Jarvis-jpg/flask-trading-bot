@@ -1,39 +1,37 @@
 import requests
 import random
-import time
 from datetime import datetime, timedelta
+import time
 
-URL = "https://jarvis-quant-sys.onrender.com/webhook"
+WEBHOOK_URL = "https://jarvis-quant-sys.onrender.com/webhook"
 
-tickers = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD"]
-strategies = ["MACD+EMA", "RSI+Trend", "Breakout", "Pullback"]
+TICKERS = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCHF"]
+STRATEGIES = ["MACD+EMA", "Breakout", "Mean Reversion"]
 
 def generate_trade(i):
     return {
-        "ticker": random.choice(tickers),
+        "ticker": random.choice(TICKERS),
         "side": random.choice(["buy", "sell"]),
-        "price": round(random.uniform(1.1000, 1.3000), 4),
-        "strategy": random.choice(strategies),
+        "price": round(random.uniform(1.0, 1.5), 4),
+        "strategy": random.choice(STRATEGIES),
         "time": (datetime.utcnow() + timedelta(minutes=i)).isoformat() + "Z"
     }
 
-success = 0
-fail = 0
-
-for i in range(100):
-    trade = generate_trade(i)
+def send_trade(trade_data, i):
     try:
-        response = requests.post(URL, json=trade)
+        response = requests.post(WEBHOOK_URL, json=trade_data, timeout=10)
         if response.status_code == 200:
-            print(f"[✓] Trade {i+1} sent: {trade['ticker']} {trade['side']} at {trade['price']}")
-            success += 1
+            print(f"[✓] Trade {i+1} success: {response.json()}")
         else:
             print(f"[✗] Trade {i+1} failed: {response.text}")
-            fail += 1
     except Exception as e:
-        print(f"[!] Error on trade {i+1}: {e}")
-        fail += 1
+        print(f"[!] Trade {i+1} exception: {str(e)}")
 
-    time.sleep(0.25)  # Slight delay to avoid spam-blocking
+def main():
+    for i in range(100):
+        trade = generate_trade(i)
+        send_trade(trade, i)
+        time.sleep(0.5)  # avoid overloading the server
 
-print(f"\n✅ Complete: {success} trades sent successfully, {fail} failed.")
+if __name__ == "__main__":
+    main()
