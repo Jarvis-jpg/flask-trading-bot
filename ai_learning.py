@@ -6,105 +6,38 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import joblib
 
+MODEL_PATH = "model.pkl"
 
-# Paths
-TRADE_LOG_FILE = "trade_log.json"
-MODEL_FILE = "ai_model.pkl"
+def train_ai(trade_data):
+    df = pd.DataFrame(trade_data)
 
-def load_trade_data():
-    if not os.path.exists(TRADE_LOG_FILE):
-        print("No trade_log.json found.")
-        return None
+    if len(df) < 10:
+        return "Not enough data to train."
 
-    with open(TRADE_LOG_FILE, "r") as f:
-        trades = json.load(f)
+    df["target"] = df["profit"].apply(lambda x: 1 if x > 0 else 0)
 
-    if not trades or not isinstance(trades, list):
-        print("Trade log is empty or invalid.")
-        return None
+    features = ["price", "profit"]
+    X = df[features]
+    y = df["target"]
 
-    return pd.DataFrame(trades)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
-def preprocess_data(df):
-    required_columns = {"price", "side", "strategy", "time", "outcome"}
-    if not required_columns.issubset(df.columns):
-        print(f"Missing required fields in trade log. Found: {df.columns.tolist()}")
-        return None, None
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2)
 
-    df["side"] = df["side"].map({"buy": 1, "sell": 0})
-    df["strategy"] = df["strategy"].astype("category").cat.codes
-    df["time"] = pd.to_datetime(df["time"], errors='coerce')
-    df["hour"] = df["time"].dt.hour
-    df = df.dropna()
-
-    X = df[["price", "side", "strategy", "hour"]]
-    y = df["outcome"].astype(int)
-
-    return X, y
-
-def train_and_save_model(X, y):
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = RandomForestClassifier()
     model.fit(X_train, y_train)
 
-    predictions = model.predict(X_test)
-    print("\n=== AI Training Report ===")
-    print(classification_report(y_test, predictions))
+    joblib.dump((model, scaler), MODEL_PATH)
+    return "AI training complete."
 
-    joblib.dump(model, MODEL_FILE)
-    print(f"✅ Model saved to {MODEL_FILE}")
-
-def main():
-    df = load_trade_data()
-    if df is None:
-        return
-
-    X, y = preprocess_data(df)
-    if X is None or y is None:
-        return
-
-    train_and_save_model(X, y)
-
-if __name__ == "__main__":
-    main()
-# --- Prediction Function for Live Use ---
 def predict_trade(trade):
-    try:
-        model = joblib.load(MODEL_FILE)
+    model_data = joblib.load(MODEL_PATH)
+    model, scaler = model_data
 
-        price = float(trade.get("price", 0))
-        side = 1 if trade.get("side") == "buy" else 0
-        strategy = pd.Series([trade.get("strategy", "")]).astype("category").cat.codes[0]
-        hour = pd.to_datetime(trade.get("time")).hour
+    features = np.array([[trade["price"], trade["profit"]]])
+    features_scaled = scaler.transform(features)
+    prediction = model.predict(features_scaled)
 
-        features = [[price, side, strategy, hour]]
-        prediction = model.predict(features)[0]
-
-        return prediction  # 1 = good trade, 0 = bad trade
-    except Exception as e:
-        print("AI prediction error:", e)
-        return 1  # Default to allowing the trade
-def train_ai():
-    try:
-        df = pd.read_csv(TRADE_HISTORY_FILE)
-
-        # Drop missing values
-        df = df.dropna()
-
-        # Convert categorical to numeric
-        df["side"] = df["side"].map({"buy": 1, "sell": 0})
-        df["strategy"] = df["strategy"].astype("category").cat.codes
-        df["hour"] = pd.to_datetime(df["time"]).dt.hour
-
-        # Features and label
-        X = df[["price", "side", "strategy", "hour"]]
-        y = df["outcome"]  # 1 = good trade, 0 = bad trade
-
-        model = RandomForestClassifier(n_estimators=100)
-        model.fit(X, y)
-
-        joblib.dump(model, MODEL_FILE)
-        print("✅ AI model trained and saved.")
-    except Exception as e:
-        print("❌ Error training AI model:", e)
+    return "high_quality" if prediction[0] == 1 else "low_quality"
 
