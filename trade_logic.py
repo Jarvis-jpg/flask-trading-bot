@@ -1,7 +1,8 @@
 import json
 from datetime import datetime
 from learner import analyze_and_learn
-from ai_learning import predict_trade  # ✅ Step 1: Import
+from ai_learning import predict_trade, train_ai
+import pandas as pd
 
 def process_trade(data):
     pair = data["pair"]
