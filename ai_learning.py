@@ -1,10 +1,9 @@
 import pandas as pd
-import json
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-import joblib
 import os
+import csv
+
 
 # Paths
 TRADE_LOG_FILE = "trade_log.json"
