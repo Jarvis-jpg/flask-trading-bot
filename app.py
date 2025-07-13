@@ -1,4 +1,3 @@
-from flask import request, jsonify
 from flask import Flask, request, jsonify
 from jarvis_ui import jarvis_ui
 from learner import analyze_and_learn
@@ -15,24 +14,28 @@ if __name__ == "__main__":
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
-        data = request.get_json(force=True)
+        if request.is_json:
+            trade_data = request.get_json()
+        else:
+            return jsonify({"status": "error", "message": "Invalid or missing JSON"}), 400
 
-        # Extract data fields
-        ticker = data.get('ticker')
-        side = data.get('side')
-        price = data.get('price')
-        strategy = data.get('strategy')
-        time = data.get('time')
+        # Extract each field safely
+        ticker = trade_data.get("ticker")
+        side = trade_data.get("side")
+        price = trade_data.get("price")
+        strategy = trade_data.get("strategy")
+        time = trade_data.get("time")
 
-        # Log it for debug
-        print(f"Webhook received:\n"
-              f"Ticker: {ticker}\nSide: {side}\nPrice: {price}\n"
-              f"Strategy: {strategy}\nTime: {time}")
+        print("Webhook received:")
+        print("Ticker:", ticker)
+        print("Side:", side)
+        print("Price:", price)
+        print("Strategy:", strategy)
+        print("Time:", time)
 
-        return jsonify({"status": "success", "message": "Webhook received"}), 200
+        return jsonify({"status": "success", "message": "Trade received"}), 200
 
     except Exception as e:
-        print(f"Error processing webhook: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
