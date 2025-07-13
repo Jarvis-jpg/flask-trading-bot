@@ -4,6 +4,7 @@ from learner import analyze_and_learn
 from ai_learning import predict_trade, train_ai
 import pandas as pd
 
+
 def process_trade(data):
     pair = data["pair"]
     action = data["action"]
@@ -31,6 +32,8 @@ def process_trade(data):
         "pnl": pnl,
         "timestamp": timestamp,
     }
+
+
 log_trade(
     pair=ticker,
     action=side,
@@ -42,6 +45,7 @@ log_trade(
     rr=2.0,                   # Example R:R
     strategy=strategy
 )
+
 
 def some_function():
     # other logic...
@@ -66,10 +70,9 @@ def some_function():
 
     return trade_result
 
-
-
     @staticmethod
     def log_trade(trade):
         df = pd.DataFrame([trade])
         file_exists = os.path.isfile(AdaptiveTradeLogic.journal_path)
-        df.to_csv(AdaptiveTradeLogic.journal_path, mode='a', header=not file_exists, index=False)
+        df.to_csv(AdaptiveTradeLogic.journal_path, mode='a',
+                  header=not file_exists, index=False)
