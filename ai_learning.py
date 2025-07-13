@@ -66,3 +66,20 @@ def main():
 
 if __name__ == "__main__":
     main()
+# --- Prediction Function for Live Use ---
+def predict_trade(trade):
+    try:
+        model = joblib.load(MODEL_FILE)
+
+        price = float(trade.get("price", 0))
+        side = 1 if trade.get("side") == "buy" else 0
+        strategy = pd.Series([trade.get("strategy", "")]).astype("category").cat.codes[0]
+        hour = pd.to_datetime(trade.get("time")).hour
+
+        features = [[price, side, strategy, hour]]
+        prediction = model.predict(features)[0]
+
+        return prediction  # 1 = good trade, 0 = bad trade
+    except Exception as e:
+        print("AI prediction error:", e)
+        return 1  # Default to allowing the trade
