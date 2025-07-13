@@ -15,11 +15,9 @@ if __name__ == "__main__":
 import traceback
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    try:
-        data = request.get_json(force=True)
-        app.logger.info(f"Webhook received: {data}")
-        # your logic...
-        return jsonify({"status": "success"}), 200
+    data = request.get_json()
+    process_trade(data)
+    return jsonify({"message": "Trade processed successfully"})
     except Exception as e:
         err = traceback.format_exc()
         app.logger.error(err)
@@ -46,5 +44,6 @@ def trigger_ai_training():
     from ai.train import run_ai_training
     result = run_ai_training()
     return jsonify({"message": result, "status": "success"})
+
 
 
