@@ -31,6 +31,17 @@ def process_trade(data):
         "pnl": pnl,
         "timestamp": timestamp,
     }
+log_trade(
+    pair=ticker,
+    action=side,
+    entry_price=price,
+    sl=calculated_sl,
+    tp=calculated_tp,
+    result='pending',         # Later updated after TP/SL hit
+    profit=0,                 # Updated later
+    rr=2.0,                   # Example R:R
+    strategy=strategy
+)
 
     # ✅ Step 2: Add AI confidence before saving
     predicted_win_prob = predict_trade(trade_result)

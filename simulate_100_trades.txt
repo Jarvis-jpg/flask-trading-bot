@@ -1,3 +1,4 @@
+from utils.journal_logger import log_trade
 import requests
 import random
 from datetime import datetime, timedelta
@@ -12,6 +13,17 @@ SIDES = ["buy", "sell"]
 
 # Simulate 100 trades
 print("📡 Sending 100 simulated trades...")
+log_trade(
+    pair=trade["pair"],
+    action=trade["side"],
+    entry_price=trade["entry_price"],
+    sl=trade["sl"],
+    tp=trade["tp"],
+    result=trade["result"],       # e.g., "win" or "loss"
+    profit=trade["profit"],       # e.g., 50 or -25
+    rr=trade["rr"],               # calculated risk/reward
+    strategy=trade["strategy"]
+)
 
 for i in range(100):
     payload = {

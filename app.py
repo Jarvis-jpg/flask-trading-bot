@@ -4,6 +4,7 @@ from jarvis_ui import jarvis_ui
 from learner import analyze_and_learn
 from trade_logic import process_trade
 from ai_learning import train_ai
+from utils.journal_logger import log_trade
 
 app = Flask(__name__)
 app.register_blueprint(jarvis_ui, url_prefix="/")
