@@ -1,37 +1,68 @@
 import json
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 import joblib
+import os
 
-def train_ai():
-    try:
-        df = pd.read_csv("trade_history.csv")
+# Paths
+TRADE_LOG_FILE = "trade_log.json"
+MODEL_FILE = "ai_model.pkl"
 
-        if len(df) < 50:
-            return "Not enough trade data to train."
+def load_trade_data():
+    if not os.path.exists(TRADE_LOG_FILE):
+        print("No trade_log.json found.")
+        return None
 
-        df["label"] = df["result"].apply(lambda r: 1 if r == "win" else 0)
-        X = df[["confidence", "entry", "stop_loss", "take_profit"]]
-        y = df["label"]
+    with open(TRADE_LOG_FILE, "r") as f:
+        trades = json.load(f)
 
-        model = RandomForestClassifier(n_estimators=100, max_depth=6, random_state=42)
-        model.fit(X, y)
-        joblib.dump(model, "ai_model.pkl")
+    if not trades or not isinstance(trades, list):
+        print("Trade log is empty or invalid.")
+        return None
 
-        return f"AI model trained on {len(df)} trades."
-    except Exception as e:
-        return f"Training failed: {str(e)}"
+    return pd.DataFrame(trades)
 
-def predict_trade(trade):
-    try:
-        model = joblib.load("ai_model.pkl")
-        X = [[
-            trade.get("confidence", 0),
-            trade["entry"],
-            trade["stop_loss"],
-            trade["take_profit"]
-        ]]
-        prob = model.predict_proba(X)[0][1]
-        return round(prob, 2)
-    except Exception as e:
-        return 0.5  # Neutral confidence if model isn't ready
+def preprocess_data(df):
+    required_columns = {"price", "side", "strategy", "time", "outcome"}
+    if not required_columns.issubset(df.columns):
+        print(f"Missing required fields in trade log. Found: {df.columns.tolist()}")
+        return None, None
+
+    df["side"] = df["side"].map({"buy": 1, "sell": 0})
+    df["strategy"] = df["strategy"].astype("category").cat.codes
+    df["time"] = pd.to_datetime(df["time"], errors='coerce')
+    df["hour"] = df["time"].dt.hour
+    df = df.dropna()
+
+    X = df[["price", "side", "strategy", "hour"]]
+    y = df["outcome"].astype(int)
+
+    return X, y
+
+def train_and_save_model(X, y):
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model.fit(X_train, y_train)
+
+    predictions = model.predict(X_test)
+    print("\n=== AI Training Report ===")
+    print(classification_report(y_test, predictions))
+
+    joblib.dump(model, MODEL_FILE)
+    print(f"✅ Model saved to {MODEL_FILE}")
+
+def main():
+    df = load_trade_data()
+    if df is None:
+        return
+
+    X, y = preprocess_data(df)
+    if X is None or y is None:
+        return
+
+    train_and_save_model(X, y)
+
+if __name__ == "__main__":
+    main()
