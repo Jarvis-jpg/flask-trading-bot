@@ -1,0 +1,26 @@
+import requests
+from datetime import datetime, timedelta
+import random
+
+URL = "https://jarvis-quant-sys.onrender.com/webhook"
+
+strategies = ["MACD+EMA", "Breakout", "Reversal"]
+pairs = ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"]
+
+for i in range(100):
+    trade = {
+        "ticker": random.choice(pairs),
+        "side": random.choice(["buy", "sell"]),
+        "price": round(random.uniform(1.1, 1.5), 4),
+        "strategy": random.choice(strategies),
+        "time": (datetime.utcnow() + timedelta(minutes=i)).isoformat() + "Z",
+        "profit": round(random.uniform(-10, 10), 2)
+    }
+
+    try:
+        response = requests.post(URL, json=trade)
+        result = response.json()
+        status = "✓" if response.status_code == 200 else "✗"
+        print(f"[{status}] Trade {i + 1}: {result}")
+    except Exception as e:
+        print(f"[✗] Trade {i + 1} failed: {e}")
