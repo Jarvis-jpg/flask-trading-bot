@@ -43,7 +43,7 @@ log_trade(
     strategy=strategy
 )
 
-   def some_function():
+def some_function():
     # other logic...
     predicted_win_prob = predict_trade(trade_result)
     trade_result["ai_confidence"] = round(predicted_win_prob, 2)
