@@ -10,32 +10,41 @@ app.register_blueprint(jarvis_ui, url_prefix="/")
 if __name__ == "__main__":
     app.run()
 
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
-        if request.is_json:
-            trade_data = request.get_json()
+        data = request.get_json()
+
+        ticker = data.get("ticker")
+        side = data.get("side")
+        price = data.get("price")
+        strategy = data.get("strategy")
+        time = data.get("time")
+
+        print(f"Webhook received:\nTicker: {ticker}\nSide: {side}\nPrice: {price}\nStrategy: {strategy}\nTime: {time}")
+
+        # Save trade to CSV
+        trade = {
+            "time": time,
+            "ticker": ticker,
+            "side": side,
+            "price": price,
+            "strategy": strategy
+        }
+
+        df = pd.DataFrame([trade])
+        if not os.path.exists("trades.csv"):
+            df.to_csv("trades.csv", index=False)
         else:
-            return jsonify({"status": "error", "message": "Invalid or missing JSON"}), 400
+            df.to_csv("trades.csv", mode='a', header=False, index=False)
+       # TEMPORARY: Trigger AI learning module after trade is received
+        import subprocess
+        subprocess.Popen(["python", "ai_learning.py"])
 
-        # Extract each field safely
-        ticker = trade_data.get("ticker")
-        side = trade_data.get("side")
-        price = trade_data.get("price")
-        strategy = trade_data.get("strategy")
-        time = trade_data.get("time")
-
-        print("Webhook received:")
-        print("Ticker:", ticker)
-        print("Side:", side)
-        print("Price:", price)
-        print("Strategy:", strategy)
-        print("Time:", time)
-
-        return jsonify({"status": "success", "message": "Trade received"}), 200
+        return jsonify({"status": "success"}), 200
 
     except Exception as e:
+        print(e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
