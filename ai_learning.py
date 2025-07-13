@@ -1,4 +1,3 @@
-import json
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -32,12 +31,8 @@ def train_ai(trade_data):
     return "AI training complete."
 
 def predict_trade(trade):
-    model_data = joblib.load(MODEL_PATH)
-    model, scaler = model_data
-
+    model, scaler = joblib.load(MODEL_PATH)
     features = np.array([[trade["price"], trade["profit"]]])
     features_scaled = scaler.transform(features)
     prediction = model.predict(features_scaled)
-
     return "high_quality" if prediction[0] == 1 else "low_quality"
-
