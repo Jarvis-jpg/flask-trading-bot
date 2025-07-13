@@ -40,5 +40,10 @@ def index():
 def learn():
     result = train_ai()
     return jsonify({"status": "ok", "message": result})
+@app.route('/ai/train', methods=['GET'])
+def trigger_ai_training():
+    from ai.train import run_ai_training
+    result = run_ai_training()
+    return jsonify({"message": result, "status": "success"})
 
 
