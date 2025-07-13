@@ -83,3 +83,27 @@ def predict_trade(trade):
     except Exception as e:
         print("AI prediction error:", e)
         return 1  # Default to allowing the trade
+def train_ai():
+    try:
+        df = pd.read_csv(TRADE_HISTORY_FILE)
+
+        # Drop missing values
+        df = df.dropna()
+
+        # Convert categorical to numeric
+        df["side"] = df["side"].map({"buy": 1, "sell": 0})
+        df["strategy"] = df["strategy"].astype("category").cat.codes
+        df["hour"] = pd.to_datetime(df["time"]).dt.hour
+
+        # Features and label
+        X = df[["price", "side", "strategy", "hour"]]
+        y = df["outcome"]  # 1 = good trade, 0 = bad trade
+
+        model = RandomForestClassifier(n_estimators=100)
+        model.fit(X, y)
+
+        joblib.dump(model, MODEL_FILE)
+        print("✅ AI model trained and saved.")
+    except Exception as e:
+        print("❌ Error training AI model:", e)
+
