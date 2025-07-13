@@ -1,26 +1,31 @@
 import requests
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
+import time
 
-URL = "https://jarvis-quant-sys.onrender.com/webhook"
+# CONFIG
+WEBHOOK_URL = "https://jarvis-quant-sys.onrender.com/webhook"
+AI_TRIGGER_URL = "https://jarvis-quant-sys.onrender.com/ai/train"
+STRATEGIES = ["MACD+EMA"]
+PAIRS = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD"]
+SIDES = ["buy", "sell"]
 
-strategies = ["MACD+EMA", "Breakout", "Reversal"]
-pairs = ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"]
+# Simulate 100 trades
+print("📡 Sending 100 simulated trades...")
 
 for i in range(100):
-    trade = {
-        "ticker": random.choice(pairs),
-        "side": random.choice(["buy", "sell"]),
-        "price": round(random.uniform(1.1, 1.5), 4),
-        "strategy": random.choice(strategies),
-        "time": (datetime.utcnow() + timedelta(minutes=i)).isoformat() + "Z",
-        "profit": round(random.uniform(-10, 10), 2)
+    payload = {
+        "ticker": random.choice(PAIRS),
+        "side": random.choice(SIDES),
+        "price": round(random.uniform(1.1, 1.5), 5),
+        "strategy": random.choice(STRATEGIES),
+        "time": (datetime.utcnow() - timedelta(minutes=i)).isoformat() + "Z"
     }
+    response = requests.post(WEBHOOK_URL, json=payload)
+    print(f"#{i+1} Sent: {payload['ticker']} {payload['side']} -> {response.status_code} {response.text}")
+    time.sleep(0.2)  # slight delay to simulate real usage
 
-    try:
-        response = requests.post(URL, json=trade)
-        result = response.json()
-        status = "✓" if response.status_code == 200 else "✗"
-        print(f"[{status}] Trade {i + 1}: {result}")
-    except Exception as e:
-        print(f"[✗] Trade {i + 1} failed: {e}")
+# Trigger AI training after trades
+print("\n🤖 Triggering AI Training...")
+ai_response = requests.get(AI_TRIGGER_URL)
+print(f"AI Training Triggered: {ai_response.status_code} - {ai_response.text}")
