@@ -1,26 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Trade Journal Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: center; border: 1px solid #ddd; }
+        th { background: #333; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+    </style>
 </head>
 <body>
     <h1>Trade Journal</h1>
-    <table border="1">
-        <tr>
-            <th>Pair</th><th>Action</th><th>Entry</th><th>SL</th><th>TP</th><th>PnL</th><th>Result</th><th>Time</th>
-        </tr>
-        {% for trade in trades %}
-        <tr>
-            <td>{{ trade.pair }}</td>
-            <td>{{ trade.action }}</td>
-            <td>{{ trade.entry }}</td>
-            <td>{{ trade.stop_loss }}</td>
-            <td>{{ trade.take_profit }}</td>
-            <td>{{ trade.pnl }}</td>
-            <td>{{ trade.result }}</td>
-            <td>{{ trade.timestamp }}</td>
-        </tr>
-        {% endfor %}
+    {% if trades %}
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Pair</th>
+                <th>Side</th>
+                <th>Price</th>
+                <th>Result</th>
+                <th>PnL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trade in trades %}
+            <tr>
+                <td>{{ trade.timestamp }}</td>
+                <td>{{ trade.pair }}</td>
+                <td>{{ trade.side }}</td>
+                <td>{{ trade.price }}</td>
+                <td>{{ trade.result }}</td>
+                <td>{{ trade.pnl }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
+    {% else %}
+    <p>No trade data found.</p>
+    {% endif %}
 </body>
 </html>
