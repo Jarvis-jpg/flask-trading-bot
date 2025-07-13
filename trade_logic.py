@@ -33,6 +33,11 @@ def log_trade(pair, action, entry_price, sl, tp, result, profit, rr, strategy):
 
 
 def process_trade(data):
+from oanda_trade import place_order
+
+# Assume 1000 units for micro trade
+place_order(pair, 1000, entry, stop_loss, take_profit)
+
     pair = data["pair"]
     action = data["action"]
     entry = float(data["entry"])
