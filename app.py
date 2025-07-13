@@ -1,3 +1,4 @@
+from flask import request, jsonify
 from flask import Flask, request, jsonify
 from jarvis_ui import jarvis_ui
 from learner import analyze_and_learn
