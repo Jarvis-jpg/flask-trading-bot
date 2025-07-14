@@ -1,42 +1,45 @@
-import json
 import pandas as pd
-import numpy as np
+import pickle
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-import joblib
+from datetime import datetime
 
 MODEL_PATH = "model.pkl"
+JOURNAL_FILE = "trade_journal.json"
 
-def train_ai(trade_data):
-    df = pd.DataFrame(trade_data)
+def train_ai():
+    try:
+        df = pd.read_json(JOURNAL_FILE)
+        if len(df) < 10:
+            print("Not enough data to train.")
+            return
 
-    if len(df) < 10:
-        return "Not enough data to train."
+        df["result"] = df["result"].map({"win": 1, "loss": 0})
+        X = df[["entry", "stop_loss", "take_profit", "confidence"]]
+        y = df["result"]
 
-    df["target"] = df["profit"].apply(lambda x: 1 if x > 0 else 0)
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        model.fit(X, y)
 
-    features = ["price", "profit"]
-    X = df[features]
-    y = df["target"]
+        with open(MODEL_PATH, "wb") as f:
+            pickle.dump(model, f)
 
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2)
-
-    model = RandomForestClassifier()
-    model.fit(X_train, y_train)
-
-    joblib.dump((model, scaler), MODEL_PATH)
-    return "AI training complete."
+        print("✅ AI model trained and saved.")
+    except Exception as e:
+        print(f"❌ Error training AI: {e}")
 
 def predict_trade(trade):
-    model_data = joblib.load(MODEL_PATH)
-    model, scaler = model_data
+    try:
+        with open(MODEL_PATH, "rb") as f:
+            model = pickle.load(f)
 
-    features = np.array([[trade["price"], trade["profit"]]])
-    features_scaled = scaler.transform(features)
-    prediction = model.predict(features_scaled)
-
-    return "high_quality" if prediction[0] == 1 else "low_quality"
+        X = pd.DataFrame([{
+            "entry": trade["entry"],
+            "stop_loss": trade["stop_loss"],
+            "take_profit": trade["take_profit"],
+            "confidence": trade["confidence"]
+        }])
+        prediction = model.predict_proba(X)[0][1]
+        return round(prediction, 2)
+    except Exception as e:
+        print(f"❌ Error predicting trade: {e}")
+        return 0.5  # neutral confidence
