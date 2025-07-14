@@ -3,17 +3,16 @@ import random
 import time
 from datetime import datetime, timedelta
 
-URL = "https://jarvis-quant-sys.onrender.com/webhook"
-AI_TRIGGER_URL = "https://jarvis-quant-sys.onrender.com/trigger-ai"
+URL = "https://jarvis-quant-sys.onrender.com/webhook"  # Must point to webhook endpoint
 
 def generate_random_trade():
     entry = round(random.uniform(1.1000, 1.2000), 4)
     stop_loss = round(entry - random.uniform(0.0020, 0.0050), 4)
-    take_profit = round(entry + (entry - stop_loss) * 2, 4)  # 2:1 reward:risk
+    take_profit = round(entry + (entry - stop_loss) * 2, 4)  # 2:1 R:R
     confidence = round(random.uniform(0.6, 0.9), 2)
 
     return {
-        "pair": "GBPUSD",
+        "pair": "GBPUSD",  # <-- MAKE SURE THIS IS INCLUDED
         "action": random.choice(["buy", "sell"]),
         "entry": entry,
         "stop_loss": stop_loss,
@@ -31,10 +30,11 @@ def send_test_trades(n=100):
             print(f"Trade {i+1}: {response.status_code} - {response.text}")
         except Exception as e:
             print(f"Error sending trade {i+1}: {e}")
-        time.sleep(0.1)
+        time.sleep(0.1)  # throttle to avoid overloading
 
 if __name__ == "__main__":
     send_test_trades()
+
 
     # ✅ Trigger AI Learning after test trades
     print("\n🤖 Triggering AI Training...")
