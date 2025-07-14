@@ -16,20 +16,18 @@ if __name__ == "__main__":
 def home():
     return "Quant AI Trading System is running."
 
-@app.route('/webhook', methods=['POST'])
+@app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No JSON payload received"}), 400
     try:
+        data = request.get_json(force=True)
         process_trade(data)
-        return jsonify({"message": "Trade processed successfully"}), 200
+        return jsonify({"message": "Trade received", "status": "success"}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("ERROR in process_trade:", str(e))
+        return jsonify({"message": str(e), "status": "error"}), 400
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
-
 
 @app.route('/', methods=['GET'])
 def index():
