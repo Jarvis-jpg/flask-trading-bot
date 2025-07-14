@@ -15,22 +15,15 @@ if __name__ == "__main__":
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
-        data = request.get_json(force=True)
-        if not data:
-            return jsonify({"message": "Empty or invalid JSON payload", "status": "error"}), 400
-
-        # Debug print
+        data = request.json
         print("Received webhook data:", data)
-
         process_trade(data)
-        return jsonify({"message": "Trade received", "status": "success"}), 200
-
+        return jsonify({"message": "Trade processed", "status": "success"})
     except Exception as e:
-        print("ERROR in process_trade:", e)
-        return jsonify({"message": f"Webhook error: {str(e)}", "status": "error"}), 500
+        return jsonify({"message": f"ERROR: {e}", "status": "error"})
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
 
 @app.route('/', methods=['GET'])
 def index():
