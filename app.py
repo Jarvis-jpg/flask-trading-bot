@@ -12,19 +12,22 @@ app.register_blueprint(jarvis_ui, url_prefix="/")
 if __name__ == "__main__":
     app.run()
 
-@app.route('/')
-def home():
-    return "Quant AI Trading System is running."
-
-@app.route("/webhook", methods=["POST"])
+@app.route('/webhook', methods=['POST'])
 def webhook():
     try:
         data = request.get_json(force=True)
+        if not data:
+            return jsonify({"message": "Empty or invalid JSON payload", "status": "error"}), 400
+
+        # Debug print
+        print("Received webhook data:", data)
+
         process_trade(data)
         return jsonify({"message": "Trade received", "status": "success"}), 200
+
     except Exception as e:
-        print("ERROR in process_trade:", str(e))
-        return jsonify({"message": str(e), "status": "error"}), 400
+        print("ERROR in process_trade:", e)
+        return jsonify({"message": f"Webhook error: {str(e)}", "status": "error"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
