@@ -1,27 +1,26 @@
 import json
 from datetime import datetime
 
-def log_trade(pair, action, entry_price, sl, tp, result, profit, rr, strategy):
-    trade = {
-        "timestamp": datetime.utcnow().isoformat(),
+def log_trade(pair, action, entry, stop_loss, take_profit, result, strategy, confidence, timestamp):
+    trade_data = {
         "pair": pair,
         "action": action,
-        "entry": entry_price,
-        "stop_loss": sl,
-        "take_profit": tp,
+        "entry": entry,
+        "stop_loss": stop_loss,
+        "take_profit": take_profit,
         "result": result,
-        "profit": profit,
-        "rr": rr,
-        "strategy": strategy
+        "strategy": strategy,
+        "confidence": confidence,
+        "timestamp": timestamp
     }
 
     try:
         with open("trade_journal.json", "r") as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = []
+            journal = json.load(f)
+    except FileNotFoundError:
+        journal = []
 
-    data.append(trade)
+    journal.append(trade_data)
 
     with open("trade_journal.json", "w") as f:
-        json.dump(data, f, indent=4)
+        json.dump(journal, f, indent=2)
