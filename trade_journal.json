@@ -1,13 +1,14 @@
-[
-  {
-    "pair": "EURUSD",
-    "action": "buy",
-    "entry": 1.1234,
-    "stop_loss": 1.1200,
-    "take_profit": 1.1294,
-    "confidence": 0.75,
-    "result": "win",
-    "pnl": 60.0,
-    "timestamp": "2025-07-13T14:00:00Z"
-  }
-]
+from trade_journal import log_trade
+
+log_trade(
+    pair=data["pair"],
+    action=data["action"],
+    entry_price=data["entry"],
+    sl=data["stop_loss"],
+    tp=data["take_profit"],
+    result=trade_result["result"],
+    profit=trade_result["pnl"],
+    rr=2.0,
+    strategy=data["strategy"],
+    confidence=data["confidence"]
+)
