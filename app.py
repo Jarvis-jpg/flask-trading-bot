@@ -15,15 +15,33 @@ if __name__ == "__main__":
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
-        data = request.json
+        data = request.get_json()
         print("Received webhook data:", data)
-        process_trade(data)
-        return jsonify({"message": "Trade processed", "status": "success"})
-    except Exception as e:
-        return jsonify({"message": f"ERROR: {e}", "status": "error"})
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+        # Patch: Convert TradingView fields to expected fields if needed
+        if 'ticker' in data and 'side' in data and 'price' in data:
+            data['pair'] = data.pop('ticker')
+            data['action'] = data.pop('side')
+            data['entry'] = data.pop('price')
+            data['timestamp'] = data.pop('time')
+            # Add default SL/TP/confidence if missing
+            entry = float(data['entry'])
+            if data['action'] == 'buy':
+                data['stop_loss'] = round(entry - 0.0020, 5)
+                data['take_profit'] = round(entry + 0.0040, 5)
+            else:
+                data['stop_loss'] = round(entry + 0.0020, 5)
+                data['take_profit'] = round(entry - 0.0040, 5)
+            data['confidence'] = 0.75  # Default if not sent
+            print("✅ Translated TradingView alert to internal format.")
+
+        process_trade(data)
+        return jsonify({'status': 'success'}), 200
+
+    except Exception as e:
+        print("ERROR in webhook:", e)
+        return jsonify({'error': str(e)}), 400
+
 
 @app.route('/', methods=['GET'])
 def index():
