@@ -16,7 +16,7 @@ raise ValueError(f"Missing required field: {field}")
 predicted_result, confidence_score = predict_trade_outcome(trade_data)
 print(f"🤖 AI Prediction: {predicted_result} with confidence {confidence_score}")
 
-# Placeholder profit calc (live systems should replace this with actual exit logic)
+# Calculate profit (placeholder logic)
 entry = float(trade_data["entry"])
 tp = float(trade_data["take_profit"])
 sl = float(trade_data["stop_loss"])
@@ -46,4 +46,3 @@ return {"status": "success", "prediction": predicted_result, "confidence": confi
 except Exception as e:
 print(f"ERROR in process_trade: {e}")
 return {"status": "error", "message": str(e)}
-
