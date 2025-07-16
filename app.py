@@ -18,22 +18,22 @@ return "✅ Quant Trading Bot is Live"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-try:
 data = request.get_json()
 print("Received webhook data:", data)
 
-result = process_trade(data)
-return jsonify({"status": "success", "result": result})
+if not data:
+return jsonify({"error": "Invalid or missing JSON"}), 400
+
+try:
+response = process_trade(data)
+return jsonify({"message": "✅ Trade processed", "result": response})
 except Exception as e:
 print("ERROR in process_trade:", str(e))
-return jsonify({"status": "error", "message": str(e)}), 400
+return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
 app.run(debug=True)
 
-    except Exception as e:
-        print("ERROR in webhook:", e)
-        return jsonify({'error': str(e)}), 400
 
 
 @app.route('/', methods=['GET'])
