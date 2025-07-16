@@ -1,52 +1,34 @@
 # trade_logic.py
 
 import json
-from utils.journal_logger import log_trade
 from ai_predict import predict_trade_outcome
-
+from utils.journal_logger import log_trade
 
 def process_trade(data):
 try:
-pair = data["pair"]
-action = data["action"]
-entry = data["entry"]
-stop_loss = data["stop_loss"]
-take_profit = data["take_profit"]
-confidence = data.get("confidence", 0.5)
-strategy = data.get("strategy", "Unknown")
-timestamp = data.get("timestamp", "")
+if not all(k in data for k in ("pair", "action", "entry", "stop_loss", "take_profit", "timestamp", "strategy", "confidence")):
+raise ValueError("Missing required field(s)")
 
-# Predict outcome
-prediction = predict_trade_outcome({
-"pair": pair,
-"entry": entry,
-"stop_loss": stop_loss,
-"take_profit": take_profit,
-"confidence": confidence,
-"strategy": strategy
-})
+print("✅ Translated TradingView alert to internal format.")
 
-print(f"🤖 AI prediction: {prediction}")
+predicted = predict_trade_outcome(data)
+print("📊 AI Confidence:", predicted)
 
-# Dummy profit calc (replace with real broker result logic)
-profit = round((take_profit - entry) if action == "buy" else (entry - stop_loss), 5)
-
-# Log trade
+profit = round(data["take_profit"] - data["entry"], 5) if data["action"] == "buy" else round(data["entry"] - data["take_profit"], 5)
 log_trade({
-"pair": pair,
-"action": action,
-"entry": entry,
-"stop_loss": stop_loss,
-"take_profit": take_profit,
-"confidence": confidence,
-"strategy": strategy,
-"timestamp": timestamp,
-"result": prediction,
-"profit": profit
+"pair": data["pair"],
+"action": data["action"],
+"entry": data["entry"],
+"stop_loss": data["stop_loss"],
+"take_profit": data["take_profit"],
+"timestamp": data["timestamp"],
+"strategy": data["strategy"],
+"confidence": data["confidence"],
+"profit": profit,
+"result": "pending"
 })
 
-except KeyError as e:
-print(f"ERROR in process_trade: Missing required field: {e}")
+return "✅ Trade processed and logged."
 except Exception as e:
-print(f"ERROR in process_trade: {e}")
-
+print("ERROR in process_trade:", e)
+raise
