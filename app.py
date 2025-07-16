@@ -9,11 +9,14 @@ return "✅ Quant Trading Bot is Live"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-data = request.get_json()
-print("Received webhook data:", data)
-
+data = request.json
 if not data:
-return jsonify({"error": "Invalid or missing JSON"}), 400
+return jsonify({"error": "No data received"}), 400
+try:
+result = process_trade(data)
+return jsonify(result)
+except Exception as e:
+return jsonify({"error": str(e)}), 500
 
 try:
 response = process_trade(data)
