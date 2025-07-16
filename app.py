@@ -12,31 +12,24 @@ app.register_blueprint(jarvis_ui, url_prefix="/")
 if __name__ == "__main__":
     app.run()
 
+@app.route('/')
+def home():
+return "✅ Quant Trading Bot is Live"
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    try:
-        data = request.get_json()
-        print("Received webhook data:", data)
+try:
+data = request.get_json()
+print("Received webhook data:", data)
 
-        # Patch: Convert TradingView fields to expected fields if needed
-        if 'ticker' in data and 'side' in data and 'price' in data:
-            data['pair'] = data.pop('ticker')
-            data['action'] = data.pop('side')
-            data['entry'] = data.pop('price')
-            data['timestamp'] = data.pop('time')
-            # Add default SL/TP/confidence if missing
-            entry = float(data['entry'])
-            if data['action'] == 'buy':
-                data['stop_loss'] = round(entry - 0.0020, 5)
-                data['take_profit'] = round(entry + 0.0040, 5)
-            else:
-                data['stop_loss'] = round(entry + 0.0020, 5)
-                data['take_profit'] = round(entry - 0.0040, 5)
-            data['confidence'] = 0.75  # Default if not sent
-            print("✅ Translated TradingView alert to internal format.")
+result = process_trade(data)
+return jsonify({"status": "success", "result": result})
+except Exception as e:
+print("ERROR in process_trade:", str(e))
+return jsonify({"status": "error", "message": str(e)}), 400
 
-        process_trade(data)
-        return jsonify({'status': 'success'}), 200
+if __name__ == '__main__':
+app.run(debug=True)
 
     except Exception as e:
         print("ERROR in webhook:", e)
