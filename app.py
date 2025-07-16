@@ -5,22 +5,22 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
- return " Quant Trading Bot is Live"
+return "✅ Quant Trading Bot is Live"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
- data = request.get_json()
- print("Received webhook data:", data)
- 
- if not data:
- return jsonify({'error': 'No JSON data received'}), 400
+data = request.get_json()
+print("Received webhook data:", data)
 
- try:
- result = process_trade(data)
- return jsonify({'status': 'Trade processed', 'result': result}), 200
- except Exception as e:
- print("ERROR in process_trade:", e)
- return jsonify({'error': str(e)}), 500
+if not data:
+return jsonify({'error': 'No JSON data received'}), 400
+
+try:
+result = process_trade(data)
+return jsonify({'status': 'Trade processed', 'result': result}), 200
+except Exception as e:
+print("ERROR in process_trade:", e)
+return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
- app.run(debug=True)Traceback (most recent call last): File "/opt/render/project/src/.venv/bin/gunicorn", line 8, in <module> sys.exit(run()) ~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/wsgiapp.py", line 66, in run WSGIApplication("%(prog)s [OPTIONS] [APP_MODULE]", prog=prog).run() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/base.py", line 235, in run super().run() ~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/base.py", line 71, in run Arbiter(self).run() ~~~~~~~^^^^^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/arbiter.py", line 57, in __init__ self.setup(app) ~~~~~~~~~~^^^^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/arbiter.py", line 117, in setup self.app.wsgi() ~~~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/base.py", line 66, in wsgi self.callable = self.load() ~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/wsgiapp.py", line 57, in load return self.load_wsgiapp() ~~~~~~~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp return util.import_app(self.app_uri) ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/util.py", line 370, in import_app mod = importlib.import_module(module) File "/usr/local/lib/python3.13/importlib/__init__.py", line 88, in import_module return _bootstrap._gcd_import(name[level:], package, level) ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ File "<frozen importlib._bootstrap>", line 1387, in _gcd_import File "<frozen importlib._bootstrap>", line 1360, in _find_and_load File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked File "<frozen importlib._bootstrap>", line 935, in _load_unlocked File "<frozen importlib._bootstrap_external>", line 1022, in exec_module File "<frozen importlib._bootstrap_external>", line 1160, in get_code File "<frozen importlib._bootstrap_external>", line 1090, in source_to_code File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed File "/opt/render/project/src/app.py", line 8 return " Quant Trading Bot is Live" ^^^^^^IndentationError: expected an indented block after function definition on line 7==> Exited with status 1==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys==> Running 'gunicorn app:app'Traceback (most recent call last): File "/opt/render/project/src/.venv/bin/gunicorn", line 8, in <module> sys.exit(run()) ~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/wsgiapp.py", line 66, in run WSGIApplication("%(prog)s [OPTIONS] [APP_MODULE]", prog=prog).run() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/base.py", line 235, in run super().run() ~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/base.py", line 71, in run Arbiter(self).run() ~~~~~~~^^^^^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/arbiter.py", line 57, in __init__ self.setup(app) ~~~~~~~~~~^^^^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/arbiter.py", line 117, in setup self.app.wsgi() ~~~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/base.py", line 66, in wsgi self.callable = self.load() ~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/wsgiapp.py", line 57, in load return self.load_wsgiapp() ~~~~~~~~~~~~~~~~~^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp return util.import_app(self.app_uri) ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^ File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/util.py", line 370, in import_app mod = importlib.import_module(module) File "/usr/local/lib/python3.13/importlib/__init__.py", line 88, in import_module return _bootstrap._gcd_import(name[level:], package, level) ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ File "<frozen importlib._bootstrap>", line 1387, in _gcd_import File "<frozen importlib._bootstrap>", line 1360, in _find_and_load File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked File "<frozen importlib._bootstrap>", line 935, in _load_unlocked File "<frozen importlib._bootstrap_external>", line 1022, in exec_module File "<frozen importlib._bootstrap_external>", line 1160, in get_code File "<frozen importlib._bootstrap_external>", line 1090, in source_to_code File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed File "/opt/render/project/src/app.py", line 8 return " Quant Trading Bot is Live" ^^^^^^IndentationError: expected an indented block after function definition on line 7
+app.run(debug=True)
