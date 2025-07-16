@@ -1,22 +1,24 @@
-# ai_predict.py
-
-import pickle
+import joblib
 import numpy as np
 
 def predict_trade_outcome(trade):
-    try:
-        with open("model.pkl", "rb") as f:
-            model = pickle.load(f)
+try:
+model = joblib.load("model.pkl")
 
-        features = np.array([
-            trade["entry"],
-            trade["stop_loss"],
-            trade["take_profit"],
-            trade["confidence"]
-        ]).reshape(1, -1)
+# Extract relevant features from the trade
+features = np.array([
+float(trade["entry"]),
+float(trade["stop_loss"]),
+float(trade["take_profit"]),
+float(trade["confidence"])
+]).reshape(1, -1)
 
-        prediction = model.predict(features)
-        return prediction[0]  # e.g., "win" or "loss"
-    except Exception as e:
-        print(f"❌ Error predicting trade: {e}")
-        return None
+prediction = model.predict(features)[0]
+probas = model.predict_proba(features)[0]
+confidence = round(max(probas), 2)
+
+return prediction, confidence
+
+except Exception as e:
+print(f"❌ Error predicting trade: {e}")
+raise

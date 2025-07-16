@@ -2,53 +2,48 @@ import json
 from utils.journal_logger import log_trade
 from ai_predict import predict_trade_outcome
 
-def process_trade(data):
-    try:
-        print("Received webhook data:", data)
+def process_trade(trade_data):
+try:
+print(f"✅ Received webhook data: {trade_data}")
 
-        # ✅ Validate required fields or translate if needed
-        if "pair" not in data and "ticker" in data:
-            print("✅ Translated TradingView alert to internal format.")
-            data = {
-                "pair": data["ticker"],
-                "action": data["side"],
-                "entry": data["price"],
-                "stop_loss": round(data["price"] - 0.0025, 5),  # Adjustable logic
-                "take_profit": round(data["price"] + 0.0050, 5),  # Adjustable logic
-                "confidence": 0.7,
-                "strategy": data.get("strategy", "unknown"),
-                "timestamp": data.get("time")
-            }
+# Validate required fields
+required = ["pair", "action", "entry", "stop_loss", "take_profit", "confidence", "strategy", "timestamp"]
+for field in required:
+if field not in trade_data:
+raise ValueError(f"Missing required field: {field}")
 
-        required_fields = ["pair", "action", "entry", "stop_loss", "take_profit", "confidence", "strategy", "timestamp"]
-        for field in required_fields:
-            if field not in data:
-                raise ValueError(f"Missing required field: {field}")
+# Predict outcome
+predicted_result, confidence_score = predict_trade_outcome(trade_data)
+print(f"🤖 AI Prediction: {predicted_result} with confidence {confidence_score}")
 
-        # ✅ Predict outcome
-        try:
-            predicted_result = predict_trade_outcome(data)
-        except Exception as e:
-            print(f"❌ Error predicting trade: {e}")
-            predicted_result = "unknown"
+# Placeholder profit calc (live systems should replace this with actual exit logic)
+entry = float(trade_data["entry"])
+tp = float(trade_data["take_profit"])
+sl = float(trade_data["stop_loss"])
+action = trade_data["action"]
 
-        # ✅ Log trade
-        log_trade(
-            pair=data["pair"],
-            action=data["action"],
-            entry=data["entry"],
-            stop_loss=data["stop_loss"],
-            take_profit=data["take_profit"],
-            confidence=data["confidence"],
-            strategy=data["strategy"],
-            timestamp=data["timestamp"],
-            result=predicted_result
-        )
+if action == "buy":
+profit = tp - entry
+else:
+profit = entry - tp
 
-        print("✅ Trade processed and logged.")
-        return {"status": "success", "message": "Trade processed"}
-    
-    except Exception as e:
-        print("ERROR in process_trade:", e)
-        return {"status": "error", "message": str(e)}
+# Log the trade
+log_trade(
+pair=trade_data["pair"],
+action=action,
+entry=entry,
+stop_loss=sl,
+take_profit=tp,
+confidence=float(trade_data["confidence"]),
+strategy=trade_data["strategy"],
+timestamp=trade_data["timestamp"],
+result=predicted_result,
+profit=round(profit, 5)
+)
+
+return {"status": "success", "prediction": predicted_result, "confidence": confidence_score}
+
+except Exception as e:
+print(f"ERROR in process_trade: {e}")
+return {"status": "error", "message": str(e)}
 
