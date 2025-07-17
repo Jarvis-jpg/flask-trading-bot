@@ -7,14 +7,16 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "✅ Quant Trading Bot is Live"
+    return "<h1>Welcome to Jarvis Dashboard</h1>"
 
+# Fix: Explicitly specify the webhook route
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if request.method == 'POST':
         data = request.get_json()
         if not data:
             return jsonify({'error': 'No data received'}), 400
+        
         try:
             result = execute_trade(data)
             log_trade(result)
@@ -22,7 +24,10 @@ def webhook():
             return jsonify({'status': 'Trade executed', 'details': result}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+    
     return jsonify({'error': 'Invalid request method'}), 405
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    print("🚀 Starting Jarvis Trading Bot...")
+    print("📡 Webhook endpoint: http://localhost:5000/webhook")
+    app.run(host='localhost', port=5000, debug=True)e)
