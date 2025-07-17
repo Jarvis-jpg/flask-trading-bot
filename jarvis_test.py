@@ -19,7 +19,7 @@ def get_server_url():
     # Check for Render URL first
     render_url = os.getenv('RENDER_URL')
     if render_url:
-        return f"https://{render_url}"
+        return f"https://{https://jarvis-quant-sys.onrender.com}"
     
     # Default to localhost if no Render URL
     return "http://127.0.0.1:5000"
