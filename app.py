@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from trade_logic import execute_trade
-from journal_logger import log_trade
+from utils.journal_logger import log_trade  # Updated import path
 from ai_predict import analyze_trade
 
 app = Flask(__name__)
