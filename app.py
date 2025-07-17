@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from trade_logic import execute_trade
-from utils.journal_logger import log_trade  # Updated import path
+from utils.journal_logger import log_trade
 from ai_predict import analyze_trade
 
 app = Flask(__name__)
@@ -28,4 +28,4 @@ def webhook():
         return jsonify({'error': 'Invalid request method'}), 405
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1', port=5000)
