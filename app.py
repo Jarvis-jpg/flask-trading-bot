@@ -9,6 +9,7 @@ app = Flask(__name__)
 def home():
     return "<h1>Welcome to Jarvis Dashboard</h1>"
 
+# Make sure this route exists and matches exactly
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if request.method == 'POST':
@@ -26,6 +27,9 @@ def webhook():
     
     return jsonify({'error': 'Invalid request method'}), 405
 
-# Fixed syntax error in app.run()
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000, debug=True)
+    print("\n🚀 Starting Jarvis Trading Bot...")
+    print("📡 Routes configured:")
+    print("  - GET  /")
+    print("  - POST /webhook")
+    app.run(host='127.0.0.1', port=5000, debug=True)
