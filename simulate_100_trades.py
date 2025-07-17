@@ -29,6 +29,9 @@ def create_trade():
         "strategy": "MACD+EMA",
         "timestamp": datetime.now(UTC).isoformat() + "Z"
     }
+def simulate_trades(num_trades=100):
+    # Change the endpoint to match the Flask route exactly
+    endpoint = "http://localhost:5000/webhook"  # Changed from 127.0.0.1 to localhost
 
 def run_simulation():
     success = 0
