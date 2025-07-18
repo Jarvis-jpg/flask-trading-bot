@@ -9,7 +9,6 @@ app = Flask(__name__)
 def home():
     return "<h1>Welcome to Jarvis Dashboard</h1>"
 
-# Make sure this route exists and matches exactly
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if request.method == 'POST':
@@ -18,10 +17,29 @@ def webhook():
             return jsonify({'error': 'No data received'}), 400
         
         try:
-            result = execute_trade(data)
-            log_trade(result)
-            analyze_trade(result)
-            return jsonify({'status': 'Trade executed', 'details': result}), 200
+            # Extract required fields from data
+            result = {
+                'pair': data['pair'],
+                'action': data['action'],
+                'entry': float(data['entry']),
+                'stop_loss': float(data['stop_loss']),
+                'take_profit': float(data['take_profit']),
+                'confidence': float(data['confidence']),
+                'strategy': data['strategy'],
+                'timestamp': data['timestamp'],
+                'result': 'pending',  # Initial trade result
+                'profit': 0.0  # Initial profit
+            }
+            
+            # Execute trade and log it
+            trade_result = execute_trade(data)
+            log_trade(**result)  # Unpack result dictionary as keyword arguments
+            analyze_trade(trade_result)
+            
+            return jsonify({'status': 'Trade executed', 'details': trade_result}), 200
+            
+        except KeyError as e:
+            return jsonify({'error': f'Missing required field: {str(e)}'}), 400
         except Exception as e:
             return jsonify({'error': str(e)}), 500
     
