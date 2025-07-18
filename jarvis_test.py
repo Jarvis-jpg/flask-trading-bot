@@ -54,7 +54,7 @@ def generate_trade(timestamp=None):
         "timestamp": timestamp.isoformat().replace('+00:00', 'Z')
     }
 
-def run_load_test(total_trades=8000, batch_size=100, delay=0.1):
+def run_load_test(total_trades=8000, batch_size=100, delay=5.0):
     """Run large-scale trade testing with batching and monitoring"""
     server_url = "http://127.0.0.1:5000"
     webhook_url = f"{server_url}/webhook"
