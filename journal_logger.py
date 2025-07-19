@@ -1,42 +1,42 @@
 import json
-import os
 from datetime import datetime
+import os
 
-JOURNAL_FILE = "trade_journal_cleaned.json"
-
-def initialize_journal():
-    if not os.path.exists(JOURNAL_FILE):
-        with open(JOURNAL_FILE, "w") as f:
-            json.dump({"trades": []}, f, indent=4)
-
-def log_trade(trade_data):
-    initialize_journal()
+def log_trade(pair=None, action=None, entry=None, stop_loss=None, 
+              take_profit=None, confidence=None, strategy=None, 
+              timestamp=None, result=None, profit=None, prediction=None, 
+              execution_time=None):
+    """
+    Log trade details to a JSON file with all necessary fields
+    """
     try:
-        with open(JOURNAL_FILE, "r+") as f:
-            data = json.load(f)
-            trade_data["status"] = "pending"
-            trade_data["profit"] = None
-            trade_data["closed_at"] = None
-            data["trades"].append(trade_data)
-            f.seek(0)
-            json.dump(data, f, indent=4)
-            f.truncate()
-    except Exception as e:
-        print(f"[Logger Error] Failed to log trade: {e}")
+        log_entry = {
+            "pair": pair,
+            "action": action,
+            "entry": entry,
+            "stop_loss": stop_loss,
+            "take_profit": take_profit,
+            "confidence": confidence,
+            "strategy": strategy,
+            "timestamp": timestamp,
+            "result": result,
+            "profit": profit,
+            "prediction": prediction,
+            "execution_time": execution_time or datetime.now().isoformat()
+        }
 
-def update_trade_result(trade_id, profit, status, exit_time=None):
-    initialize_journal()
-    try:
-        with open(JOURNAL_FILE, "r+") as f:
-            data = json.load(f)
-            for trade in data["trades"]:
-                if trade.get("id") == trade_id:
-                    trade["status"] = status
-                    trade["profit"] = profit
-                    trade["closed_at"] = exit_time or datetime.now().isoformat()
-                    break
-            f.seek(0)
-            json.dump(data, f, indent=4)
-            f.truncate()
+        # Create logs directory if it doesn't exist
+        if not os.path.exists('logs'):
+            os.makedirs('logs')
+
+        # Append to trade log file
+        with open('logs/trade_journal.json', 'a') as f:
+            json.dump(log_entry, f)
+            f.write('\n')
+            
+        print(f"📝 Trade logged successfully for {pair}")
+        return True
+        
     except Exception as e:
-        print(f"[Journal Update Error] {e}")
+        print(f"❌ Error logging trade: {e}")
+        return False
