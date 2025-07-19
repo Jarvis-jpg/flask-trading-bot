@@ -34,10 +34,7 @@ def execute_trade(trade_data):
     "strategy": "MACD+EMA",
     "timestamp": datetime.now().isoformat()
 }
-log_trade(trade)
-        
-        return result
-
-    except Exception as e:
-        print(f"❌ Error executing trade: {e}")
-        return {"status": "error", "message": str(e)}
+try:
+    log_trade(trade)
+except Exception as e:
+    print(f"⚠️ Trade log failed: {e}")
