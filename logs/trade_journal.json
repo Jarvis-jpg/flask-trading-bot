@@ -1,0 +1,2 @@
+{"pair": "BTCUSDT", "action": "buy", "entry": 45000.0, "stop_loss": 44500.0, "take_profit": 46000.0, "confidence": 0.75, "strategy": "TEST", "timestamp": "2025-07-19T15:11:51.858791", "result": "win", "profit": 100.0, "log_time": "2025-07-19T15:11:51.859396"}
+{"pair": "MATICUSDT", "action": "sell", "entry": 1.63, "stop_loss": 1.65, "take_profit": 1.57, "confidence": 0.83, "strategy": "MACD+EMA", "timestamp": "2025-07-19T22:12:12.607188Z", "result": "win", "profit": 0.06, "log_time": "2025-07-19T15:12:12.615782"}
