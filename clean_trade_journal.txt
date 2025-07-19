@@ -1,0 +1,27 @@
+import json
+
+INPUT_FILE = "trade_journal.json"
+OUTPUT_FILE = "cleaned_trade_journal.json"
+
+def clean_trade_journal():
+ try:
+ with open(INPUT_FILE, "r", encoding="utf-8", errors="ignore") as f:
+ raw_data = f.read()
+
+ # Remove invalid characters (like unescaped newlines in strings)
+ cleaned_data = ''.join(c for c in raw_data if ord(c) >= 32 or c in ['\n', '\r'])
+
+ # Try to load cleaned JSON
+ data = json.loads(cleaned_data)
+
+ # Write the cleaned JSON to a new file
+ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+ json.dump(data, f, indent=2)
+
+ print(" trade_journal.json cleaned and saved as cleaned_trade_journal.json")
+
+ except Exception as e:
+ print(f" Cleaning failed: {e}")
+
+if __name__ == "__main__":
+ clean_trade_journal()
