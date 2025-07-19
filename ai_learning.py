@@ -2,44 +2,56 @@ import pandas as pd
 import pickle
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime
+import json
+import uuid
+from ai_predict import predict_trade_outcome
+from utils.journal_logger import log_trade, update_trade_result
 
-MODEL_PATH = "model.pkl"
-JOURNAL_FILE = "trade_journal.json"
+TRADE_JOURNAL_FILE = "trade_journal.json"
 
-def train_ai():
+def analyze_and_learn():
     try:
-        df = pd.read_json(JOURNAL_FILE)
-        if len(df) < 10:
-            print("Not enough data to train.")
-            return
+        print("📊 Training AI model from trade_journal.json...")
 
-        df["result"] = df["result"].map({"win": 1, "loss": 0})
-        X = df[["entry", "stop_loss", "take_profit", "confidence"]]
-        y = df["result"]
+        # Load trades from journal
+        with open(TRADE_JOURNAL_FILE, "r", encoding="utf-8") as f:
+            trades = json.load(f)
 
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
-        model.fit(X, y)
+        for trade in trades:
+            # Skip if already evaluated
+            if trade.get("result") in ["won", "lost"]:
+                continue
 
-        with open(MODEL_PATH, "wb") as f:
-            pickle.dump(model, f)
+            # AI prediction
+            predicted_result, confidence_score = predict_trade_outcome(trade)
 
-        print("✅ AI model trained and saved.")
+            # Determine actual result and profit
+            entry = float(trade["entry"])
+            stop_loss = float(trade["stop_loss"])
+            take_profit = float(trade["take_profit"])
+            action = trade["action"]
+
+            if action == "buy":
+                result = "won" if take_profit > entry else "lost"
+                profit = take_profit - entry if result == "won" else stop_loss - entry
+            elif action == "sell":
+                result = "won" if take_profit < entry else "lost"
+                profit = entry - take_profit if result == "won" else entry - stop_loss
+            else:
+                result = "lost"
+                profit = 0.0
+
+            # Finalize the trade in journal
+            update_trade_result(
+                trade_id=trade["id"],
+                profit=round(profit, 5),
+                status=result
+            )
+
+        print("✅ AI learning complete and journal updated.")
+
     except Exception as e:
-        print(f"❌ Error training AI: {e}")
+        print(f"❌ Error in AI learning: {e}")
 
-def predict_trade(trade):
-    try:
-        with open(MODEL_PATH, "rb") as f:
-            model = pickle.load(f)
-
-        X = pd.DataFrame([{
-            "entry": trade["entry"],
-            "stop_loss": trade["stop_loss"],
-            "take_profit": trade["take_profit"],
-            "confidence": trade["confidence"]
-        }])
-        prediction = model.predict_proba(X)[0][1]
-        return round(prediction, 2)
-    except Exception as e:
-        print(f"❌ Error predicting trade: {e}")
-        return 0.5  # neutral confidence
+if __name__ == "__main__":
+    analyze_and_learn()
