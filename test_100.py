@@ -111,7 +111,13 @@ def run_test(num_trades=100, delay=5):
                         )
                     else:
                         errors += 1
-                        pbar.set_description(f"❌ Error: {response.status_code}")
+                        error_details = response.json()
+                        error_msg = error_details.get('error', 'Unknown error')
+                        print(f"\n❌ Server Error: {error_msg}")
+                        if 'traceback' in error_details:
+                            print("\nTraceback:")
+                            print(error_details['traceback'])
+                        pbar.set_description(f"❌ Error: {error_msg[:30]}...")
                         
                 except Exception as e:
                     errors += 1

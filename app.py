@@ -20,7 +20,10 @@ def webhook():
             result = execute_trade(data)
             return jsonify({'status': 'Trade executed', 'details': result}), 200
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            import traceback
+            print(f"❌ Error in webhook: {str(e)}")
+            print(traceback.format_exc())
+            return jsonify({'error': str(e), 'traceback': traceback.format_exc()}), 500
     
     return jsonify({'error': 'Invalid request method'}), 405
 
