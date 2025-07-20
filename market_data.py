@@ -3,7 +3,13 @@ import requests
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple
-import talib
+# Try to import TA-Lib, but provide fallback if not available
+try:
+    import talib
+    HAS_TALIB = True
+except ImportError:
+    HAS_TALIB = False
+    print("TA-Lib not available, using fallback calculations")
 import logging
 
 logging.basicConfig(level=logging.INFO)
