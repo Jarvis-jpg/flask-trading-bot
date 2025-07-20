@@ -49,51 +49,56 @@ def generate_trade():
         "timestamp": datetime.now(UTC).isoformat().replace('+00:00', 'Z')
     }
 
-def run_test(num_trades=8000, delay=5):
+def run_test(num_trades=8000, delay=10, max_retries=3):
     """Run Forex trading test"""
     server_url = "http://127.0.0.1:5000"
     webhook_url = f"{server_url}/webhook"
     
-    print("\n🤖 Jarvis Forex Trading Test")
-    print(f"Testing {len(PAIRS)} currency pairs:")
-    for pair in PAIRS:
-        print(f"- {pair}")
-    print(f"\nTotal trades: {num_trades}")
-    print(f"Delay between trades: {delay}s")
-    print(f"Estimated duration: {(num_trades * delay) / 3600:.1f} hours")
-    
-    input("\nPress Enter to start testing...")
+    print(f"\n🤖 Jarvis Forex Trading Test")
+    # ... (existing print statements) ...
     
     try:
         with tqdm(total=num_trades, desc="Processing trades") as pbar:
             for i in range(num_trades):
                 trade = generate_trade()
+                retry_count = 0
                 
-                try:
-                    response = requests.post(
-                        webhook_url,
-                        json=trade,
-                        headers={'Content-Type': 'application/json'},
-                        timeout=10
-                    )
-                    
-                    if response.status_code == 200:
-                        pbar.set_description(f"✅ {trade['pair']} {trade['action']}")
-                    else:
-                        pbar.set_description(f"❌ Error: {response.status_code}")
+                while retry_count < max_retries:
+                    try:
+                        response = requests.post(
+                            webhook_url,
+                            json=trade,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
                         
-                except Exception as e:
-                    print(f"\n❌ Error: {str(e)}")
+                        if response.status_code == 200:
+                            pbar.set_description(f"✅ {trade['pair']} {trade['action']}")
+                            break
+                        else:
+                            retry_count += 1
+                            pbar.set_description(f"⚠️ Retry {retry_count}/{max_retries} - Error: {response.status_code}")
+                            time.sleep(delay * 2)  # Double delay on retry
+                            
+                    except requests.exceptions.RequestException as e:
+                        retry_count += 1
+                        pbar.set_description(f"⚠️ Retry {retry_count}/{max_retries} - Error: {str(e)}")
+                        time.sleep(delay * 2)  # Double delay on retry
+                        
+                    if retry_count == max_retries:
+                        print(f"\n❌ Failed after {max_retries} retries - Trade: {trade['pair']}")
                 
                 pbar.update(1)
                 time.sleep(delay)
                 
-                # Show periodic statistics
+                # Show periodic statistics every 100 trades
                 if (i + 1) % 100 == 0:
                     print(f"\nCompleted {i + 1} trades")
+                    
+                # Add a longer pause every 1000 trades to let system catch up
+                if (i + 1) % 1000 == 0:
+                    print("\n⏳ Taking a 30s break to let system catch up...")
+                    time.sleep(30)
     
     except KeyboardInterrupt:
         print("\n\n⚠️ Test interrupted by user")
-
-if __name__ == "__main__":
-    run_test()
