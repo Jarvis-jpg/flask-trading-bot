@@ -34,13 +34,36 @@
    pip install -r requirements.txt
    ```
 
-2. Configure environment variables in `.env`:
+2. Configure environment variables in `.env` for local development:
    ```
    OANDA_API_KEY=your_api_key
    OANDA_ACCOUNT_ID=your_account_id
    OANDA_LIVE=false
    OANDA_API_URL=https://api-fxpractice.oanda.com
    ```
+
+3. Configure environment variables for deployment:
+   - In render.com dashboard, add environment variables
+   - For other platforms, use their environment configuration interface
+   - Never commit API keys to version control
+   
+4. Configure build environment:
+   Create a `render.yaml` file:
+   ```yaml
+   services:
+     - type: web
+       name: trading-bot
+       env: python
+       buildCommand: |
+         apt-get update && apt-get install -y python3-dev build-essential
+         wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+         tar -xvf ta-lib-0.4.0-src.tar.gz
+         cd ta-lib/ && ./configure --prefix=/usr && make && make install
+         pip install -r requirements.txt
+       startCommand: gunicorn app:app
+       envVars:
+         - key: PYTHON_VERSION
+           value: 3.11.0
 
 3. Create required directories:
    ```bash
@@ -224,6 +247,30 @@
    - Check account balance
    - Verify position limits
    - Review risk parameters
+
+4. Deployment Errors
+   - Missing Environment Variables
+     ```bash
+     # Check if environment variables are set
+     echo $OANDA_API_KEY
+     echo $OANDA_ACCOUNT_ID
+     
+     # Set environment variables in render.com dashboard:
+     OANDA_API_KEY=your_api_key
+     OANDA_ACCOUNT_ID=your_account_id
+     OANDA_LIVE=false
+     OANDA_API_URL=https://api-fxpractice.oanda.com
+     ```
+   
+   - TA-Lib Installation
+     ```bash
+     # Add to your render.yaml or build script:
+     - apt-get update && apt-get install -y python3-dev build-essential
+     - wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+     - tar -xvf ta-lib-0.4.0-src.tar.gz
+     - cd ta-lib/ && ./configure --prefix=/usr && make && make install
+     - pip install TA-Lib
+     ```
 
 ### Error Recovery
 1. Stop trading:

@@ -7,16 +7,17 @@ import time
 from trade_analyzer import TradeAnalyzer
 import logging
 
+from model_trainer import ModelTrainer
+
 # Configure more realistic market simulation settings
 MARKET_SETTINGS = {
-    'trade_delay': 5,  # seconds between trades
+    'trade_delay': 0.1,  # 100ms between trades for faster testing
     'market_hours': {
         'open': 8,   # 8 AM
         'close': 16  # 4 PM
     },
     'weekend_days': [5, 6]  # Saturday and Sunday
 }
-from model_trainer import ModelTrainer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,33 +69,30 @@ class AdaptiveTradeSimulator:
     def simulate_trades(self, num_trades, batch_size=100):
         """Generate trades with improving performance over time"""
         all_trades = []
+        trades_processed = 0
         
-        for batch_num in range(0, num_trades, batch_size):
+        while trades_processed < num_trades:
             # Calculate learning factor (0 to 1) based on progress
             learning_factor = min(len(all_trades) / num_trades, 0.8)
-            batch_trades = []
             
-            logger.info(f"Generating trades {batch_num} to {batch_num + batch_size}...")
+            logger.info(f"Generating trades {trades_processed} to {trades_processed + batch_size}...")
             logger.info(f"Learning factor: {learning_factor:.2f}")
             
+            batch_trades = []
             trades_in_batch = 0
-            while trades_in_batch < batch_size:
-                # Simulate real market delay (5 seconds per trade)
-                time.sleep(MARKET_SETTINGS['trade_delay'])
-                
-                trade_time = self.base_time + timedelta(minutes=batch_num + trades_in_batch)
+            
+            while trades_in_batch < batch_size and trades_processed < num_trades:
+                trade_time = self.base_time + timedelta(minutes=trades_processed)
                 
                 # Skip if market is closed
                 if not self.is_market_open(trade_time):
                     self.base_time += timedelta(minutes=1)
                     continue
-                    
-                conditions = self.generate_market_conditions(learning_factor)
-                trades_in_batch += 1
                 
-                # Log progress
-                if i % 10 == 0:
-                    logger.info(f"Processing trade {batch_num + i} of {num_trades}...")
+                conditions = self.generate_market_conditions(learning_factor)
+                
+                # Optional: Add a small delay between trades for realism
+                time.sleep(MARKET_SETTINGS['trade_delay'])
                 
                 # Generate base price with less randomness as learning improves
                 base_price = 1.1000 + random.uniform(-0.02 * (1 - learning_factor), 0.02 * (1 - learning_factor))
