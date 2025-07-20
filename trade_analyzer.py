@@ -4,6 +4,7 @@ from datetime import datetime
 import joblib
 import logging
 from market_data import MarketData
+from model_trainer import ModelTrainer
 from typing import Dict, List, Tuple
 import os
 
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 class TradeAnalyzer:
     def __init__(self):
         self.market_data = MarketData()
-        self.model = None
-        self.scaler = None
+        self.model_trainer = ModelTrainer()
+        self.trade_history = []
         self.load_models()
         
     def load_models(self):
@@ -24,11 +25,11 @@ class TradeAnalyzer:
             scaler_path = os.path.join('models', 'scaler.pkl')
             
             if os.path.exists(model_path) and os.path.exists(scaler_path):
-                self.model = joblib.load(model_path)
-                self.scaler = joblib.load(scaler_path)
+                self.model_trainer.model = joblib.load(model_path)
+                self.model_trainer.scaler = joblib.load(scaler_path)
                 logger.info("Models loaded successfully")
             else:
-                logger.warning("No trained models found")
+                logger.warning("No trained models found. Will train on historical data if available.")
                 
         except Exception as e:
             logger.error(f"Error loading models: {e}")
@@ -72,13 +73,60 @@ class TradeAnalyzer:
             logger.error(f"Error extracting features: {e}")
             return None
     
+    def track_trade_performance(self, trade_result: Dict) -> None:
+        """Track trade performance for model improvement"""
+        try:
+            # Extract relevant data
+            trade_data = {
+                'timestamp': datetime.now().isoformat(),
+                'pair': trade_result.get('pair'),
+                'profit': trade_result.get('profit', 0),
+                'profitable': trade_result.get('profit', 0) > 0,
+                'entry': trade_result.get('entry_price'),
+                'exit': trade_result.get('exit_price'),
+                'duration': trade_result.get('duration'),
+                **self.extract_features(trade_result.get('market_conditions', {}),
+                                     trade_result.get('trade_setup', {}))
+            }
+            
+            # Add to trade history
+            self.trade_history.append(trade_data)
+            
+            # Update model if we have enough new trades
+            if len(self.trade_history) >= 10:  # Update model every 10 trades
+                df = pd.DataFrame(self.trade_history)
+                update_result = self.model_trainer.update_model(df)
+                logger.info(f"Model updated: {update_result}")
+                self.trade_history = []  # Reset after update
+                
+        except Exception as e:
+            logger.error(f"Error tracking trade performance: {str(e)}")
+
     def analyze_trade(self, pair: str, trade_setup: Dict) -> Dict:
         """Analyze potential trade setup"""
         try:
+            # Check if market is open (weekends are closed)
+            now = datetime.utcnow()
+            is_weekend = now.weekday() >= 5  # 5 = Saturday, 6 = Sunday
+            
+            if is_weekend:
+                return {
+                    "status": "market_closed",
+                    "message": "Forex market is closed (weekend)",
+                    "next_open": "Market opens at 5 PM EST on Sunday",
+                    "market_conditions": {
+                        "can_trade": False,
+                        "reason": "weekend_closure"
+                    }
+                }
+            
             # Get market conditions
             market_conditions = self.market_data.analyze_market_conditions(pair)
             if not market_conditions:
-                return {'error': 'Could not analyze market conditions'}
+                return {
+                    'error': 'Could not analyze market conditions',
+                    'reason': 'market_data_unavailable'
+                }
             
             # Extract features
             features = self.extract_features(market_conditions, trade_setup)
