@@ -1,0 +1,23 @@
+{
+  "training_completed": "2025-07-20T18:48:06.533389",
+  "training_duration": "0:00:51.834612",
+  "performance_metrics": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "total_profit": 0.0,
+    "max_drawdown": 0.0,
+    "win_streaks": [],
+    "loss_streaks": [],
+    "learning_progression": []
+  },
+  "final_learning_factor": 0.23589559091591783,
+  "strategy_config": {
+    "risk_reward_min": 2.0,
+    "max_risk_per_trade": 0.02,
+    "confidence_threshold": 0.7,
+    "stop_loss_atr_multiplier": 2.0,
+    "take_profit_atr_multiplier": 4.0
+  },
+  "learning_progression": []
+}
