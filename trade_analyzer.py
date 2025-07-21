@@ -16,6 +16,11 @@ class TradeAnalyzer:
         self.market_data = MarketData()
         self.model_trainer = ModelTrainer()
         self.trade_history = []
+        self.model = None
+        self.scaler = None
+        self.learning_factor = 0.0
+        self.trades_processed = 0
+        self.successful_trades = 0
         self.load_models()
         
     def load_models(self):
@@ -84,10 +89,31 @@ class TradeAnalyzer:
                 'profitable': trade_result.get('profit', 0) > 0,
                 'entry': trade_result.get('entry_price'),
                 'exit': trade_result.get('exit_price'),
-                'duration': trade_result.get('duration'),
-                **self.extract_features(trade_result.get('market_conditions', {}),
-                                     trade_result.get('trade_setup', {}))
+                'duration': trade_result.get('duration')
             }
+            
+            # Update trade tracking metrics
+            self.trades_processed += 1
+            if trade_data['profitable']:
+                self.successful_trades += 1
+            
+            # Calculate win rate
+            win_rate = self.successful_trades / max(1, self.trades_processed)
+            
+            # Update learning factor based on trades processed and win rate
+            self.learning_factor = (self.trades_processed / 100) * win_rate
+            
+            # Log progress
+            logger.info(f"Trade processed - Profit: {trade_data['profit']}, Win Rate: {win_rate:.2%}, Learning Factor: {self.learning_factor:.4f}")
+            
+            # Extract features from market conditions
+            if trade_result.get('market_conditions'):
+                features = self.extract_features(
+                    trade_result.get('market_conditions', {}),
+                    trade_result.get('trade_setup', {})
+                )
+                if features is not None:
+                    trade_data.update(features.to_dict('records')[0])
             
             # Add to trade history
             self.trade_history.append(trade_data)
@@ -98,6 +124,9 @@ class TradeAnalyzer:
                 update_result = self.model_trainer.update_model(df)
                 logger.info(f"Model updated: {update_result}")
                 self.trade_history = []  # Reset after update
+                
+                # Save updated learning progress
+                self._save_learning_progress()
                 
         except Exception as e:
             logger.error(f"Error tracking trade performance: {str(e)}")
