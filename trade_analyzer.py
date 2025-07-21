@@ -52,19 +52,24 @@ class TradeAnalyzer:
                 'volume': self._encode_volume(market_conditions['volume_analysis']),
                 'rsi': indicators['rsi_14'],
                 'macd_diff': indicators['macd'] - indicators['macd_signal'],
-                'price_to_sma20': market_conditions['price'] / indicators['sma_20'],
-                'price_to_sma50': market_conditions['price'] / indicators['sma_50'],
+                'price_to_sma20': market_conditions['price'] / indicators['sma_20'] if indicators['sma_20'] != 0 else 1.0,
+                'price_to_sma50': market_conditions['price'] / indicators['sma_50'] if indicators['sma_50'] != 0 else 1.0,
                 'atr': indicators['atr'],
                 'cci': indicators['cci']
             })
             
             # Trade setup features
             if trade_setup:
-                risk_reward = abs(float(trade_setup['take_profit']) - float(trade_setup['entry'])) / \
-                             abs(float(trade_setup['stop_loss']) - float(trade_setup['entry']))
+                # Handle missing stop_loss and take_profit with defaults
+                entry_price = float(trade_setup.get('entry', 1.0))
+                stop_loss = float(trade_setup.get('stop_loss', entry_price * 0.98))  # Default 2% stop loss
+                take_profit = float(trade_setup.get('take_profit', entry_price * 1.04))  # Default 4% take profit
+                
+                stop_loss_distance = abs(stop_loss - entry_price)
+                risk_reward = abs(take_profit - entry_price) / stop_loss_distance if stop_loss_distance != 0 else 2.0
                 features.update({
                     'risk_reward_ratio': risk_reward,
-                    'confidence': float(trade_setup['confidence']),
+                    'confidence': float(trade_setup.get('confidence', 0.5)),
                     'hour_of_day': datetime.now().hour,
                     'distance_to_support': abs(market_conditions['price'] - 
                                             market_conditions['support_resistance']['support']),
@@ -355,3 +360,37 @@ class TradeAnalyzer:
         except Exception as e:
             logger.error(f"Error checking indicator alignment: {e}")
             return 0.5
+
+    def _save_learning_progress(self):
+        """Save learning progress to file"""
+        try:
+            progress_data = {
+                'timestamp': datetime.now().isoformat(),
+                'trades_processed': self.trades_processed,
+                'successful_trades': self.successful_trades,
+                'learning_factor': self.learning_factor,
+                'win_rate': self.successful_trades / max(1, self.trades_processed)
+            }
+            
+            os.makedirs('logs', exist_ok=True)
+            progress_file = 'logs/learning_progress.json'
+            
+            # Load existing progress if it exists
+            existing_progress = []
+            if os.path.exists(progress_file):
+                import json
+                with open(progress_file, 'r') as f:
+                    existing_progress = json.load(f)
+            
+            # Add new progress
+            existing_progress.append(progress_data)
+            
+            # Save updated progress
+            import json
+            with open(progress_file, 'w') as f:
+                json.dump(existing_progress, f, indent=2)
+                
+            logger.info(f"Learning progress saved: {self.trades_processed} trades, {self.learning_factor:.4f} factor")
+            
+        except Exception as e:
+            logger.error(f"Error saving learning progress: {e}")

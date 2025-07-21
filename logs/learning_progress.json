@@ -1,0 +1,72 @@
+[
+  {
+    "timestamp": "2025-07-20T18:25:27.443265",
+    "trades_processed": 10,
+    "successful_trades": 2,
+    "learning_factor": 0.020000000000000004,
+    "win_rate": 0.2
+  },
+  {
+    "timestamp": "2025-07-20T18:35:20.046299",
+    "trades_processed": 10,
+    "successful_trades": 0,
+    "learning_factor": 0.0,
+    "win_rate": 0.0
+  },
+  {
+    "timestamp": "2025-07-20T18:37:01.714150",
+    "trades_processed": 10,
+    "successful_trades": 0,
+    "learning_factor": 0.0,
+    "win_rate": 0.0
+  },
+  {
+    "timestamp": "2025-07-20T18:37:11.315396",
+    "trades_processed": 20,
+    "successful_trades": 0,
+    "learning_factor": 0.0,
+    "win_rate": 0.0
+  },
+  {
+    "timestamp": "2025-07-20T18:37:21.359848",
+    "trades_processed": 30,
+    "successful_trades": 1,
+    "learning_factor": 0.01,
+    "win_rate": 0.03333333333333333
+  },
+  {
+    "timestamp": "2025-07-20T18:37:31.383767",
+    "trades_processed": 40,
+    "successful_trades": 2,
+    "learning_factor": 0.020000000000000004,
+    "win_rate": 0.05
+  },
+  {
+    "timestamp": "2025-07-20T18:37:41.553336",
+    "trades_processed": 50,
+    "successful_trades": 2,
+    "learning_factor": 0.02,
+    "win_rate": 0.04
+  },
+  {
+    "timestamp": "2025-07-20T18:37:51.209223",
+    "trades_processed": 60,
+    "successful_trades": 3,
+    "learning_factor": 0.03,
+    "win_rate": 0.05
+  },
+  {
+    "timestamp": "2025-07-20T18:38:01.429110",
+    "trades_processed": 70,
+    "successful_trades": 3,
+    "learning_factor": 0.03,
+    "win_rate": 0.04285714285714286
+  },
+  {
+    "timestamp": "2025-07-20T18:47:50.723399",
+    "trades_processed": 10,
+    "successful_trades": 0,
+    "learning_factor": 0.0,
+    "win_rate": 0.0
+  }
+]

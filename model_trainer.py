@@ -37,16 +37,29 @@ class ModelTrainer:
             # Remove any missing values
             df = df.dropna(subset=['profitable'])  # Only drop if target is missing
             
-            # Ensure numeric columns are float type
+            # Ensure numeric columns are float type and handle infinite values
             numeric_columns = ['volatility', 'volume', 'rsi', 'macd_diff',
                              'price_to_sma20', 'price_to_sma50', 'atr', 'cci',
                              'risk_reward_ratio']
             
             for col in numeric_columns:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
+                if col in df.columns:
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+                    # Replace infinite values with NaN, then fill with median
+                    df[col] = df[col].replace([np.inf, -np.inf], np.nan)
+                    df[col] = df[col].fillna(df[col].median())
+                else:
+                    # Create default values for missing columns
+                    df[col] = 0.5 if 'ratio' in col else 50.0
             
-            # Convert hour_of_day to int
-            df['hour_of_day'] = df['hour_of_day'].astype(int)
+            # Convert hour_of_day to int, handle missing values
+            if 'hour_of_day' not in df.columns:
+                df['hour_of_day'] = datetime.now().hour
+            df['hour_of_day'] = pd.to_numeric(df['hour_of_day'], errors='coerce').fillna(12).astype(int)
+            
+            # Handle trend column
+            if 'trend' not in df.columns:
+                df['trend'] = 'sideways'
             
             # Convert trend to categorical and use one-hot encoding
             df['trend'] = df['trend'].astype('category')
@@ -120,7 +133,7 @@ class ModelTrainer:
                 'status': 'success',
                 'train_accuracy': train_accuracy,
                 'test_accuracy': test_accuracy,
-                'feature_importance': feature_importance.to_dict(),
+                'feature_importance': feature_importance.to_dict('records'),
                 'timestamp': datetime.now().isoformat()
             }
             
@@ -131,22 +144,29 @@ class ModelTrainer:
                 'error': str(e),
                 'timestamp': datetime.now().isoformat()
             }
-    
-    def update_model(self, new_trade_data: pd.DataFrame):
-        """Update existing model with new trade data"""
+
+    def update_model(self, new_trade_data: pd.DataFrame) -> dict:
+        """Update model with new trade data"""
         try:
-            # Load existing training data
-            historical_data = pd.read_csv('data/historical_trades.csv')
+            # Ensure data directory exists
+            os.makedirs('data', exist_ok=True)
+            
+            # Load existing training data or create empty DataFrame
+            historical_data_path = 'data/historical_trades.csv'
+            if os.path.exists(historical_data_path):
+                historical_data = pd.read_csv(historical_data_path)
+            else:
+                # Create empty DataFrame with required columns
+                historical_data = pd.DataFrame(columns=['profitable', 'profit'])
             
             # Calculate performance metrics for new trades
+            wins = new_trade_data[new_trade_data['profit'] > 0]['profit'].sum()
+            losses = abs(new_trade_data[new_trade_data['profit'] < 0]['profit'].sum())
+            
             new_trade_metrics = {
                 'win_rate': (new_trade_data['profitable'].astype(bool).mean() * 100),
                 'avg_profit': new_trade_data['profit'].mean(),
-                'profit_factor': (
-                    abs(new_trade_data[new_trade_data['profit'] > 0]['profit'].sum()) /
-                    abs(new_trade_data[new_trade_data['profit'] < 0]['profit'].sum())
-                    if len(new_trade_data[new_trade_data['profit'] < 0]) > 0 else float('inf')
-                )
+                'profit_factor': wins / losses if losses > 0 else (wins if wins > 0 else 1.0)
             }
             
             # Update performance metrics
@@ -166,14 +186,21 @@ class ModelTrainer:
             # Append new data and remove duplicates
             updated_data = pd.concat([historical_data, new_trade_data]).drop_duplicates()
             
-            # Retrain model
-            result = self.train_model(updated_data)
+            # Retrain model if we have enough data
+            if len(updated_data) >= 10:
+                result = self.train_model(updated_data)
+            else:
+                result = {
+                    'status': 'insufficient_data',
+                    'message': f'Need at least 10 trades to train model, have {len(updated_data)}',
+                    'timestamp': datetime.now().isoformat()
+                }
             
             # Add performance metrics to result
             result['performance_metrics'] = new_trade_metrics
             
             # Save updated data
-            updated_data.to_csv('data/historical_trades.csv', index=False)
+            updated_data.to_csv(historical_data_path, index=False)
             
             logger.info(f"Model updated with {len(new_trade_data)} new trades")
             logger.info(f"New performance metrics: {new_trade_metrics}")
@@ -185,7 +212,8 @@ class ModelTrainer:
             return {
                 'status': 'error',
                 'error': str(e),
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
+                'performance_metrics': {'win_rate': 0, 'avg_profit': 0, 'profit_factor': 1}
             }
     
     def save_models(self):
@@ -203,7 +231,12 @@ class ModelTrainer:
         """Evaluate a potential trade using the current model"""
         try:
             if self.model is None or self.scaler is None:
-                raise ValueError("Model or scaler not initialized")
+                return {
+                    'status': 'no_model',
+                    'probability': 0.5,
+                    'prediction': False,
+                    'confidence': 0.0
+                }
             
             # Prepare features in the same way as training data
             numeric_columns = ['volatility', 'volume', 'rsi', 'macd_diff',
@@ -216,7 +249,10 @@ class ModelTrainer:
                     features[col] = pd.to_numeric(features[col], errors='coerce')
             
             # Handle trend with one-hot encoding
-            trend_dummies = pd.get_dummies(features['trend'], prefix='trend')
+            if 'trend' in features.columns:
+                trend_dummies = pd.get_dummies(features['trend'], prefix='trend')
+            else:
+                trend_dummies = pd.DataFrame()
             
             # Combine features
             X = pd.concat([features[numeric_columns + ['hour_of_day']], trend_dummies], axis=1)
@@ -229,15 +265,19 @@ class ModelTrainer:
             probability = self.model.predict_proba(features_scaled)[0][1]
             
             return {
-                'recommended': prediction == 1,
-                'confidence': float(probability),
-                'threshold': 0.6  # Minimum confidence required
+                'status': 'success',
+                'prediction': bool(prediction),
+                'probability': float(probability),
+                'confidence': max(probability, 1 - probability),
+                'timestamp': datetime.now().isoformat()
             }
             
         except Exception as e:
             logger.error(f"Error evaluating trade: {str(e)}")
             return {
+                'status': 'error',
                 'error': str(e),
-                'recommended': False,
+                'probability': 0.5,
+                'prediction': False,
                 'confidence': 0.0
             }

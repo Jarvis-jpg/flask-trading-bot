@@ -64,7 +64,8 @@ class EnhancedTradingStrategy:
             
             # Volume indicators (if available)
             if 'volume' in price_data.columns:
-                volume_sma = ta.volume.volume_sma(price_data['close'], price_data['volume'])
+                # Calculate simple moving average of volume
+                volume_sma = price_data['volume'].rolling(window=20).mean()
             else:
                 volume_sma = pd.Series([1] * len(price_data))
             
@@ -139,7 +140,13 @@ class EnhancedTradingStrategy:
         try:
             indicators = self.calculate_technical_indicators(price_data)
             if not indicators:
-                return {'signal': 'no_signal', 'confidence': 0, 'reason': 'insufficient_data'}
+                return {
+                    'signal': 'no_signal', 
+                    'confidence': 0, 
+                    'reason': 'insufficient_data',
+                    'pair': pair,
+                    'entry': price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0
+                }
             
             session = self.detect_market_session()
             volatility = self.calculate_volatility_regime(price_data)
@@ -160,9 +167,15 @@ class EnhancedTradingStrategy:
             signals = [trend_signal, mean_reversion_signal, breakout_signal, momentum_signal]
             combined_signal = self._combine_signals(signals, session, volatility)
             
+            # Ensure entry price is always included
+            current_price = indicators.get('current_price', price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0)
+            
             # Add risk management parameters
             if combined_signal['signal'] != 'no_signal':
                 combined_signal.update(self._calculate_risk_parameters(indicators, combined_signal))
+            else:
+                # Even for no_signal, include basic entry price
+                combined_signal['entry'] = current_price
             
             combined_signal['pair'] = pair
             combined_signal['timestamp'] = datetime.now().isoformat()
@@ -173,7 +186,13 @@ class EnhancedTradingStrategy:
             
         except Exception as e:
             logger.error(f"Error generating trade signal for {pair}: {e}")
-            return {'signal': 'no_signal', 'confidence': 0, 'reason': f'error: {str(e)}'}
+            return {
+                'signal': 'no_signal', 
+                'confidence': 0, 
+                'reason': f'error: {str(e)}',
+                'pair': pair,
+                'entry': price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0
+            }
     
     def _trend_following_strategy(self, indicators: Dict) -> Dict:
         """Trend following strategy with multiple confirmations"""
