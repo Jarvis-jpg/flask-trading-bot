@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import logging
+import time
 from datetime import datetime
 from model_trainer import ModelTrainer
 
@@ -41,6 +42,7 @@ def test_strategies():
         results = []
         for strategy in strategies:
             logger.info(f"\nTesting {strategy['name']} strategy...")
+            time.sleep(10)  # 10 second delay between strategies
             
             # Filter trades based on strategy parameters
             strategy_trades = historical_data[

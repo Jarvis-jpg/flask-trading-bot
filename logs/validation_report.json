@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-07-20T18:02:46.690478",
+  "summary": {
+    "total_tests": 10,
+    "passed": 8,
+    "warnings": 0,
+    "failed": 2,
+    "critical_failures": 2
+  },
+  "test_results": {
+    "Environment Configuration": {
+      "status": "PASS",
+      "message": "All environment variables configured correctly"
+    },
+    "Python Dependencies": {
+      "status": "FAIL",
+      "message": "Missing packages: ['scikit-learn', 'python-dotenv']",
+      "critical": true
+    },
+    "OANDA Connection": {
+      "status": "PASS",
+      "message": "OANDA connection successful. EUR_USD: 1.16273/1.16288"
+    },
+    "Trading Strategy": {
+      "status": "FAIL",
+      "message": "Signal missing required fields: ['strategy', 'pair', 'timestamp']",
+      "critical": true
+    },
+    "Risk Management": {
+      "status": "PASS",
+      "message": "Risk management validated. R:R = 2.0, Stop = 0.3%"
+    },
+    "Trade Execution Logic": {
+      "status": "PASS",
+      "message": "Trade execution logic validated"
+    },
+    "Autonomous Engine": {
+      "status": "PASS",
+      "message": "Engine validated. Max trades: 5, Max loss: $500.0"
+    },
+    "Data Handling": {
+      "status": "PASS",
+      "message": "Data handling validated"
+    },
+    "Error Handling": {
+      "status": "PASS",
+      "message": "Error handling validated"
+    },
+    "Performance Metrics": {
+      "status": "PASS",
+      "message": "Performance tracking validated. Sample: 4 trades, 50% win rate, $100 profit"
+    }
+  },
+  "critical_failures": [
+    "Python Dependencies",
+    "Trading Strategy"
+  ],
+  "system_ready": false
+}
