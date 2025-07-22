@@ -1,0 +1,22 @@
+{
+  "last_updated": "2025-07-21T21:41:35.708626",
+  "learning_metrics": {
+    "sessions_completed": 1,
+    "best_win_rate": 0.9003083247687564,
+    "current_win_rate": 0.9003083247687564,
+    "target_win_rate": 0.65,
+    "learning_trend": "improving",
+    "confidence_threshold": 0.78,
+    "last_improvement": "2025-07-21T21:41:35.352182"
+  },
+  "performance_history": [
+    {
+      "session": 1,
+      "win_rate": 0.9003083247687564,
+      "threshold": 0.78,
+      "trades_analyzed": 973,
+      "timestamp": "2025-07-21T21:41:35.704357"
+    }
+  ],
+  "feature_importances": {}
+}

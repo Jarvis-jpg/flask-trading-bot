@@ -1,17 +1,48 @@
 {
-  "training_completed": "2025-07-20T18:48:06.533389",
-  "training_duration": "0:00:51.834612",
+  "training_completed": "2025-07-20T19:04:51.395815",
+  "training_duration": "0:03:21.076179",
   "performance_metrics": {
-    "total_trades": 0,
-    "wins": 0,
-    "losses": 0,
-    "total_profit": 0.0,
+    "total_trades": 50,
+    "wins": 43,
+    "losses": 7,
+    "total_profit": 79.79999999999998,
     "max_drawdown": 0.0,
     "win_streaks": [],
     "loss_streaks": [],
-    "learning_progression": []
+    "learning_progression": [
+      {
+        "trade_count": 10,
+        "win_rate": 1.0,
+        "total_profit": 24.169999999999998,
+        "learning_factor": 3.7136111079325
+      },
+      {
+        "trade_count": 20,
+        "win_rate": 1.0,
+        "total_profit": 69.52,
+        "learning_factor": 2.8357777777787403
+      },
+      {
+        "trade_count": 30,
+        "win_rate": 0.9666666666666667,
+        "total_profit": 95.42999999999999,
+        "learning_factor": 0.5551467694528999
+      },
+      {
+        "trade_count": 40,
+        "win_rate": 0.875,
+        "total_profit": 86.87999999999998,
+        "learning_factor": 0.4769871164393051
+      },
+      {
+        "trade_count": 50,
+        "win_rate": 0.86,
+        "total_profit": 79.79999999999998,
+        "learning_factor": 0.45587106528936955
+      }
+    ]
   },
-  "final_learning_factor": 0.23589559091591783,
+  "final_learning_factor": 0.4559987753942538,
   "strategy_config": {
     "risk_reward_min": 2.0,
     "max_risk_per_trade": 0.02,
@@ -19,5 +50,36 @@
     "stop_loss_atr_multiplier": 2.0,
     "take_profit_atr_multiplier": 4.0
   },
-  "learning_progression": []
+  "learning_progression": [
+    {
+      "trade_count": 10,
+      "win_rate": 1.0,
+      "total_profit": 24.169999999999998,
+      "learning_factor": 3.7136111079325
+    },
+    {
+      "trade_count": 20,
+      "win_rate": 1.0,
+      "total_profit": 69.52,
+      "learning_factor": 2.8357777777787403
+    },
+    {
+      "trade_count": 30,
+      "win_rate": 0.9666666666666667,
+      "total_profit": 95.42999999999999,
+      "learning_factor": 0.5551467694528999
+    },
+    {
+      "trade_count": 40,
+      "win_rate": 0.875,
+      "total_profit": 86.87999999999998,
+      "learning_factor": 0.4769871164393051
+    },
+    {
+      "trade_count": 50,
+      "win_rate": 0.86,
+      "total_profit": 79.79999999999998,
+      "learning_factor": 0.45587106528936955
+    }
+  ]
 }

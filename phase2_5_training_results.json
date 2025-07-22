@@ -1,0 +1,18 @@
+{
+  "phase": "Phase 2.5 Balanced Enhanced",
+  "timestamp": "2025-07-21T21:33:31.438247",
+  "training_duration": "0:00:00.307816",
+  "total_attempts": 3000,
+  "trades_executed": 246,
+  "trades_rejected": 2754,
+  "rejection_rate_percent": 91.8,
+  "wins": 219,
+  "losses": 27,
+  "win_rate_percent": 89.02439024390245,
+  "target_achieved": true,
+  "avg_confidence": 0.8516973972674203,
+  "avg_risk_reward": 2.8595975224421544,
+  "total_profit": 31608.950132990525,
+  "final_equity": 31808.950132990525,
+  "return_percent": 15804.475066495263
+}

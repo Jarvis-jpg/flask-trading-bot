@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-07-22T13:00:38.025134",
+  "results": {
+    "session_number": 105,
+    "total_trades": 265,
+    "lifetime_trades": 349578,
+    "wins": 130,
+    "losses": 135,
+    "win_rate": 49.056603773584904,
+    "total_profit": -104.10924837868518,
+    "lifetime_profit": 12389659.519951921,
+    "max_drawdown": 52.15498045319631,
+    "avg_confidence": 0.5265599801781994,
+    "final_equity": 100.0
+  }
+}

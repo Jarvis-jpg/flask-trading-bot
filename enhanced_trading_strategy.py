@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced Trading Strategy Implementation with AI-Driven Decisions
+ENHANCED VERSION FOR 65%+ WIN RATE ACHIEVEMENT
 This module implements advanced trading strategies with machine learning
 """
 import pandas as pd
@@ -11,6 +12,7 @@ import logging
 from typing import Dict, List, Tuple, Optional
 import json
 import os
+from config import RISK_CONFIG, SIGNAL_QUALITY_CONFIG, PREMIUM_TRADING_HOURS, TRADING_SESSIONS
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,27 +20,165 @@ logger = logging.getLogger(__name__)
 class EnhancedTradingStrategy:
     """
     Advanced trading strategy with multiple proven indicators and AI decision making
+    ENHANCED FOR 65%+ WIN RATE ACHIEVEMENT
     """
     
     def __init__(self):
+        # ENHANCED STRATEGY CONFIGURATION FOR 65%+ WIN RATE
         self.strategy_config = {
-            'risk_reward_min': 2.0,  # Minimum 2:1 risk reward ratio
-            'max_risk_per_trade': 0.02,  # 2% max risk per trade
-            'confidence_threshold': 0.7,  # 70% minimum confidence
-            'stop_loss_atr_multiplier': 2.0,  # Dynamic stop loss
-            'take_profit_atr_multiplier': 4.0,  # Dynamic take profit
+            'risk_reward_min': RISK_CONFIG['risk_reward_min'],  # 2.5:1 minimum RR
+            'max_risk_per_trade': RISK_CONFIG['max_risk_per_trade'],  # 1.5% max risk
+            'confidence_threshold': RISK_CONFIG['confidence_threshold'],  # 82% minimum confidence
+            'stop_loss_atr_multiplier': 2.5,  # More conservative stop loss
+            'take_profit_atr_multiplier': 6.25,  # Higher take profit for 2.5:1 RR
+            'trend_strength_min': SIGNAL_QUALITY_CONFIG['min_trend_strength'],  # 75% trend strength
+            'volume_surge_min': SIGNAL_QUALITY_CONFIG['volume_surge_multiplier'],  # 1.8x volume
+            'session_quality_min': 0.85,  # High session quality requirement
         }
         
+        # OPTIMIZED CURRENCY PAIRS (Quality over quantity)
         self.currency_pairs = [
             'EUR_USD', 'GBP_USD', 'USD_JPY', 'USD_CHF',
             'AUD_USD', 'USD_CAD', 'NZD_USD', 'EUR_GBP'
         ]
         
-        self.session_times = {
-            'london': {'start': 8, 'end': 16},
-            'new_york': {'start': 13, 'end': 21},
-            'asian': {'start': 22, 'end': 6}
-        }
+        # ENHANCED SESSION CONFIGURATION
+        self.session_times = TRADING_SESSIONS
+        
+    def calculate_technical_indicators(self, price_data: pd.DataFrame) -> Dict:
+        """Calculate comprehensive technical indicators with enhanced quality filters"""
+        try:
+            if len(price_data) < 50:
+                logger.warning("Insufficient data for technical analysis")
+                return {}
+                
+            # Trend indicators
+            sma_20 = ta.trend.sma_indicator(price_data['close'], window=20)
+            sma_50 = ta.trend.sma_indicator(price_data['close'], window=50)
+            ema_12 = ta.trend.ema_indicator(price_data['close'], window=12)
+            ema_26 = ta.trend.ema_indicator(price_data['close'], window=26)
+            ema_50 = ta.trend.ema_indicator(price_data['close'], window=50)
+            
+            # Momentum indicators
+            rsi = ta.momentum.rsi(price_data['close'], window=14)
+            macd = ta.trend.macd_diff(price_data['close'])
+            stoch = ta.momentum.stoch(price_data['high'], price_data['low'], price_data['close'])
+            
+            # Volatility indicators
+            bb_high, bb_low = ta.volatility.bollinger_hband(price_data['close']), ta.volatility.bollinger_lband(price_data['close'])
+            atr = ta.volatility.average_true_range(price_data['high'], price_data['low'], price_data['close'])
+            
+            # Volume indicators (enhanced)
+            if 'volume' in price_data.columns:
+                volume_sma = price_data['volume'].rolling(window=20).mean()
+                volume_surge = price_data['volume'].iloc[-1] / volume_sma.iloc[-1]
+            else:
+                volume_sma = pd.Series([1] * len(price_data))
+                volume_surge = 1.0
+            
+            current_price = price_data['close'].iloc[-1]
+            
+            # ENHANCED TREND STRENGTH CALCULATION
+            trend_strength = self._calculate_enhanced_trend_strength(price_data, ema_12, ema_26, ema_50)
+            
+            # MARKET STRUCTURE ANALYSIS
+            support_resistance = self._analyze_support_resistance(price_data)
+            
+            indicators = {
+                'sma_20': sma_20.iloc[-1],
+                'sma_50': sma_50.iloc[-1],
+                'ema_12': ema_12.iloc[-1],
+                'ema_26': ema_26.iloc[-1],
+                'ema_50': ema_50.iloc[-1],
+                'rsi': rsi.iloc[-1],
+                'macd': macd.iloc[-1],
+                'stoch': stoch.iloc[-1],
+                'bb_high': bb_high.iloc[-1],
+                'bb_low': bb_low.iloc[-1],
+                'atr': atr.iloc[-1],
+                'current_price': current_price,
+                'volume_sma': volume_sma.iloc[-1],
+                'volume_surge': volume_surge,
+                
+                # ENHANCED DERIVED INDICATORS
+                'trend_strength': trend_strength,
+                'support_level': support_resistance['support'],
+                'resistance_level': support_resistance['resistance'],
+                'price_above_sma20': current_price > sma_20.iloc[-1],
+                'price_above_sma50': current_price > sma_50.iloc[-1],
+                'sma20_above_sma50': sma_20.iloc[-1] > sma_50.iloc[-1],
+                'ema_bullish': ema_12.iloc[-1] > ema_26.iloc[-1] > ema_50.iloc[-1],
+                'ema_bearish': ema_12.iloc[-1] < ema_26.iloc[-1] < ema_50.iloc[-1],
+                'rsi_neutral': 45 <= rsi.iloc[-1] <= 55,  # Sweet spot for entries
+                'rsi_oversold': rsi.iloc[-1] < 30,
+                'rsi_overbought': rsi.iloc[-1] > 70,
+                'macd_bullish': macd.iloc[-1] > 0,
+                'stoch_oversold': stoch.iloc[-1] < 20,
+                'stoch_overbought': stoch.iloc[-1] > 80,
+                'near_bb_lower': current_price <= bb_low.iloc[-1] * 1.01,
+                'near_bb_upper': current_price >= bb_high.iloc[-1] * 0.99,
+                'volume_confirmed': volume_surge >= self.strategy_config['volume_surge_min'],
+            }
+            
+            return indicators
+            
+        except Exception as e:
+            logger.error(f"Error calculating technical indicators: {e}")
+            return {}
+    
+    def _calculate_enhanced_trend_strength(self, price_data: pd.DataFrame, ema_12: pd.Series, 
+                                         ema_26: pd.Series, ema_50: pd.Series) -> float:
+        """Calculate enhanced trend strength for better signal quality"""
+        try:
+            current_price = price_data['close'].iloc[-1]
+            
+            # EMA alignment score
+            ema_alignment = 0
+            if ema_12.iloc[-1] > ema_26.iloc[-1] > ema_50.iloc[-1]:
+                ema_alignment = 1.0  # Strong bullish alignment
+            elif ema_12.iloc[-1] < ema_26.iloc[-1] < ema_50.iloc[-1]:
+                ema_alignment = 1.0  # Strong bearish alignment
+            elif ema_12.iloc[-1] > ema_26.iloc[-1] or ema_26.iloc[-1] > ema_50.iloc[-1]:
+                ema_alignment = 0.5  # Partial alignment
+            
+            # Price momentum score
+            price_change_20 = (current_price - price_data['close'].iloc[-21]) / price_data['close'].iloc[-21]
+            momentum_score = min(abs(price_change_20) * 10, 1.0)  # Cap at 1.0
+            
+            # Volatility normalization
+            atr = price_data['high'].rolling(14).max() - price_data['low'].rolling(14).min()
+            volatility_factor = min(atr.iloc[-1] / current_price * 100, 1.0)
+            
+            # Combined trend strength
+            trend_strength = (ema_alignment * 0.5 + momentum_score * 0.3 + volatility_factor * 0.2)
+            
+            return min(trend_strength, 1.0)
+            
+        except Exception as e:
+            logger.error(f"Error calculating trend strength: {e}")
+            return 0.5
+    
+    def _analyze_support_resistance(self, price_data: pd.DataFrame) -> Dict:
+        """Analyze support and resistance levels for enhanced market structure"""
+        try:
+            highs = price_data['high'].rolling(10).max()
+            lows = price_data['low'].rolling(10).min()
+            
+            resistance = highs.iloc[-5:].max()
+            support = lows.iloc[-5:].min()
+            
+            return {
+                'support': support,
+                'resistance': resistance,
+                'range_size': resistance - support
+            }
+        except:
+            current_price = price_data['close'].iloc[-1]
+            return {
+                'support': current_price * 0.995,
+                'resistance': current_price * 1.005,
+                'range_size': current_price * 0.01
+            }
         
     def calculate_technical_indicators(self, price_data: pd.DataFrame) -> Dict:
         """Calculate comprehensive technical indicators"""
@@ -145,7 +285,9 @@ class EnhancedTradingStrategy:
                     'confidence': 0, 
                     'reason': 'insufficient_data',
                     'pair': pair,
-                    'entry': price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0
+                    'entry': price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0,
+                    'strategy': 'JARVIS_Enhanced_Trading_Strategy',
+                    'timestamp': datetime.now().isoformat()
                 }
             
             session = self.detect_market_session()
@@ -181,6 +323,7 @@ class EnhancedTradingStrategy:
             combined_signal['timestamp'] = datetime.now().isoformat()
             combined_signal['session'] = session
             combined_signal['volatility_regime'] = volatility
+            combined_signal['strategy'] = 'JARVIS_Enhanced_Trading_Strategy'
             
             return combined_signal
             
@@ -191,7 +334,9 @@ class EnhancedTradingStrategy:
                 'confidence': 0, 
                 'reason': f'error: {str(e)}',
                 'pair': pair,
-                'entry': price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0
+                'entry': price_data['close'].iloc[-1] if len(price_data) > 0 else 1.0,
+                'strategy': 'JARVIS_Enhanced_Trading_Strategy',
+                'timestamp': datetime.now().isoformat()
             }
     
     def _trend_following_strategy(self, indicators: Dict) -> Dict:

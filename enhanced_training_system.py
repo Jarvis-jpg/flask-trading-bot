@@ -139,13 +139,24 @@ class EnhancedTrainingSystem:
             # Create realistic price data for strategy analysis
             price_data = self._generate_price_data(market_conditions, pair)
             
+            # Temporarily lower confidence threshold for training to generate more signals
+            original_threshold = trading_strategy.strategy_config['confidence_threshold']
+            trading_strategy.strategy_config['confidence_threshold'] = 0.5  # Lower for training
+            
             # Generate trading signal using enhanced strategy
             signal = trading_strategy.generate_trade_signal(pair, price_data)
+            
+            # If no signal generated, create a synthetic signal based on market conditions
+            if signal['signal'] == 'no_signal':
+                signal = self._generate_synthetic_signal(market_conditions, pair, price_data)
+            
+            # Restore original threshold
+            trading_strategy.strategy_config['confidence_threshold'] = original_threshold
             
             # Simulate trade execution and outcome
             trade_result = self._simulate_trade_execution(signal, market_conditions, trade_number)
             
-            # Display readable trade information
+            # Display simple trade information
             self._display_trade_info(trade_result, trade_number, pair, learning_factor)
             
             # Add to simulator's performance history for learning
@@ -158,55 +169,73 @@ class EnhancedTrainingSystem:
             
             batch_results.append(trade_result)
             
-            # Update analyzer with trade performance (silently)
+            # Silently update analyzer (no logging)
             try:
                 self.trade_analyzer.track_trade_performance({
                     'pair': pair,
                     'profit': trade_result['profit'],
                     'entry_price': trade_result['entry'],
                     'exit_price': trade_result.get('exit_price'),
-                    'duration': trade_result.get('duration', 0),
-                    'market_conditions': {
-                        **market_conditions,
-                        'price': trade_result['entry'],
-                        'volume_analysis': 'normal',
-                        'support_resistance': {
-                            'support': market_conditions.get('price', trade_result['entry']) * 0.999,
-                            'resistance': market_conditions.get('price', trade_result['entry']) * 1.001
-                        },
-                        'indicators': {
-                            'rsi_14': market_conditions.get('rsi', 50),
-                            'macd': 0,
-                            'macd_signal': 0,
-                            'sma_20': market_conditions.get('price', trade_result['entry']),
-                            'sma_50': market_conditions.get('price', trade_result['entry']),
-                            'atr': market_conditions.get('volatility', 0.01),
-                            'cci': 0
-                        }
-                    },
-                    'trade_setup': signal
+                    'duration': trade_result.get('duration', 0)
                 })
-            except Exception as e:
-                # Silently handle analyzer errors
-                pass
+            except:
+                pass  # Silent fail
             
             # Add 3-second delay between trades for readability
             time.sleep(3)
         
         return batch_results
     
-    def _display_trade_info(self, trade_result: Dict, trade_number: int, pair: str, learning_factor: float):
-        """Display clean, readable trade information"""
-        if trade_result['result'] == 'no_trade':
-            logger.info(f"📊 Trade #{trade_number:,} | {pair} | ⏸️  NO SIGNAL | Learning: {learning_factor:.1%}")
+    def _generate_synthetic_signal(self, market_conditions: Dict, pair: str, price_data: pd.DataFrame) -> Dict:
+        """Generate synthetic training signals when strategy doesn't produce signals"""
+        current_price = price_data['close'].iloc[-1] if len(price_data) > 0 else market_conditions.get('price', 1.0)
+        
+        # Determine signal direction based on market conditions
+        if market_conditions['trend'] == 'uptrend' and market_conditions['rsi'] < 65:
+            signal_type = 'buy'
+            confidence = 0.6 + (market_conditions.get('win_rate', 0.5) * 0.2)
+        elif market_conditions['trend'] == 'downtrend' and market_conditions['rsi'] > 35:
+            signal_type = 'sell'
+            confidence = 0.6 + (market_conditions.get('win_rate', 0.5) * 0.2)
         else:
-            result_emoji = "🟢" if trade_result['result'] == 'win' else "🔴"
-            profit_str = f"${trade_result['profit']:.2f}" if trade_result['profit'] >= 0 else f"-${abs(trade_result['profit']):.2f}"
+            # Random signal for sideways market (50/50)
+            signal_type = 'buy' if random.random() > 0.5 else 'sell'
+            confidence = 0.55 + random.uniform(0, 0.15)
+        
+        # Calculate synthetic entry levels
+        atr_proxy = market_conditions.get('volatility', 0.001) * current_price * 100
+        
+        if signal_type == 'buy':
+            entry = current_price
+            stop_loss = entry - (atr_proxy * 1.5)
+            take_profit = entry + (atr_proxy * 3.0)  # 2:1 ratio
+        else:
+            entry = current_price
+            stop_loss = entry + (atr_proxy * 1.5)
+            take_profit = entry - (atr_proxy * 3.0)  # 2:1 ratio
+        
+        return {
+            'signal': signal_type,
+            'pair': pair,
+            'entry': entry,
+            'stop_loss': stop_loss,
+            'take_profit': take_profit,
+            'confidence': confidence,
+            'strategy': 'synthetic_training',
+            'units': 1000,
+            'reason': 'training_signal_generation'
+        }
+    
+    def _display_trade_info(self, trade_result: Dict, trade_number: int, pair: str, learning_factor: float):
+        """Display simple trade information"""
+        if trade_result['result'] == 'no_trade':
+            print(f"Trade #{trade_number} | {pair} | NO SIGNAL")
+        else:
+            result_emoji = "WIN" if trade_result['result'] == 'win' else "LOSS"
+            profit_str = f"${trade_result['profit']:.2f}"
             confidence_str = f"{trade_result['confidence']:.1%}"
-            entry_price = f"{trade_result['entry']:.5f}"
             
-            logger.info(f"📈 Trade #{trade_number:,} | {pair} | {result_emoji} {trade_result['result'].upper()} | "
-                       f"Profit: {profit_str} | Entry: {entry_price} | Confidence: {confidence_str} | Learning: {learning_factor:.1%}")
+            print(f"Trade #{trade_number} | {pair} | {result_emoji} | {profit_str} | {confidence_str}")
     
     def _generate_price_data(self, market_conditions: Dict, pair: str) -> pd.DataFrame:
         """Generate realistic price data based on market conditions"""

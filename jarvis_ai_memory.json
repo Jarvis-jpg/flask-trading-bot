@@ -1,0 +1,1132 @@
+{
+  "session_number": 105,
+  "lifetime_trades": 349578,
+  "lifetime_wins": 179914,
+  "lifetime_losses": 169664,
+  "lifetime_profit": 12389659.519951921,
+  "lifetime_win_rate": 51.46605335576038,
+  "last_session_date": "2025-07-22T13:00:38.004540",
+  "pair_performance": {
+    "EUR/USD": {
+      "wins": 21287,
+      "losses": 20151,
+      "profit": 1624052.7720617005,
+      "avg_confidence": 0.75
+    },
+    "GBP/USD": {
+      "wins": 23136,
+      "losses": 21313,
+      "profit": 1761768.6691261223,
+      "avg_confidence": 0.75
+    },
+    "USD/JPY": {
+      "wins": 22857,
+      "losses": 21716,
+      "profit": 1455748.0753612914,
+      "avg_confidence": 0.75
+    },
+    "USD/CHF": {
+      "wins": 22974,
+      "losses": 21688,
+      "profit": 1485910.731362297,
+      "avg_confidence": 0.75
+    },
+    "AUD/USD": {
+      "wins": 22776,
+      "losses": 21667,
+      "profit": 1331592.852288504,
+      "avg_confidence": 0.75
+    },
+    "USD/CAD": {
+      "wins": 22791,
+      "losses": 21654,
+      "profit": 1653492.9033482098,
+      "avg_confidence": 0.75
+    },
+    "NZD/USD": {
+      "wins": 22814,
+      "losses": 21238,
+      "profit": 1691258.609036446,
+      "avg_confidence": 0.75
+    },
+    "EUR/GBP": {
+      "wins": 21279,
+      "losses": 20237,
+      "profit": 1385834.9073675757,
+      "avg_confidence": 0.75
+    }
+  },
+  "session_performance": [
+    {
+      "session_number": 1,
+      "trades": 8000,
+      "wins": 2280,
+      "losses": 483,
+      "win_rate": 28.499999999999996,
+      "profit": 824212.4557321918,
+      "date": "2025-07-20T20:52:12.961416",
+      "duration": "0:46:07.977602"
+    },
+    {
+      "session_number": 2,
+      "trades": 8000,
+      "wins": 211,
+      "losses": 185,
+      "win_rate": 2.6374999999999997,
+      "profit": 1852.0128235982195,
+      "date": "2025-07-20T20:59:11.098772",
+      "duration": "0:06:36.427633"
+    },
+    {
+      "session_number": 3,
+      "trades": 8000,
+      "wins": 4231,
+      "losses": 3368,
+      "win_rate": 52.887499999999996,
+      "profit": 661406.0261071963,
+      "date": "2025-07-20T23:23:01.134589",
+      "duration": "2:06:53.275198"
+    },
+    {
+      "session_number": 4,
+      "trades": 8000,
+      "wins": 4073,
+      "losses": 3536,
+      "win_rate": 50.91250000000001,
+      "profit": 541549.8954047123,
+      "date": "2025-07-21T01:37:37.327961",
+      "duration": "2:07:04.645069"
+    },
+    {
+      "session_number": 5,
+      "trades": 8000,
+      "wins": 4116,
+      "losses": 3480,
+      "win_rate": 51.449999999999996,
+      "profit": 578940.8318427443,
+      "date": "2025-07-21T07:35:41.600345",
+      "duration": "2:06:51.430031"
+    },
+    {
+      "session_number": 6,
+      "trades": 8000,
+      "wins": 4092,
+      "losses": 3517,
+      "win_rate": 51.15,
+      "profit": 562574.2151921128,
+      "date": "2025-07-21T11:06:25.933808",
+      "duration": "2:07:03.543549"
+    },
+    {
+      "session_number": 7,
+      "trades": 8000,
+      "wins": 4203,
+      "losses": 3405,
+      "win_rate": 52.5375,
+      "profit": 629524.3157995443,
+      "date": "2025-07-21T15:32:38.473343",
+      "duration": "2:06:58.935979"
+    },
+    {
+      "session_number": 8,
+      "trades": 8000,
+      "wins": 4197,
+      "losses": 3412,
+      "win_rate": 52.4625,
+      "profit": 629869.1958905739,
+      "date": "2025-07-21T19:46:19.281730",
+      "duration": "2:07:03.252944"
+    },
+    {
+      "session_number": 9,
+      "trades": 8000,
+      "wins": 673,
+      "losses": 583,
+      "win_rate": 8.412500000000001,
+      "profit": 26496.362311658246,
+      "date": "2025-07-21T21:24:56.924461",
+      "duration": "0:20:57.529191"
+    },
+    {
+      "session_number": 10,
+      "trades": 8000,
+      "wins": 109,
+      "losses": 75,
+      "win_rate": 1.3625,
+      "profit": 937.2426816463797,
+      "date": "2025-07-21T21:39:57.188105",
+      "duration": "0:03:04.473054"
+    },
+    {
+      "session_number": 11,
+      "trades": 8000,
+      "wins": 35,
+      "losses": 24,
+      "win_rate": 0.43750000000000006,
+      "profit": 139.24914741588975,
+      "date": "2025-07-21T21:53:29.851114",
+      "duration": "0:00:58.264093"
+    },
+    {
+      "session_number": 12,
+      "trades": 8000,
+      "wins": 4134,
+      "losses": 3483,
+      "win_rate": 51.675000000000004,
+      "profit": 575195.988231505,
+      "date": "2025-07-22T00:01:00.034323",
+      "duration": "2:07:09.168142"
+    },
+    {
+      "session_number": 13,
+      "trades": 8000,
+      "wins": 4100,
+      "losses": 3504,
+      "win_rate": 51.24999999999999,
+      "profit": 553386.3657411997,
+      "date": "2025-07-22T07:46:06.825269",
+      "duration": "2:06:57.169135"
+    },
+    {
+      "session_number": 14,
+      "trades": 8000,
+      "wins": 4020,
+      "losses": 3617,
+      "win_rate": 50.24999999999999,
+      "profit": 490577.6495084377,
+      "date": "2025-07-22T12:58:56.499378",
+      "duration": "2:07:29.086874"
+    },
+    {
+      "session_number": 15,
+      "trades": 4207,
+      "wins": 2159,
+      "losses": 2048,
+      "win_rate": 51.31922985500357,
+      "profit": 156134.8774663567,
+      "date": "2025-07-22T14:51:10.708596",
+      "duration": "0:00:01.012192"
+    },
+    {
+      "session_number": 16,
+      "trades": 4260,
+      "wins": 2334,
+      "losses": 1926,
+      "win_rate": 54.7887323943662,
+      "profit": 270019.9233650347,
+      "date": "2025-07-22T14:51:13.652250",
+      "duration": "0:00:00.917304"
+    },
+    {
+      "session_number": 17,
+      "trades": 4233,
+      "wins": 2208,
+      "losses": 2025,
+      "win_rate": 52.161587526576895,
+      "profit": 184320.34464090646,
+      "date": "2025-07-22T14:51:16.472948",
+      "duration": "0:00:00.801335"
+    },
+    {
+      "session_number": 18,
+      "trades": 4222,
+      "wins": 2233,
+      "losses": 1989,
+      "win_rate": 52.88962576977736,
+      "profit": 204428.4205728345,
+      "date": "2025-07-22T14:51:19.445249",
+      "duration": "0:00:00.955765"
+    },
+    {
+      "session_number": 19,
+      "trades": 4258,
+      "wins": 2293,
+      "losses": 1965,
+      "win_rate": 53.85157350868952,
+      "profit": 242054.3944110695,
+      "date": "2025-07-22T14:51:22.282462",
+      "duration": "0:00:00.805325"
+    },
+    {
+      "session_number": 20,
+      "trades": 4204,
+      "wins": 2240,
+      "losses": 1964,
+      "win_rate": 53.2825880114177,
+      "profit": 216115.77832832406,
+      "date": "2025-07-22T14:51:25.303579",
+      "duration": "0:00:01.000482"
+    },
+    {
+      "session_number": 21,
+      "trades": 4285,
+      "wins": 2234,
+      "losses": 2051,
+      "win_rate": 52.135355892648775,
+      "profit": 188745.274246945,
+      "date": "2025-07-22T16:03:45.630227",
+      "duration": "1:04:35.281084"
+    },
+    {
+      "session_number": 22,
+      "trades": 4203,
+      "wins": 2183,
+      "losses": 2020,
+      "win_rate": 51.939091125386625,
+      "profit": 176386.34207716509,
+      "date": "2025-07-18T14:46:36.107728",
+      "duration": "1:03:17.091082"
+    },
+    {
+      "session_number": 23,
+      "trades": 4227,
+      "wins": 2201,
+      "losses": 2026,
+      "win_rate": 52.07002602318429,
+      "profit": 186854.30385891648,
+      "date": "2025-07-18T15:50:27.732597",
+      "duration": "1:03:41.524318"
+    },
+    {
+      "session_number": 24,
+      "trades": 4218,
+      "wins": 2285,
+      "losses": 1933,
+      "win_rate": 54.17259364627785,
+      "profit": 253419.24192469806,
+      "date": "2025-07-18T16:54:10.493588",
+      "duration": "1:03:32.683443"
+    },
+    {
+      "session_number": 25,
+      "trades": 4207,
+      "wins": 2204,
+      "losses": 2003,
+      "win_rate": 52.38887568338484,
+      "profit": 189455.28955184165,
+      "date": "2025-07-18T17:57:41.588438",
+      "duration": "1:03:21.061416"
+    },
+    {
+      "session_number": 26,
+      "trades": 4256,
+      "wins": 2223,
+      "losses": 2033,
+      "win_rate": 52.23214285714286,
+      "profit": 184488.23562865154,
+      "date": "2025-07-18T19:01:57.983941",
+      "duration": "1:04:06.371289"
+    },
+    {
+      "session_number": 27,
+      "trades": 4191,
+      "wins": 2187,
+      "losses": 2004,
+      "win_rate": 52.183249821045095,
+      "profit": 184489.0993967111,
+      "date": "2025-07-18T20:05:16.063495",
+      "duration": "1:03:08.052635"
+    },
+    {
+      "session_number": 28,
+      "trades": 4229,
+      "wins": 2186,
+      "losses": 2043,
+      "win_rate": 51.69070702293686,
+      "profit": 171365.75104489873,
+      "date": "2025-07-18T21:09:08.741970",
+      "duration": "1:03:42.643125"
+    },
+    {
+      "session_number": 29,
+      "trades": 4129,
+      "wins": 2136,
+      "losses": 1993,
+      "win_rate": 51.73165415354808,
+      "profit": 169560.58370580748,
+      "date": "2025-07-18T22:11:30.192743",
+      "duration": "1:02:11.415774"
+    },
+    {
+      "session_number": 30,
+      "trades": 4255,
+      "wins": 2225,
+      "losses": 2030,
+      "win_rate": 52.29142185663925,
+      "profit": 192520.57776546894,
+      "date": "2025-07-18T23:15:43.130291",
+      "duration": "1:04:02.853031"
+    },
+    {
+      "session_number": 31,
+      "trades": 4203,
+      "wins": 2151,
+      "losses": 2052,
+      "win_rate": 51.17773019271949,
+      "profit": 154615.5980889351,
+      "date": "2025-07-19T00:19:09.128872",
+      "duration": "1:03:15.964727"
+    },
+    {
+      "session_number": 32,
+      "trades": 4269,
+      "wins": 2350,
+      "losses": 1919,
+      "win_rate": 55.04802061372687,
+      "profit": 282607.02230738767,
+      "date": "2025-07-19T01:23:33.961067",
+      "duration": "1:04:14.698564"
+    },
+    {
+      "session_number": 33,
+      "trades": 4257,
+      "wins": 2272,
+      "losses": 1985,
+      "win_rate": 53.370918487197564,
+      "profit": 227576.15368003154,
+      "date": "2025-07-19T02:27:48.180910",
+      "duration": "1:04:04.190385"
+    },
+    {
+      "session_number": 34,
+      "trades": 4197,
+      "wins": 2218,
+      "losses": 1979,
+      "win_rate": 52.847271860853,
+      "profit": 207066.27313844636,
+      "date": "2025-07-19T03:31:07.482832",
+      "duration": "1:03:09.271453"
+    },
+    {
+      "session_number": 35,
+      "trades": 4207,
+      "wins": 2127,
+      "losses": 2080,
+      "win_rate": 50.55859282148799,
+      "profit": 142670.91842849963,
+      "date": "2025-07-19T04:34:36.049357",
+      "duration": "1:03:18.479335"
+    },
+    {
+      "session_number": 36,
+      "trades": 4240,
+      "wins": 2166,
+      "losses": 2074,
+      "win_rate": 51.08490566037736,
+      "profit": 153295.57717412914,
+      "date": "2025-07-19T05:38:36.322457",
+      "duration": "1:03:50.242743"
+    },
+    {
+      "session_number": 37,
+      "trades": 4242,
+      "wins": 2129,
+      "losses": 2113,
+      "win_rate": 50.188590287600185,
+      "profit": 131212.08777693976,
+      "date": "2025-07-19T06:42:36.897752",
+      "duration": "1:03:50.548558"
+    },
+    {
+      "session_number": 38,
+      "trades": 4238,
+      "wins": 2180,
+      "losses": 2058,
+      "win_rate": 51.439358187824446,
+      "profit": 163524.34736420328,
+      "date": "2025-07-19T07:46:34.344664",
+      "duration": "1:03:47.405375"
+    },
+    {
+      "session_number": 39,
+      "trades": 4170,
+      "wins": 2163,
+      "losses": 2007,
+      "win_rate": 51.870503597122294,
+      "profit": 170640.5423504576,
+      "date": "2025-07-19T08:49:31.441316",
+      "duration": "1:02:47.065446"
+    },
+    {
+      "session_number": 40,
+      "trades": 4150,
+      "wins": 2159,
+      "losses": 1991,
+      "win_rate": 52.02409638554217,
+      "profit": 177251.00373847954,
+      "date": "2025-07-19T09:52:08.705533",
+      "duration": "1:02:27.232657"
+    },
+    {
+      "session_number": 41,
+      "trades": 4186,
+      "wins": 2154,
+      "losses": 2032,
+      "win_rate": 51.45723841376015,
+      "profit": 164936.20554440172,
+      "date": "2025-07-19T10:55:17.667605",
+      "duration": "1:02:58.866181"
+    },
+    {
+      "session_number": 42,
+      "trades": 4245,
+      "wins": 2162,
+      "losses": 2083,
+      "win_rate": 50.93050647820966,
+      "profit": 155960.6652883452,
+      "date": "2025-07-19T11:59:19.838238",
+      "duration": "1:03:52.136040"
+    },
+    {
+      "session_number": 43,
+      "trades": 4214,
+      "wins": 2193,
+      "losses": 2021,
+      "win_rate": 52.04081632653062,
+      "profit": 185599.4110076634,
+      "date": "2025-07-19T13:02:55.694879",
+      "duration": "1:03:25.818916"
+    },
+    {
+      "session_number": 44,
+      "trades": 500,
+      "wins": 255,
+      "losses": 245,
+      "win_rate": 51.0,
+      "profit": 2071.4629655880626,
+      "date": "2025-07-19T13:58:25.376829",
+      "duration": "0:07:58.751851"
+    },
+    {
+      "session_number": 45,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T13:58:47.343510",
+      "duration": "0:00:11.940871"
+    },
+    {
+      "session_number": 46,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T13:59:08.310955",
+      "duration": "0:00:10.947567"
+    },
+    {
+      "session_number": 47,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T13:59:30.256819",
+      "duration": "0:00:11.922031"
+    },
+    {
+      "session_number": 48,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T13:59:51.614038",
+      "duration": "0:00:11.325369"
+    },
+    {
+      "session_number": 49,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:00:15.251014",
+      "duration": "0:00:13.614739"
+    },
+    {
+      "session_number": 50,
+      "trades": 100,
+      "wins": 50,
+      "losses": 50,
+      "win_rate": 50.0,
+      "profit": 122.46377704783144,
+      "date": "2025-07-19T14:06:56.765112",
+      "duration": "0:01:40.830295"
+    },
+    {
+      "session_number": 51,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:07:17.692238",
+      "duration": "0:00:10.877965"
+    },
+    {
+      "session_number": 52,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:07:38.513031",
+      "duration": "0:00:10.800352"
+    },
+    {
+      "session_number": 53,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:07:59.690407",
+      "duration": "0:00:11.121103"
+    },
+    {
+      "session_number": 54,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:08:20.761678",
+      "duration": "0:00:11.035181"
+    },
+    {
+      "session_number": 55,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:08:44.181378",
+      "duration": "0:00:13.198319"
+    },
+    {
+      "session_number": 56,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:09:09.628299",
+      "duration": "0:00:15.421884"
+    },
+    {
+      "session_number": 57,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:09:37.265109",
+      "duration": "0:00:17.611347"
+    },
+    {
+      "session_number": 58,
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0.0,
+      "profit": 0.0,
+      "date": "2025-07-19T14:10:00.052386",
+      "duration": "0:00:12.752615"
+    },
+    {
+      "session_number": 59,
+      "trades": 7598,
+      "wins": 4487,
+      "losses": 3111,
+      "win_rate": 59.05501447749407,
+      "profit": 884354.2933321749,
+      "date": "2025-07-19T16:29:35.324090",
+      "duration": "2:17:04.439222"
+    },
+    {
+      "session_number": 60,
+      "trades": 6016,
+      "wins": 3235,
+      "losses": 2781,
+      "win_rate": 53.77327127659575,
+      "profit": -1391.3115428826432,
+      "date": "2025-07-19T20:28:46.405823",
+      "duration": "1:45:35.093220"
+    },
+    {
+      "session_number": 61,
+      "trades": 6031,
+      "wins": 3112,
+      "losses": 2919,
+      "win_rate": 51.6000663239927,
+      "profit": -1865.31381022594,
+      "date": "2025-07-19T22:43:21.174950",
+      "duration": "2:14:24.710372"
+    },
+    {
+      "session_number": 62,
+      "trades": 6123,
+      "wins": 3042,
+      "losses": 3081,
+      "win_rate": 49.681528662420384,
+      "profit": -2331.966728686352,
+      "date": "2025-07-20T01:05:07.472387",
+      "duration": "2:21:36.249410"
+    },
+    {
+      "session_number": 63,
+      "trades": 6096,
+      "wins": 2961,
+      "losses": 3135,
+      "win_rate": 48.572834645669296,
+      "profit": -2487.5285388188595,
+      "date": "2025-07-20T03:26:40.525074",
+      "duration": "2:21:23.007932"
+    },
+    {
+      "session_number": 64,
+      "trades": 6037,
+      "wins": 2906,
+      "losses": 3131,
+      "win_rate": 48.136491634918,
+      "profit": -2635.732566194732,
+      "date": "2025-07-20T05:47:24.317031",
+      "duration": "2:20:33.763941"
+    },
+    {
+      "session_number": 65,
+      "trades": 6064,
+      "wins": 2905,
+      "losses": 3159,
+      "win_rate": 47.905672823219,
+      "profit": -2673.2612822465094,
+      "date": "2025-07-20T08:08:19.697616",
+      "duration": "2:20:45.338504"
+    },
+    {
+      "session_number": 66,
+      "trades": 5981,
+      "wins": 2796,
+      "losses": 3185,
+      "win_rate": 46.74803544557766,
+      "profit": -2918.2049413179043,
+      "date": "2025-07-20T10:27:44.165105",
+      "duration": "2:19:14.421129"
+    },
+    {
+      "session_number": 67,
+      "trades": 6036,
+      "wins": 2833,
+      "losses": 3203,
+      "win_rate": 46.9350563286945,
+      "profit": -2887.155333151973,
+      "date": "2025-07-20T12:48:00.243208",
+      "duration": "2:20:06.042509"
+    },
+    {
+      "session_number": 68,
+      "trades": 6043,
+      "wins": 2807,
+      "losses": 3236,
+      "win_rate": 46.45043852391196,
+      "profit": -2940.5307830432484,
+      "date": "2025-07-20T15:08:12.881477",
+      "duration": "2:20:02.584725"
+    },
+    {
+      "session_number": 69,
+      "trades": 6092,
+      "wins": 2754,
+      "losses": 3338,
+      "win_rate": 45.20682862770847,
+      "profit": -3320.936013736517,
+      "date": "2025-07-20T17:29:19.389920",
+      "duration": "2:20:56.443328"
+    },
+    {
+      "session_number": 70,
+      "trades": 7630,
+      "wins": 3770,
+      "losses": 3860,
+      "win_rate": 49.41022280471822,
+      "profit": -2903.3807903101374,
+      "date": "2025-07-20T20:27:56.835318",
+      "duration": "2:38:39.795113"
+    },
+    {
+      "session_number": 71,
+      "trades": 7588,
+      "wins": 3622,
+      "losses": 3966,
+      "win_rate": 47.733263046916186,
+      "profit": -3359.3317084373625,
+      "date": "2025-07-21T00:08:57.876833",
+      "duration": "3:40:51.002509"
+    },
+    {
+      "session_number": 72,
+      "trades": 7565,
+      "wins": 3625,
+      "losses": 3940,
+      "win_rate": 47.918043621943156,
+      "profit": -3352.957713013534,
+      "date": "2025-07-21T03:58:03.313681",
+      "duration": "3:48:55.359895"
+    },
+    {
+      "session_number": 73,
+      "trades": 7590,
+      "wins": 3596,
+      "losses": 3994,
+      "win_rate": 47.378129117259554,
+      "profit": -3494.984561803767,
+      "date": "2025-07-21T07:45:21.760427",
+      "duration": "3:47:08.397076"
+    },
+    {
+      "session_number": 74,
+      "trades": 7577,
+      "wins": 3578,
+      "losses": 3999,
+      "win_rate": 47.221855615679026,
+      "profit": -3504.809744793439,
+      "date": "2025-07-21T11:29:06.967713",
+      "duration": "3:43:35.155707"
+    },
+    {
+      "session_number": 75,
+      "trades": 7576,
+      "wins": 3624,
+      "losses": 3952,
+      "win_rate": 47.83526927138332,
+      "profit": -3393.3015134508482,
+      "date": "2025-07-21T15:18:47.658240",
+      "duration": "3:49:30.491370"
+    },
+    {
+      "session_number": 76,
+      "trades": 7585,
+      "wins": 3636,
+      "losses": 3949,
+      "win_rate": 47.936717205009884,
+      "profit": -3360.3056157745355,
+      "date": "2025-07-21T19:03:54.835727",
+      "duration": "3:44:57.092559"
+    },
+    {
+      "session_number": 77,
+      "trades": 7602,
+      "wins": 3648,
+      "losses": 3954,
+      "win_rate": 47.98737174427782,
+      "profit": -3321.053534794615,
+      "date": "2025-07-21T22:49:48.996212",
+      "duration": "3:45:44.063569"
+    },
+    {
+      "session_number": 78,
+      "trades": 7612,
+      "wins": 3576,
+      "losses": 4036,
+      "win_rate": 46.97845507094062,
+      "profit": -3608.4526863725805,
+      "date": "2025-07-22T02:39:11.564180",
+      "duration": "3:49:12.503659"
+    },
+    {
+      "session_number": 79,
+      "trades": 7587,
+      "wins": 3691,
+      "losses": 3896,
+      "win_rate": 48.64900487676289,
+      "profit": -3109.0948809501897,
+      "date": "2025-07-22T06:22:03.058514",
+      "duration": "3:42:41.422203"
+    },
+    {
+      "session_number": 80,
+      "trades": 529,
+      "wins": 263,
+      "losses": 266,
+      "win_rate": 49.7164461247637,
+      "profit": -150.1013214745915,
+      "date": "2025-07-22T07:48:11.315745",
+      "duration": "0:08:47.858042"
+    },
+    {
+      "session_number": 81,
+      "trades": 519,
+      "wins": 255,
+      "losses": 264,
+      "win_rate": 49.13294797687861,
+      "profit": -142.35688407222824,
+      "date": "2025-07-22T07:58:30.820598",
+      "duration": "0:10:09.370065"
+    },
+    {
+      "session_number": 82,
+      "trades": 503,
+      "wins": 262,
+      "losses": 241,
+      "win_rate": 52.087475149105366,
+      "profit": -117.75780586441503,
+      "date": "2025-07-22T08:08:39.751873",
+      "duration": "0:09:58.843755"
+    },
+    {
+      "session_number": 83,
+      "trades": 560,
+      "wins": 288,
+      "losses": 272,
+      "win_rate": 51.42857142857142,
+      "profit": -127.50928142588747,
+      "date": "2025-07-22T08:21:43.303226",
+      "duration": "0:12:53.478913"
+    },
+    {
+      "session_number": 84,
+      "trades": 549,
+      "wins": 300,
+      "losses": 249,
+      "win_rate": 54.644808743169406,
+      "profit": -73.63182034284783,
+      "date": "2025-07-22T08:35:51.925538",
+      "duration": "0:13:58.592676"
+    },
+    {
+      "session_number": 85,
+      "trades": 558,
+      "wins": 288,
+      "losses": 270,
+      "win_rate": 51.61290322580645,
+      "profit": -115.62840517357867,
+      "date": "2025-07-22T08:51:26.310643",
+      "duration": "0:15:24.333968"
+    },
+    {
+      "session_number": 86,
+      "trades": 500,
+      "wins": 253,
+      "losses": 247,
+      "win_rate": 50.6,
+      "profit": -115.54097143268343,
+      "date": "2025-07-22T09:04:36.699194",
+      "duration": "0:13:00.266762"
+    },
+    {
+      "session_number": 87,
+      "trades": 593,
+      "wins": 318,
+      "losses": 275,
+      "win_rate": 53.62563237774031,
+      "profit": -86.43683362772354,
+      "date": "2025-07-22T09:22:45.809740",
+      "duration": "0:17:59.059110"
+    },
+    {
+      "session_number": 88,
+      "trades": 531,
+      "wins": 263,
+      "losses": 268,
+      "win_rate": 49.52919020715631,
+      "profit": -149.42624457375945,
+      "date": "2025-07-22T09:41:12.265188",
+      "duration": "0:18:16.362730"
+    },
+    {
+      "session_number": 89,
+      "trades": 354,
+      "wins": 181,
+      "losses": 173,
+      "win_rate": 51.12994350282486,
+      "profit": -102.34601225223675,
+      "date": "2025-07-22T09:50:38.212540",
+      "duration": "0:09:15.891584"
+    },
+    {
+      "session_number": 90,
+      "trades": 292,
+      "wins": 148,
+      "losses": 144,
+      "win_rate": 50.68493150684932,
+      "profit": -98.5820358320468,
+      "date": "2025-07-22T10:03:10.146670",
+      "duration": "0:12:21.884199"
+    },
+    {
+      "session_number": 91,
+      "trades": 294,
+      "wins": 149,
+      "losses": 145,
+      "win_rate": 50.68027210884354,
+      "profit": -105.25383577297681,
+      "date": "2025-07-22T10:12:09.468345",
+      "duration": "0:08:49.264416"
+    },
+    {
+      "session_number": 92,
+      "trades": 275,
+      "wins": 149,
+      "losses": 126,
+      "win_rate": 54.18181818181819,
+      "profit": -61.72120069952116,
+      "date": "2025-07-22T10:25:16.334780",
+      "duration": "0:12:56.815846"
+    },
+    {
+      "session_number": 93,
+      "trades": 281,
+      "wins": 152,
+      "losses": 129,
+      "win_rate": 54.092526690391466,
+      "profit": -59.23999778914659,
+      "date": "2025-07-22T10:34:28.384076",
+      "duration": "0:09:01.981638"
+    },
+    {
+      "session_number": 94,
+      "trades": 269,
+      "wins": 149,
+      "losses": 120,
+      "win_rate": 55.39033457249071,
+      "profit": -50.955358267730524,
+      "date": "2025-07-22T10:48:22.741419",
+      "duration": "0:13:44.302906"
+    },
+    {
+      "session_number": 95,
+      "trades": 249,
+      "wins": 140,
+      "losses": 109,
+      "win_rate": 56.22489959839358,
+      "profit": -44.377429443242995,
+      "date": "2025-07-22T10:57:36.228560",
+      "duration": "0:09:03.416563"
+    },
+    {
+      "session_number": 96,
+      "trades": 252,
+      "wins": 145,
+      "losses": 107,
+      "win_rate": 57.53968253968254,
+      "profit": -13.995857547810516,
+      "date": "2025-07-22T11:06:58.920573",
+      "duration": "0:09:12.656548"
+    },
+    {
+      "session_number": 97,
+      "trades": 187,
+      "wins": 116,
+      "losses": 71,
+      "win_rate": 62.03208556149733,
+      "profit": 27.27171634603737,
+      "date": "2025-07-22T11:15:31.098972",
+      "duration": "0:08:22.136820"
+    },
+    {
+      "session_number": 98,
+      "trades": 285,
+      "wins": 155,
+      "losses": 130,
+      "win_rate": 54.385964912280706,
+      "profit": -79.71578687294532,
+      "date": "2025-07-22T11:25:45.571938",
+      "duration": "0:10:04.413787"
+    },
+    {
+      "session_number": 99,
+      "trades": 282,
+      "wins": 160,
+      "losses": 122,
+      "win_rate": 56.73758865248227,
+      "profit": -39.614842975791625,
+      "date": "2025-07-22T11:42:51.443539",
+      "duration": "0:16:55.832657"
+    },
+    {
+      "session_number": 100,
+      "trades": 312,
+      "wins": 175,
+      "losses": 137,
+      "win_rate": 56.08974358974359,
+      "profit": -53.59254827887352,
+      "date": "2025-07-22T11:54:38.890185",
+      "duration": "0:11:37.391977"
+    },
+    {
+      "session_number": 101,
+      "trades": 275,
+      "wins": 158,
+      "losses": 117,
+      "win_rate": 57.45454545454546,
+      "profit": -24.621663064953655,
+      "date": "2025-07-22T12:11:24.414885",
+      "duration": "0:16:35.495387"
+    },
+    {
+      "session_number": 102,
+      "trades": 173,
+      "wins": 104,
+      "losses": 69,
+      "win_rate": 60.115606936416185,
+      "profit": 17.03988784895966,
+      "date": "2025-07-22T12:20:48.037828",
+      "duration": "0:09:13.581200"
+    },
+    {
+      "session_number": 103,
+      "trades": 264,
+      "wins": 142,
+      "losses": 122,
+      "win_rate": 53.78787878787878,
+      "profit": -59.828969420854875,
+      "date": "2025-07-22T12:31:42.686263",
+      "duration": "0:10:44.612658"
+    },
+    {
+      "session_number": 104,
+      "trades": 250,
+      "wins": 133,
+      "losses": 117,
+      "win_rate": 53.2,
+      "profit": -73.10337037584678,
+      "date": "2025-07-22T12:42:33.019505",
+      "duration": "0:10:40.306148"
+    },
+    {
+      "session_number": 105,
+      "trades": 265,
+      "wins": 130,
+      "losses": 135,
+      "win_rate": 49.056603773584904,
+      "profit": -104.10924837868518,
+      "date": "2025-07-22T13:00:37.990355",
+      "duration": "0:17:54.931719"
+    }
+  ],
+  "ai_insights": {
+    "best_pair": "GBP/USD",
+    "learning_trend": "Needs Adjustment"
+  },
+  "enhanced_config": {
+    "confidence_threshold": 0.35,
+    "risk_reward_min": 2.5,
+    "session_quality_min": 0.8,
+    "trend_strength_min": 0.7,
+    "ai_retrain_frequency": 200,
+    "min_training_samples": 50,
+    "realistic_spreads": true,
+    "market_hours_filter": true,
+    "news_impact_simulation": true,
+    "weekend_gap_simulation": true,
+    "correlation_limits": true,
+    "latency_simulation": true,
+    "microstructure_analysis": true,
+    "advanced_risk_management": true,
+    "news_awareness": true
+  }
+}

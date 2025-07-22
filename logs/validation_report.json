@@ -1,11 +1,11 @@
 {
-  "timestamp": "2025-07-20T18:02:46.690478",
+  "timestamp": "2025-07-20T21:12:01.701783",
   "summary": {
     "total_tests": 10,
-    "passed": 8,
+    "passed": 10,
     "warnings": 0,
-    "failed": 2,
-    "critical_failures": 2
+    "failed": 0,
+    "critical_failures": 0
   },
   "test_results": {
     "Environment Configuration": {
@@ -13,18 +13,16 @@
       "message": "All environment variables configured correctly"
     },
     "Python Dependencies": {
-      "status": "FAIL",
-      "message": "Missing packages: ['scikit-learn', 'python-dotenv']",
-      "critical": true
+      "status": "PASS",
+      "message": "All required packages are installed"
     },
     "OANDA Connection": {
       "status": "PASS",
-      "message": "OANDA connection successful. EUR_USD: 1.16273/1.16288"
+      "message": "OANDA connection successful. EUR_USD: 1.16196/1.16213"
     },
     "Trading Strategy": {
-      "status": "FAIL",
-      "message": "Signal missing required fields: ['strategy', 'pair', 'timestamp']",
-      "critical": true
+      "status": "PASS",
+      "message": "Strategy tests passed. Sample signal: no_signal (confidence: 0.67)"
     },
     "Risk Management": {
       "status": "PASS",
@@ -51,9 +49,6 @@
       "message": "Performance tracking validated. Sample: 4 trades, 50% win rate, $100 profit"
     }
   },
-  "critical_failures": [
-    "Python Dependencies",
-    "Trading Strategy"
-  ],
-  "system_ready": false
+  "critical_failures": [],
+  "system_ready": true
 }
