@@ -1,0 +1,98 @@
+{
+  "plan_created": "2025-07-21T21:48:13.936510",
+  "current_performance": {
+    "lifetime_win_rate": 56.11300244878456,
+    "gap_to_target": 8.886997551215437,
+    "bottlenecks_identified": 4
+  },
+  "target_performance": {
+    "win_rate": 65.0,
+    "confidence_threshold": 0.7,
+    "expected_timeframe": "3-5 training sessions"
+  },
+  "immediate_actions": [
+    {
+      "action": "Increase Confidence Threshold",
+      "from": "55.2%",
+      "to": "70%+",
+      "expected_impact": "+3-5% win rate",
+      "implementation": "Update config.py RISK_CONFIG['confidence_threshold'] = 0.70"
+    },
+    {
+      "action": "Implement Quality-Only Trading",
+      "description": "Only execute trades with 70%+ confidence",
+      "expected_impact": "+4-6% win rate",
+      "trade_frequency": "Reduced by 40-50%",
+      "implementation": "Add strict confidence filtering in ai_learner.py"
+    },
+    {
+      "action": "Enhanced Risk:Reward Requirements",
+      "from": "Variable",
+      "to": "3:1 minimum",
+      "expected_impact": "+2-3% win rate",
+      "implementation": "Update risk management minimum RR ratio"
+    }
+  ],
+  "medium_term_actions": [
+    {
+      "action": "Advanced Feature Engineering",
+      "description": "Add market microstructure features",
+      "features": [
+        "bid-ask spread analysis",
+        "order flow imbalance",
+        "market depth"
+      ],
+      "expected_impact": "+3-4% win rate",
+      "implementation": "Enhance feature generation in AI system"
+    },
+    {
+      "action": "Session-Based Optimization",
+      "description": "Optimize performance for specific trading sessions",
+      "focus": "London/NY overlap (highest win rate potential)",
+      "expected_impact": "+2-3% win rate",
+      "implementation": "Add session-specific AI models"
+    },
+    {
+      "action": "Pair-Specific Models",
+      "description": "Individual AI models for each currency pair",
+      "target": "Optimize EUR/USD, GBP/USD (highest volume)",
+      "expected_impact": "+4-5% win rate",
+      "implementation": "Create specialized models per pair"
+    }
+  ],
+  "advanced_optimizations": [
+    {
+      "action": "Ensemble AI Models",
+      "description": "Multiple AI models voting on trades",
+      "models": [
+        "XGBoost",
+        "Neural Network",
+        "Random Forest"
+      ],
+      "expected_impact": "+2-3% win rate",
+      "complexity": "High"
+    },
+    {
+      "action": "Real-Time Market Sentiment",
+      "description": "Integrate news sentiment and social media",
+      "sources": [
+        "Reuters API",
+        "Twitter sentiment",
+        "Economic calendar"
+      ],
+      "expected_impact": "+1-2% win rate",
+      "complexity": "Medium"
+    },
+    {
+      "action": "Adaptive Learning System",
+      "description": "AI that adapts to changing market conditions",
+      "features": [
+        "Regime detection",
+        "Volatility adaptation",
+        "News impact modeling"
+      ],
+      "expected_impact": "+3-4% win rate",
+      "complexity": "Very High"
+    }
+  ]
+}

@@ -56,6 +56,34 @@ class OandaClient:
             logger.error(f"Error initializing OANDA client: {str(e)}")
             raise
 
+    def get_account_details(self) -> Dict:
+        """Get account details and balance"""
+        try:
+            import oandapyV20.endpoints.accounts as accounts
+            
+            # Get account details
+            r = accounts.AccountDetails(accountID=self.account_id)
+            response = self.client.request(r)
+            
+            account_data = response.get('account', {})
+            
+            return {
+                'balance': float(account_data.get('balance', 0)),
+                'currency': account_data.get('currency', 'USD'),
+                'margin_used': float(account_data.get('marginUsed', 0)),
+                'margin_available': float(account_data.get('marginAvailable', 0)),
+                'open_positions': len(account_data.get('positions', [])),
+                'open_trades': len(account_data.get('trades', [])),
+                'unrealized_pl': float(account_data.get('unrealizedPL', 0))
+            }
+            
+        except V20Error as e:
+            logger.error(f"OANDA API error getting account details: {str(e)}")
+            raise Exception(f"Failed to get account details: {str(e)}")
+        except Exception as e:
+            logger.error(f"Error getting account details: {str(e)}")
+            raise
+
     def place_trade(self, trade_data: Dict) -> Dict:
         """Place a trade on OANDA"""
         try:

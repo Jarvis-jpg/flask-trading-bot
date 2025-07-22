@@ -1,24 +1,45 @@
 from typing import Dict, List, Optional
 import numpy as np
 from datetime import datetime, timedelta
+from config import RISK_CONFIG, PREMIUM_TRADING_HOURS, SIGNAL_QUALITY_CONFIG
 
 class RiskManager:
     def __init__(self, initial_balance: float = 200.0):
         self.initial_balance = initial_balance
         self.current_balance = initial_balance
-        self.max_drawdown = 0.15  # 15% maximum drawdown - adjusted for small account
-        self.max_risk_per_trade = 0.05  # 5% risk per trade as requested
-        self.max_daily_risk = 0.15  # 15% maximum daily risk - adjusted for aggressive trading
-        self.correlation_threshold = 0.85  # More lenient correlation threshold (was 0.7)
-        self.min_trades_for_correlation = 3  # Minimum trades before checking correlation
+        # ENHANCED RISK PARAMETERS FOR 65%+ WIN RATE
+        self.max_drawdown = RISK_CONFIG['max_drawdown']  # 12% maximum drawdown
+        self.max_risk_per_trade = RISK_CONFIG['max_risk_per_trade']  # 1.5% risk per trade
+        self.max_daily_risk = RISK_CONFIG['max_daily_loss']  # 4% maximum daily risk
+        self.confidence_threshold = RISK_CONFIG['confidence_threshold']  # 82% minimum confidence
+        self.risk_reward_min = RISK_CONFIG['risk_reward_min']  # 2.5:1 minimum RR
+        self.correlation_threshold = 0.7  # Stricter correlation control
+        self.max_daily_trades = 3  # Quality over quantity
+        self.min_trades_for_correlation = 2
         self.trade_history: List[Dict] = []
         self.daily_trades: List[Dict] = []
         
     def validate_trade(self, trade: Dict, market_conditions: Dict) -> tuple[bool, str]:
         """
-        Validate if a trade meets all risk management criteria.
+        ENHANCED trade validation for 65%+ win rate achievement.
         Returns: (is_valid, reason)
         """
+        # Check confidence threshold (CRITICAL for 65%+ win rate)
+        if trade.get('confidence', 0) < self.confidence_threshold:
+            return False, f"Confidence {trade.get('confidence', 0):.1%} below required {self.confidence_threshold:.1%}"
+            
+        # Check risk:reward ratio
+        if trade.get('risk_reward', 0) < self.risk_reward_min:
+            return False, f"Risk:Reward {trade.get('risk_reward', 0):.1f} below minimum {self.risk_reward_min:.1f}"
+            
+        # Check premium trading hours
+        if not self._is_premium_trading_time():
+            return False, "Outside premium trading hours - quality filter active"
+            
+        # Check daily trade limit (quality over quantity)
+        if len(self.daily_trades) >= self.max_daily_trades:
+            return False, f"Daily limit of {self.max_daily_trades} trades reached"
+            
         # Check drawdown
         if self._check_drawdown():
             return False, "Maximum drawdown reached"
@@ -27,9 +48,9 @@ class RiskManager:
         if self._check_daily_risk(trade):
             return False, "Maximum daily risk reached"
             
-        # Check market conditions
-        if not self._validate_market_conditions(market_conditions):
-            return False, "Unfavorable market conditions"
+        # Enhanced market conditions validation
+        if not self._validate_enhanced_market_conditions(market_conditions):
+            return False, "Market conditions don't meet enhanced quality standards"
             
         # Check position sizing
         if not self._validate_position_size(trade):
@@ -39,7 +60,80 @@ class RiskManager:
         if self._check_correlation_risk(trade):
             return False, "High correlation with existing trades"
             
-        return True, "Trade validated"
+        # Check market structure quality
+        if not self._validate_market_structure(trade, market_conditions):
+            return False, "Market structure quality insufficient"
+            
+        return True, "Trade validated - meets enhanced quality standards"
+    
+    def _is_premium_trading_time(self) -> bool:
+        """Check if current time is within premium trading hours"""
+        try:
+            current_time = datetime.now()
+            current_hour = current_time.hour
+            current_day = current_time.strftime('%A').lower()
+            
+            if current_day in PREMIUM_TRADING_HOURS:
+                premium_hours = PREMIUM_TRADING_HOURS[current_day]
+                for start_hour, end_hour in premium_hours:
+                    if start_hour <= current_hour <= end_hour:
+                        return True
+            return False
+        except:
+            # Default to allow trading if time check fails
+            return True
+    
+    def _validate_enhanced_market_conditions(self, market_conditions: Dict) -> bool:
+        """Enhanced market condition validation for higher win rates"""
+        try:
+            # Check trend strength
+            trend_strength = market_conditions.get('trend_strength', 0)
+            if trend_strength < SIGNAL_QUALITY_CONFIG['min_trend_strength']:
+                return False
+                
+            # Check RSI sweet spot
+            rsi = market_conditions.get('rsi', 50)
+            rsi_range = SIGNAL_QUALITY_CONFIG['rsi_sweet_spot_range']
+            if not (rsi_range[0] <= rsi <= rsi_range[1]):
+                return False
+                
+            # Check volume surge
+            volume_multiplier = market_conditions.get('volume_multiplier', 1.0)
+            if volume_multiplier < SIGNAL_QUALITY_CONFIG['volume_surge_multiplier']:
+                return False
+                
+            # Check session quality
+            session_quality = market_conditions.get('session_quality', 0.5)
+            if session_quality < 0.8:  # High session quality requirement
+                return False
+                
+            return True
+        except:
+            return False
+    
+    def _validate_market_structure(self, trade: Dict, market_conditions: Dict) -> bool:
+        """Validate market structure quality for enhanced performance"""
+        try:
+            # Check support/resistance proximity
+            sr_proximity = market_conditions.get('support_resistance_proximity', 0)
+            if sr_proximity > 0.02:  # Too close to S/R levels
+                return False
+                
+            # Check breakout confirmation
+            if trade.get('signal_type') == 'breakout':
+                confirmation_candles = market_conditions.get('breakout_confirmation', 0)
+                if confirmation_candles < SIGNAL_QUALITY_CONFIG['breakout_confirmation']:
+                    return False
+                    
+            # Check pullback depth for trend trades
+            if trade.get('signal_type') == 'trend_pullback':
+                pullback_depth = market_conditions.get('pullback_depth', 0)
+                if pullback_depth > SIGNAL_QUALITY_CONFIG['pullback_depth_max']:
+                    return False
+                    
+            return True
+        except:
+            return True  # Default to allow if validation fails
         
     def calculate_position_size(self, trade: Dict) -> float:
         """Calculate safe position size based on risk parameters and Oanda requirements."""

@@ -112,22 +112,23 @@ class TradingBotValidator:
     
     def test_dependencies(self):
         """Test all required Python dependencies"""
-        required_packages = [
-            'flask',
-            'pandas',
-            'numpy',
-            'scikit-learn',
-            'oandapyV20',
-            'python-dotenv',
-            'ta',
-            'requests',
-            'joblib'
-        ]
+        # Map package names to their import names
+        package_imports = {
+            'flask': 'flask',
+            'pandas': 'pandas',
+            'numpy': 'numpy',
+            'scikit-learn': 'sklearn',
+            'oandapyV20': 'oandapyV20',
+            'python-dotenv': 'dotenv',
+            'ta': 'ta',
+            'requests': 'requests',
+            'joblib': 'joblib'
+        }
         
         missing_packages = []
-        for package in required_packages:
+        for package, import_name in package_imports.items():
             try:
-                __import__(package)
+                __import__(import_name)
             except ImportError:
                 missing_packages.append(package)
         
