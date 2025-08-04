@@ -1,0 +1,82 @@
+{
+  "deployment_status": "REJECTED",
+  "readiness_score": 37.5,
+  "critical_failures": 4,
+  "warnings": 1,
+  "passed_checks": 3,
+  "recommendation": "\u274c NOT APPROVED - Critical issues must be resolved",
+  "checklist_results": {
+    "AI Memory": {
+      "passed": false,
+      "message": "Invalid AI memory file structure",
+      "critical": true,
+      "timestamp": "2025-08-04T03:09:04.096188"
+    },
+    "AI Memory Integrity": {
+      "passed": false,
+      "message": "Check failed with error: 'AI Memory Integrity'",
+      "critical": true,
+      "timestamp": "2025-08-04T03:09:04.096390"
+    },
+    "OANDA Config": {
+      "passed": true,
+      "message": "Valid configuration - PRACTICE environment",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.098262"
+    },
+    "OANDA Configuration": {
+      "passed": false,
+      "message": "Check failed with error: 'OANDA Configuration'",
+      "critical": true,
+      "timestamp": "2025-08-04T03:09:04.098613"
+    },
+    "System Files": {
+      "passed": true,
+      "message": "All core files present (6/6)",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.101262"
+    },
+    "Trading System Files": {
+      "passed": false,
+      "message": "Check failed with error: 'Trading System Files'",
+      "critical": true,
+      "timestamp": "2025-08-04T03:09:04.101338"
+    },
+    "Risk Management": {
+      "passed": false,
+      "message": "Risk management check failed: 'charmap' codec can't decode byte 0x8f in position 1259: character maps to <undefined>",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.184053"
+    },
+    "Account Balance": {
+      "passed": true,
+      "message": "$200 meets all requirements",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.184967"
+    },
+    "Market Conditions": {
+      "passed": true,
+      "message": "Weekday - market active",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.185402"
+    },
+    "Performance Validation": {
+      "passed": true,
+      "message": "Strong validation evidence: 7 items found",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.253241"
+    },
+    "Monitoring": {
+      "passed": true,
+      "message": "Strong monitoring: 3 log files, Flask application logging, comprehensive safety monitoring",
+      "critical": false,
+      "timestamp": "2025-08-04T03:09:04.567773"
+    },
+    "Monitoring Systems": {
+      "passed": false,
+      "message": "Check failed with error: 'Monitoring Systems'",
+      "critical": true,
+      "timestamp": "2025-08-04T03:09:04.567851"
+    }
+  }
+}
