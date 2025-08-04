@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-08-02T07:04:18.766777",
+  "total_trades": 0,
+  "win_rate": 0,
+  "target_achieved": false,
+  "currency_pairs_trained": 20,
+  "quality_filters": {
+    "confidence_min": 0.68,
+    "risk_reward_min": 2.0,
+    "trend_strength_min": 0.55,
+    "volatility_max": 0.75,
+    "spread_max": 4.0,
+    "session_quality_min": 0.65,
+    "momentum_min": 0.5
+  },
+  "ready_for_live": false,
+  "training_method": "comprehensive_realistic"
+}
