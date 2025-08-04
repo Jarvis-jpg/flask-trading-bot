@@ -5,3 +5,18 @@ __pycache__/
 *.pyd
 .env
 *.log
+
+# Large AI memory files (too big for GitHub)
+jarvis_ai_memory.json
+jarvis_ai_memory_backup*.json
+*.pkl
+
+# Large training data files
+comprehensive_training_*.json
+massive_*.json
+million_*.json
+
+# Temporary files
+temp_*
+*.tmp
+quality_test_results.txt

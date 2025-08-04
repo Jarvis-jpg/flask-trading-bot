@@ -3,6 +3,7 @@ import oandapyV20
 import oandapyV20.endpoints.orders as orders
 import oandapyV20.endpoints.trades as trades
 import oandapyV20.endpoints.pricing as pricing
+import oandapyV20.endpoints.accounts as accounts
 from oandapyV20.exceptions import V20Error
 import logging
 from typing import Dict, Optional
@@ -123,6 +124,31 @@ class OandaClient:
             logger.error(f"Error placing trade: {str(e)}")
             raise
 
+    def get_account_info(self) -> Optional[Dict]:
+        """Get account information"""
+        try:
+            logger.info(f"Fetching account information for {self.account_id}")
+            r = accounts.AccountDetails(accountID=self.account_id)
+            response = self.client.request(r)
+            account_data = response.get('account', {})
+            
+            return {
+                'id': account_data.get('id'),
+                'balance': float(account_data.get('balance', 0)),
+                'currency': account_data.get('currency'),
+                'nav': float(account_data.get('NAV', 0)),
+                'margin_used': float(account_data.get('marginUsed', 0)),
+                'margin_available': float(account_data.get('marginAvailable', 0)),
+                'unrealized_pl': float(account_data.get('unrealizedPL', 0)),
+                'open_trade_count': int(account_data.get('openTradeCount', 0))
+            }
+        except V20Error as e:
+            logger.error(f"Error fetching account info: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error fetching account info: {str(e)}")
+            return None
+
     def get_current_price(self, pair: str) -> Dict:
         """Get current price for a currency pair"""
         try:
@@ -224,3 +250,25 @@ class OandaClient:
         except Exception as e:
             logger.error(f"Error modifying trade: {str(e)}")
             raise
+
+    def get_trade_status(self, trade_id: str) -> Optional[Dict]:
+        """Get status of a specific trade"""
+        try:
+            r = trades.TradeDetails(accountID=self.account_id, tradeID=trade_id)
+            response = self.client.request(r)
+            trade_data = response.get('trade', {})
+            
+            return {
+                'id': trade_data.get('id'),
+                'state': trade_data.get('state'),
+                'profit': float(trade_data.get('unrealizedPL', 0)),
+                'current_units': int(trade_data.get('currentUnits', 0)),
+                'price': float(trade_data.get('price', 0)),
+                'instrument': trade_data.get('instrument')
+            }
+        except V20Error as e:
+            logger.error(f"Error fetching trade status: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error fetching trade status: {str(e)}")
+            return None

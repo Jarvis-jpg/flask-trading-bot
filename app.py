@@ -12,6 +12,15 @@ import traceback
 import json
 from datetime import datetime
 
+# Import the autonomous trading system
+try:
+    from live_trading_system import live_trading_system
+    LIVE_SYSTEM_AVAILABLE = True
+except ImportError as e:
+    print(f"Live trading system not available: {e}")
+    live_trading_system = None
+    LIVE_SYSTEM_AVAILABLE = False
+
 # Load environment variables
 load_dotenv()
 
@@ -38,6 +47,14 @@ def home():
     # Get engine status
     engine_status = autonomous_engine.get_status()
     
+    # Get live trading system status
+    live_status = None
+    if LIVE_SYSTEM_AVAILABLE and live_trading_system:
+        try:
+            live_status = live_trading_system.get_status()
+        except:
+            live_status = None
+    
     dashboard_html = f"""
     <!DOCTYPE html>
     <html>
@@ -45,39 +62,46 @@ def home():
         <title>Jarvis Autonomous Trading Dashboard</title>
         <style>
             body {{ font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: #fff; }}
-            .container {{ max-width: 1200px; margin: 0 auto; }}
+            .container {{ max-width: 1400px; margin: 0 auto; }}
             .header {{ text-align: center; padding: 20px; background: #2a2a2a; border-radius: 10px; margin-bottom: 20px; }}
             .status-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }}
             .status-card {{ background: #2a2a2a; padding: 20px; border-radius: 10px; border: 2px solid #444; }}
             .status-card.running {{ border-color: #4CAF50; }}
             .status-card.stopped {{ border-color: #f44336; }}
+            .status-card.live {{ border-color: #FF9800; }}
             .btn {{ padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }}
             .btn-start {{ background: #4CAF50; color: white; }}
             .btn-stop {{ background: #f44336; color: white; }}
             .btn-test {{ background: #2196F3; color: white; }}
+            .btn-live {{ background: #FF9800; color: white; }}
             .stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }}
             .stat-item {{ background: #333; padding: 10px; border-radius: 5px; text-align: center; }}
             .trades-list {{ max-height: 300px; overflow-y: auto; background: #333; padding: 10px; border-radius: 5px; }}
             .refresh {{ position: fixed; top: 20px; right: 20px; }}
+            .warning {{ background: #ff6b35; padding: 10px; border-radius: 5px; margin: 10px 0; }}
+            .success {{ background: #4CAF50; padding: 10px; border-radius: 5px; margin: 10px 0; }}
         </style>
         <script>
             function refreshPage() {{ window.location.reload(); }}
             function startEngine() {{ fetch('/start_engine', {{method: 'POST'}}).then(() => refreshPage()); }}
             function stopEngine() {{ fetch('/stop_engine', {{method: 'POST'}}).then(() => refreshPage()); }}
+            function startLive() {{ fetch('/autonomous/start', {{method: 'POST'}}).then(() => refreshPage()); }}
+            function stopLive() {{ fetch('/autonomous/stop', {{method: 'POST'}}).then(() => refreshPage()); }}
             setInterval(refreshPage, 30000); // Auto-refresh every 30 seconds
         </script>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <h1>🤖 Jarvis Autonomous Trading Bot</h1>
-                <h2>Mode: {mode} | Status: {'🟢 RUNNING' if engine_status['is_running'] else '🔴 STOPPED'}</h2>
+                <h1>🤖 JARVIS Autonomous Trading Bot</h1>
+                <h2>Mode: {mode} | Engine: {'🟢 RUNNING' if engine_status['is_running'] else '🔴 STOPPED'}{'| Live System: 🟢 RUNNING' if live_status and live_status.get('is_running') else '| Live System: 🔴 STOPPED' if live_status else ''}</h2>
                 <button class="btn refresh btn-test" onclick="refreshPage()">🔄 Refresh</button>
+                {f'<div class="warning">⚠️ LIVE TRADING MODE - Real money at risk!</div>' if is_live else '<div class="success">✅ PRACTICE MODE - Safe for testing</div>'}
             </div>
             
             <div class="status-grid">
                 <div class="status-card {'running' if engine_status['is_running'] else 'stopped'}">
-                    <h3>🎛️ Engine Controls</h3>
+                    <h3>🎛️ Legacy Engine Controls</h3>
                     <p>Status: {'RUNNING' if engine_status['is_running'] else 'STOPPED'}</p>
                     <p>Trading Hours: {'✅ ACTIVE' if engine_status['trading_hours'] else '⏰ INACTIVE'}</p>
                     <button class="btn btn-start" onclick="startEngine()" {'disabled' if engine_status['is_running'] else ''}>
@@ -89,10 +113,60 @@ def home():
                     <br><br>
                     <a href="/test_connection" class="btn btn-test">🔧 Test Systems</a>
                     <a href="/training" class="btn btn-test">🎯 Enhanced Training</a>
+                </div>"""
+    
+    # Add live trading system card if available
+    if live_status:
+        dashboard_html += f"""
+                <div class="status-card {'live' if live_status['is_running'] else 'stopped'}">
+                    <h3>🚀 LIVE Trading System</h3>
+                    <p>Status: {'🟢 RUNNING' if live_status['is_running'] else '🔴 STOPPED'}</p>
+                    <p>AI System: {'✅ AVAILABLE' if live_status['ai_system_available'] else '❌ NOT AVAILABLE'}</p>
+                    <p>Trading Hours: {'✅ ACTIVE' if live_status['trading_hours'] else '⏰ INACTIVE'}</p>
+                    <p>Active Trades: {live_status['active_trades']}/{live_status['config']['max_concurrent_trades']}</p>
+                    <button class="btn btn-live" onclick="startLive()" {'disabled' if live_status['is_running'] else ''}>
+                        🎯 Start LIVE Trading
+                    </button>
+                    <button class="btn btn-stop" onclick="stopLive()" {'disabled' if not live_status['is_running'] else ''}>
+                        🛑 Stop LIVE Trading
+                    </button>
                 </div>
                 
                 <div class="status-card">
-                    <h3>📊 Daily Statistics</h3>
+                    <h3>📊 LIVE Daily Statistics</h3>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <strong>{live_status['daily_stats']['trades_count']}</strong><br>
+                            Total Trades
+                        </div>
+                        <div class="stat-item">
+                            <strong>{live_status['daily_stats']['wins']}</strong><br>
+                            Wins
+                        </div>
+                        <div class="stat-item">
+                            <strong>{live_status['daily_stats']['losses']}</strong><br>
+                            Losses
+                        </div>
+                        <div class="stat-item">
+                            <strong>${live_status['daily_stats']['profit_loss']:.2f}</strong><br>
+                            P&L
+                        </div>
+                    </div>
+                    <p>Win Rate: {(live_status['daily_stats']['wins'] / max(live_status['daily_stats']['trades_count'], 1) * 100):.1f}%</p>
+                </div>"""
+    else:
+        dashboard_html += f"""
+                <div class="status-card stopped">
+                    <h3>🚀 LIVE Trading System</h3>
+                    <p>Status: ❌ NOT AVAILABLE</p>
+                    <p>System needs to be properly initialized</p>
+                    <p>Check live_trading_system.py imports</p>
+                </div>"""
+    
+    # Continue with original cards
+    dashboard_html += f"""
+                <div class="status-card">
+                    <h3>📊 Legacy Daily Statistics</h3>
                     <div class="stats">
                         <div class="stat-item">
                             <strong>{engine_status['daily_stats']['trades_count']}</strong><br>
@@ -573,6 +647,76 @@ def training_status():
             
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/autonomous/start', methods=['POST'])
+def start_autonomous():
+    """Start autonomous trading system"""
+    try:
+        if not LIVE_SYSTEM_AVAILABLE or not live_trading_system:
+            return jsonify({
+                'success': False,
+                'message': 'Live trading system not available'
+            }), 400
+        
+        success = live_trading_system.start_trading()
+        return jsonify({
+            'success': success,
+            'message': 'Autonomous trading started' if success else 'Failed to start autonomous trading',
+            'status': live_trading_system.get_status()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error starting autonomous trading: {str(e)}'
+        }), 500
+
+@app.route('/autonomous/stop', methods=['POST'])
+def stop_autonomous():
+    """Stop autonomous trading system"""
+    try:
+        if not LIVE_SYSTEM_AVAILABLE or not live_trading_system:
+            return jsonify({
+                'success': False,
+                'message': 'Live trading system not available'
+            }), 400
+        
+        live_trading_system.stop_trading()
+        return jsonify({
+            'success': True,
+            'message': 'Autonomous trading stopped',
+            'status': live_trading_system.get_status()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error stopping autonomous trading: {str(e)}'
+        }), 500
+
+@app.route('/autonomous/status', methods=['GET'])
+def autonomous_status():
+    """Get autonomous trading system status"""
+    try:
+        if not LIVE_SYSTEM_AVAILABLE or not live_trading_system:
+            return jsonify({
+                'success': False,
+                'message': 'Live trading system not available',
+                'available': False
+            })
+        
+        status = live_trading_system.get_status()
+        return jsonify({
+            'success': True,
+            'available': True,
+            'status': status
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error getting status: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     try:
