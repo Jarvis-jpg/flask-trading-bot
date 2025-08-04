@@ -1,0 +1,69 @@
+{
+  "deployment_status": "NEEDS_WORK",
+  "readiness_score": 50.0,
+  "passed_checks": 4,
+  "total_checks": 8,
+  "recommendation": "\u26a0\ufe0f NEEDS IMPROVEMENT - Address failed checks",
+  "checklist_results": {
+    "AI Memory": {
+      "passed": true,
+      "message": "Substantial training data (332.3MB)",
+      "timestamp": "2025-08-04T03:10:24.590304"
+    },
+    "AI Memory Integrity": {
+      "passed": false,
+      "message": "Check error: 'AI Memory Integrity'",
+      "timestamp": "2025-08-04T03:10:24.590442"
+    },
+    "OANDA Config": {
+      "passed": true,
+      "message": "Valid configuration - PRACTICE",
+      "timestamp": "2025-08-04T03:10:24.593891"
+    },
+    "OANDA Configuration": {
+      "passed": false,
+      "message": "Check error: 'OANDA Configuration'",
+      "timestamp": "2025-08-04T03:10:24.593975"
+    },
+    "System Files": {
+      "passed": true,
+      "message": "All core system files present",
+      "timestamp": "2025-08-04T03:10:24.595697"
+    },
+    "Trading System Files": {
+      "passed": false,
+      "message": "Check error: 'Trading System Files'",
+      "timestamp": "2025-08-04T03:10:24.595785"
+    },
+    "Risk Management": {
+      "passed": true,
+      "message": "Multiple risk systems detected (3)",
+      "timestamp": "2025-08-04T03:10:24.598171"
+    },
+    "Account Balance": {
+      "passed": true,
+      "message": "$200 acceptable for conservative trading",
+      "timestamp": "2025-08-04T03:10:24.598772"
+    },
+    "Market Conditions": {
+      "passed": true,
+      "message": "Market conditions acceptable",
+      "timestamp": "2025-08-04T03:10:24.599827"
+    },
+    "Performance Validation": {
+      "passed": true,
+      "message": "Strong validation evidence: 8 items",
+      "timestamp": "2025-08-04T03:10:24.602269"
+    },
+    "Monitoring": {
+      "passed": true,
+      "message": "Adequate monitoring: 4 systems",
+      "timestamp": "2025-08-04T03:10:24.605332"
+    },
+    "Monitoring Systems": {
+      "passed": false,
+      "message": "Check error: 'Monitoring Systems'",
+      "timestamp": "2025-08-04T03:10:24.605405"
+    }
+  }
+}

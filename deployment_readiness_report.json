@@ -1,0 +1,82 @@
+{
+  "deployment_status": "REJECTED",
+  "readiness_score": 37.5,
+  "critical_failures": 4,
+  "warnings": 2,
+  "passed_checks": 2,
+  "recommendation": "\u274c NOT APPROVED - Critical issues must be resolved",
+  "checklist_results": {
+    "AI Memory": {
+      "passed": false,
+      "message": "Training insufficient: 1,000,000 trades, 0.0% win rate",
+      "critical": true,
+      "timestamp": "2025-08-04T02:58:55.589582"
+    },
+    "AI Memory Integrity": {
+      "passed": false,
+      "message": "Check failed with error: 'AI Memory Integrity'",
+      "critical": true,
+      "timestamp": "2025-08-04T02:58:56.771515"
+    },
+    "OANDA Config": {
+      "passed": true,
+      "message": "Configuration complete - PRACTICE environment",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.822823"
+    },
+    "OANDA Configuration": {
+      "passed": false,
+      "message": "Check failed with error: 'OANDA Configuration'",
+      "critical": true,
+      "timestamp": "2025-08-04T02:58:56.822935"
+    },
+    "System Files": {
+      "passed": true,
+      "message": "All required system files present",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.824839"
+    },
+    "Trading System Files": {
+      "passed": false,
+      "message": "Check failed with error: 'Trading System Files'",
+      "critical": true,
+      "timestamp": "2025-08-04T02:58:56.824944"
+    },
+    "Risk Management": {
+      "passed": true,
+      "message": "Comprehensive safety system available",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.826303"
+    },
+    "Account Balance": {
+      "passed": false,
+      "message": "$200 below recommended $500",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.827012"
+    },
+    "Market Conditions": {
+      "passed": false,
+      "message": "Outside major market hours",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.828003"
+    },
+    "Performance Validation": {
+      "passed": true,
+      "message": "Validation reports found: real_world_validation_report.txt, quality_test_results.txt",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.829658"
+    },
+    "Monitoring": {
+      "passed": true,
+      "message": "Adequate monitoring systems in place",
+      "critical": false,
+      "timestamp": "2025-08-04T02:58:56.835888"
+    },
+    "Monitoring Systems": {
+      "passed": false,
+      "message": "Check failed with error: 'Monitoring Systems'",
+      "critical": true,
+      "timestamp": "2025-08-04T02:58:56.836014"
+    }
+  }
+}
