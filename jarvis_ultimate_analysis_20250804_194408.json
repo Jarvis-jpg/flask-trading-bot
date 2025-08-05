@@ -1,0 +1,657 @@
+{
+  "timestamp": "20250804_194408",
+  "system_name": "JARVIS AUTONOMOUS TRADING SYSTEM",
+  "ai_training_trades": 1000000,
+  "base_win_rate": 64.21,
+  "projections": {
+    "5000": {
+      "starting_balance": 5000,
+      "annual_profit": 648940.6147828354,
+      "annual_return_pct": 12978.812295656706,
+      "final_balance": 653940.6147828354,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 5000.0,
+          "profit": 2505.0,
+          "ending_balance": 7505.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 7505.000000000001,
+          "profit": 3760.005,
+          "ending_balance": 11265.005000000001
+        },
+        {
+          "month": 3,
+          "starting_balance": 11265.005000000001,
+          "profit": 5643.767505000001,
+          "ending_balance": 16908.772505
+        },
+        {
+          "month": 4,
+          "starting_balance": 16908.772505,
+          "profit": 8471.295025005,
+          "ending_balance": 25380.067530005
+        },
+        {
+          "month": 5,
+          "starting_balance": 25380.067530005,
+          "profit": 12715.413832532504,
+          "ending_balance": 38095.4813625375
+        },
+        {
+          "month": 6,
+          "starting_balance": 38095.48136253751,
+          "profit": 19085.836162631287,
+          "ending_balance": 57181.31752516879
+        },
+        {
+          "month": 7,
+          "starting_balance": 57181.31752516879,
+          "profit": 28647.840080109567,
+          "ending_balance": 85829.15760527836
+        },
+        {
+          "month": 8,
+          "starting_balance": 85829.15760527836,
+          "profit": 43000.40796024446,
+          "ending_balance": 128829.56556552282
+        },
+        {
+          "month": 9,
+          "starting_balance": 128829.56556552283,
+          "profit": 64543.61234832693,
+          "ending_balance": 193373.17791384977
+        },
+        {
+          "month": 10,
+          "starting_balance": 193373.17791384977,
+          "profit": 96879.96213483873,
+          "ending_balance": 290253.1400486885
+        },
+        {
+          "month": 11,
+          "starting_balance": 290253.1400486885,
+          "profit": 145416.82316439293,
+          "ending_balance": 435669.9632130815
+        },
+        {
+          "month": 12,
+          "starting_balance": 435669.96321308153,
+          "profit": 218270.65156975383,
+          "ending_balance": 653940.6147828354
+        }
+      ]
+    },
+    "10000": {
+      "starting_balance": 10000,
+      "annual_profit": 1297881.2295656707,
+      "annual_return_pct": 12978.812295656706,
+      "final_balance": 1307881.2295656707,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 10000.0,
+          "profit": 5010.0,
+          "ending_balance": 15010.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 15010.000000000002,
+          "profit": 7520.01,
+          "ending_balance": 22530.010000000002
+        },
+        {
+          "month": 3,
+          "starting_balance": 22530.010000000002,
+          "profit": 11287.535010000001,
+          "ending_balance": 33817.54501
+        },
+        {
+          "month": 4,
+          "starting_balance": 33817.54501,
+          "profit": 16942.59005001,
+          "ending_balance": 50760.13506001
+        },
+        {
+          "month": 5,
+          "starting_balance": 50760.13506001,
+          "profit": 25430.827665065008,
+          "ending_balance": 76190.962725075
+        },
+        {
+          "month": 6,
+          "starting_balance": 76190.96272507502,
+          "profit": 38171.672325262574,
+          "ending_balance": 114362.63505033759
+        },
+        {
+          "month": 7,
+          "starting_balance": 114362.63505033759,
+          "profit": 57295.68016021913,
+          "ending_balance": 171658.31521055673
+        },
+        {
+          "month": 8,
+          "starting_balance": 171658.31521055673,
+          "profit": 86000.81592048892,
+          "ending_balance": 257659.13113104564
+        },
+        {
+          "month": 9,
+          "starting_balance": 257659.13113104567,
+          "profit": 129087.22469665387,
+          "ending_balance": 386746.35582769953
+        },
+        {
+          "month": 10,
+          "starting_balance": 386746.35582769953,
+          "profit": 193759.92426967746,
+          "ending_balance": 580506.280097377
+        },
+        {
+          "month": 11,
+          "starting_balance": 580506.280097377,
+          "profit": 290833.64632878586,
+          "ending_balance": 871339.926426163
+        },
+        {
+          "month": 12,
+          "starting_balance": 871339.9264261631,
+          "profit": 436541.30313950765,
+          "ending_balance": 1307881.2295656707
+        }
+      ]
+    },
+    "25000": {
+      "starting_balance": 25000,
+      "annual_profit": 3244703.073914176,
+      "annual_return_pct": 12978.812295656704,
+      "final_balance": 3269703.073914176,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 25000.0,
+          "profit": 12525.0,
+          "ending_balance": 37525.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 37525.0,
+          "profit": 18800.025,
+          "ending_balance": 56325.025
+        },
+        {
+          "month": 3,
+          "starting_balance": 56325.02500000001,
+          "profit": 28218.837525,
+          "ending_balance": 84543.862525
+        },
+        {
+          "month": 4,
+          "starting_balance": 84543.862525,
+          "profit": 42356.475125025005,
+          "ending_balance": 126900.337650025
+        },
+        {
+          "month": 5,
+          "starting_balance": 126900.337650025,
+          "profit": 63577.06916266253,
+          "ending_balance": 190477.40681268752
+        },
+        {
+          "month": 6,
+          "starting_balance": 190477.4068126875,
+          "profit": 95429.18081315645,
+          "ending_balance": 285906.58762584394
+        },
+        {
+          "month": 7,
+          "starting_balance": 285906.58762584394,
+          "profit": 143239.20040054782,
+          "ending_balance": 429145.78802639176
+        },
+        {
+          "month": 8,
+          "starting_balance": 429145.78802639176,
+          "profit": 215002.03980122227,
+          "ending_balance": 644147.827827614
+        },
+        {
+          "month": 9,
+          "starting_balance": 644147.827827614,
+          "profit": 322718.0617416346,
+          "ending_balance": 966865.8895692487
+        },
+        {
+          "month": 10,
+          "starting_balance": 966865.8895692488,
+          "profit": 484399.81067419355,
+          "ending_balance": 1451265.7002434423
+        },
+        {
+          "month": 11,
+          "starting_balance": 1451265.7002434423,
+          "profit": 727084.1158219646,
+          "ending_balance": 2178349.816065407
+        },
+        {
+          "month": 12,
+          "starting_balance": 2178349.816065407,
+          "profit": 1091353.257848769,
+          "ending_balance": 3269703.073914176
+        }
+      ]
+    },
+    "50000": {
+      "starting_balance": 50000,
+      "annual_profit": 6489406.147828352,
+      "annual_return_pct": 12978.812295656704,
+      "final_balance": 6539406.147828352,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 50000.0,
+          "profit": 25050.0,
+          "ending_balance": 75050.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 75050.0,
+          "profit": 37600.05,
+          "ending_balance": 112650.05
+        },
+        {
+          "month": 3,
+          "starting_balance": 112650.05000000002,
+          "profit": 56437.67505,
+          "ending_balance": 169087.72505
+        },
+        {
+          "month": 4,
+          "starting_balance": 169087.72505,
+          "profit": 84712.95025005001,
+          "ending_balance": 253800.67530005
+        },
+        {
+          "month": 5,
+          "starting_balance": 253800.67530005,
+          "profit": 127154.13832532505,
+          "ending_balance": 380954.81362537504
+        },
+        {
+          "month": 6,
+          "starting_balance": 380954.813625375,
+          "profit": 190858.3616263129,
+          "ending_balance": 571813.1752516879
+        },
+        {
+          "month": 7,
+          "starting_balance": 571813.1752516879,
+          "profit": 286478.40080109565,
+          "ending_balance": 858291.5760527835
+        },
+        {
+          "month": 8,
+          "starting_balance": 858291.5760527835,
+          "profit": 430004.07960244454,
+          "ending_balance": 1288295.655655228
+        },
+        {
+          "month": 9,
+          "starting_balance": 1288295.655655228,
+          "profit": 645436.1234832692,
+          "ending_balance": 1933731.7791384973
+        },
+        {
+          "month": 10,
+          "starting_balance": 1933731.7791384975,
+          "profit": 968799.6213483871,
+          "ending_balance": 2902531.4004868846
+        },
+        {
+          "month": 11,
+          "starting_balance": 2902531.4004868846,
+          "profit": 1454168.2316439291,
+          "ending_balance": 4356699.632130814
+        },
+        {
+          "month": 12,
+          "starting_balance": 4356699.632130814,
+          "profit": 2182706.515697538,
+          "ending_balance": 6539406.147828352
+        }
+      ]
+    },
+    "100000": {
+      "starting_balance": 100000,
+      "annual_profit": 12978812.295656703,
+      "annual_return_pct": 12978.812295656704,
+      "final_balance": 13078812.295656703,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 100000.0,
+          "profit": 50100.0,
+          "ending_balance": 150100.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 150100.0,
+          "profit": 75200.1,
+          "ending_balance": 225300.1
+        },
+        {
+          "month": 3,
+          "starting_balance": 225300.10000000003,
+          "profit": 112875.3501,
+          "ending_balance": 338175.4501
+        },
+        {
+          "month": 4,
+          "starting_balance": 338175.4501,
+          "profit": 169425.90050010002,
+          "ending_balance": 507601.3506001
+        },
+        {
+          "month": 5,
+          "starting_balance": 507601.3506001,
+          "profit": 254308.2766506501,
+          "ending_balance": 761909.6272507501
+        },
+        {
+          "month": 6,
+          "starting_balance": 761909.62725075,
+          "profit": 381716.7232526258,
+          "ending_balance": 1143626.3505033758
+        },
+        {
+          "month": 7,
+          "starting_balance": 1143626.3505033758,
+          "profit": 572956.8016021913,
+          "ending_balance": 1716583.152105567
+        },
+        {
+          "month": 8,
+          "starting_balance": 1716583.152105567,
+          "profit": 860008.1592048891,
+          "ending_balance": 2576591.311310456
+        },
+        {
+          "month": 9,
+          "starting_balance": 2576591.311310456,
+          "profit": 1290872.2469665385,
+          "ending_balance": 3867463.5582769946
+        },
+        {
+          "month": 10,
+          "starting_balance": 3867463.558276995,
+          "profit": 1937599.2426967742,
+          "ending_balance": 5805062.800973769
+        },
+        {
+          "month": 11,
+          "starting_balance": 5805062.800973769,
+          "profit": 2908336.4632878583,
+          "ending_balance": 8713399.264261628
+        },
+        {
+          "month": 12,
+          "starting_balance": 8713399.264261628,
+          "profit": 4365413.031395076,
+          "ending_balance": 13078812.295656703
+        }
+      ]
+    },
+    "250000": {
+      "starting_balance": 250000,
+      "annual_profit": 32447030.73914177,
+      "annual_return_pct": 12978.812295656706,
+      "final_balance": 32697030.73914177,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 250000.0,
+          "profit": 125250.0,
+          "ending_balance": 375250.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 375250.0,
+          "profit": 188000.25,
+          "ending_balance": 563250.25
+        },
+        {
+          "month": 3,
+          "starting_balance": 563250.25,
+          "profit": 282188.37525,
+          "ending_balance": 845438.62525
+        },
+        {
+          "month": 4,
+          "starting_balance": 845438.62525,
+          "profit": 423564.75125025003,
+          "ending_balance": 1269003.37650025
+        },
+        {
+          "month": 5,
+          "starting_balance": 1269003.3765002503,
+          "profit": 635770.6916266253,
+          "ending_balance": 1904774.0681268754
+        },
+        {
+          "month": 6,
+          "starting_balance": 1904774.0681268757,
+          "profit": 954291.8081315646,
+          "ending_balance": 2859065.8762584403
+        },
+        {
+          "month": 7,
+          "starting_balance": 2859065.8762584403,
+          "profit": 1432392.0040054787,
+          "ending_balance": 4291457.880263919
+        },
+        {
+          "month": 8,
+          "starting_balance": 4291457.880263919,
+          "profit": 2150020.3980122237,
+          "ending_balance": 6441478.278276143
+        },
+        {
+          "month": 9,
+          "starting_balance": 6441478.278276143,
+          "profit": 3227180.6174163474,
+          "ending_balance": 9668658.89569249
+        },
+        {
+          "month": 10,
+          "starting_balance": 9668658.89569249,
+          "profit": 4843998.106741938,
+          "ending_balance": 14512657.002434429
+        },
+        {
+          "month": 11,
+          "starting_balance": 14512657.002434427,
+          "profit": 7270841.1582196485,
+          "ending_balance": 21783498.160654075
+        },
+        {
+          "month": 12,
+          "starting_balance": 21783498.160654075,
+          "profit": 10913532.578487692,
+          "ending_balance": 32697030.73914177
+        }
+      ]
+    },
+    "500000": {
+      "starting_balance": 500000,
+      "annual_profit": 64894061.47828354,
+      "annual_return_pct": 12978.812295656706,
+      "final_balance": 65394061.47828354,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 500000.0,
+          "profit": 250500.0,
+          "ending_balance": 750500.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 750500.0,
+          "profit": 376000.5,
+          "ending_balance": 1126500.5
+        },
+        {
+          "month": 3,
+          "starting_balance": 1126500.5,
+          "profit": 564376.7505,
+          "ending_balance": 1690877.2505
+        },
+        {
+          "month": 4,
+          "starting_balance": 1690877.2505,
+          "profit": 847129.5025005001,
+          "ending_balance": 2538006.7530005
+        },
+        {
+          "month": 5,
+          "starting_balance": 2538006.7530005006,
+          "profit": 1271541.3832532505,
+          "ending_balance": 3809548.136253751
+        },
+        {
+          "month": 6,
+          "starting_balance": 3809548.1362537513,
+          "profit": 1908583.6162631293,
+          "ending_balance": 5718131.752516881
+        },
+        {
+          "month": 7,
+          "starting_balance": 5718131.752516881,
+          "profit": 2864784.0080109574,
+          "ending_balance": 8582915.760527838
+        },
+        {
+          "month": 8,
+          "starting_balance": 8582915.760527838,
+          "profit": 4300040.796024447,
+          "ending_balance": 12882956.556552285
+        },
+        {
+          "month": 9,
+          "starting_balance": 12882956.556552285,
+          "profit": 6454361.234832695,
+          "ending_balance": 19337317.79138498
+        },
+        {
+          "month": 10,
+          "starting_balance": 19337317.79138498,
+          "profit": 9687996.213483876,
+          "ending_balance": 29025314.004868858
+        },
+        {
+          "month": 11,
+          "starting_balance": 29025314.004868854,
+          "profit": 14541682.316439297,
+          "ending_balance": 43566996.32130815
+        },
+        {
+          "month": 12,
+          "starting_balance": 43566996.32130815,
+          "profit": 21827065.156975385,
+          "ending_balance": 65394061.47828354
+        }
+      ]
+    },
+    "1000000": {
+      "starting_balance": 1000000,
+      "annual_profit": 129788122.95656708,
+      "annual_return_pct": 12978.812295656706,
+      "final_balance": 130788122.95656708,
+      "monthly_return_pct": 50.1,
+      "monthly_details": [
+        {
+          "month": 1,
+          "starting_balance": 1000000.0,
+          "profit": 501000.0,
+          "ending_balance": 1501000.0
+        },
+        {
+          "month": 2,
+          "starting_balance": 1501000.0,
+          "profit": 752001.0,
+          "ending_balance": 2253001.0
+        },
+        {
+          "month": 3,
+          "starting_balance": 2253001.0,
+          "profit": 1128753.501,
+          "ending_balance": 3381754.501
+        },
+        {
+          "month": 4,
+          "starting_balance": 3381754.501,
+          "profit": 1694259.0050010001,
+          "ending_balance": 5076013.506001
+        },
+        {
+          "month": 5,
+          "starting_balance": 5076013.506001001,
+          "profit": 2543082.766506501,
+          "ending_balance": 7619096.272507502
+        },
+        {
+          "month": 6,
+          "starting_balance": 7619096.272507503,
+          "profit": 3817167.2325262586,
+          "ending_balance": 11436263.505033761
+        },
+        {
+          "month": 7,
+          "starting_balance": 11436263.505033761,
+          "profit": 5729568.016021915,
+          "ending_balance": 17165831.521055676
+        },
+        {
+          "month": 8,
+          "starting_balance": 17165831.521055676,
+          "profit": 8600081.592048895,
+          "ending_balance": 25765913.11310457
+        },
+        {
+          "month": 9,
+          "starting_balance": 25765913.11310457,
+          "profit": 12908722.46966539,
+          "ending_balance": 38674635.58276996
+        },
+        {
+          "month": 10,
+          "starting_balance": 38674635.58276996,
+          "profit": 19375992.42696775,
+          "ending_balance": 58050628.009737715
+        },
+        {
+          "month": 11,
+          "starting_balance": 58050628.00973771,
+          "profit": 29083364.632878594,
+          "ending_balance": 87133992.6426163
+        },
+        {
+          "month": 12,
+          "starting_balance": 87133992.6426163,
+          "profit": 43654130.31395077,
+          "ending_balance": 130788122.95656708
+        }
+      ]
+    }
+  },
+  "analysis_complete": true
+}
