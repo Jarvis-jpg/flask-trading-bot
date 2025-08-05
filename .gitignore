@@ -16,4 +16,4 @@ venv/
 __pycache__/
 *.pyc
 *.log
-.env
+.env\n# Large million trade file (use chunks instead)\njarvis_ai_memory_mega.json\n
