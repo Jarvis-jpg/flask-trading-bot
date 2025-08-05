@@ -1,11 +1,8 @@
 # Large AI memory files (use compressed versions)
-jarvis_ai_memory.json
 !jarvis_ai_memory.json.gz
 !jarvis_ai_memory.json_summary.json
 
 # Large training data (use compressed versions)
-million_trade_data.json
-massive_training_data.json
 !*_summary.json
 !*.gz
 
