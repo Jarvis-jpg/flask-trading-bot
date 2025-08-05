@@ -1,0 +1,46 @@
+🚀 JARVIS QUALITY LEARNING SYSTEM TEST
+============================================================
+Started: 2025-08-04 03:14:44
+
+📥 STEP 1: Importing training system...
+✅ System imported successfully
+🔧 STEP 2: Initializing system...
+✅ System initialized
+⚙️ STEP 3: Checking quality configuration...
+   - Confidence threshold: 75.0%
+   - Risk/reward minimum: 2.0:1
+   - Trend strength minimum: 60.0%
+✅ QUALITY THRESHOLDS ACTIVE - System configured for 65% win rate!
+🔄 STEP 4: Checking AI training data...
+✅ AI memory file found (332.3MB) - extensive training data available
+🎯 STEP 5: Quality trade generation test...
+Testing trade generation with quality filters...
+Attempting to generate 100 trades with quality filtering:
+   Progress:  10 quality trades | Win rate:  70.0% | Rejection: 76.7%
+   Progress:  20 quality trades | Win rate:  70.0% | Rejection: 73.0%
+
+📊 STEP 6: QUALITY TEST RESULTS
+========================================
+Total attempts: 100
+Quality trades generated: 27
+Quality filter rejection rate: 73.0%
+Simulated win rate: 66.7%
+
+🎯 EXCELLENT: Quality system achieving 65%+ win rate target!
+✅ Quality filtering is aggressive - rejecting poor setups
+
+🔍 STEP 7: SYSTEM READINESS ASSESSMENT
+========================================
+✅ Quality configuration: READY
+✅ Trade generation: READY
+✅ Quality filtering: READY
+✅ Win rate potential: READY
+✅ OANDA integration: READY
+
+🏆 OVERALL READINESS: 5/5 (100%)
+🚀 SYSTEM READY FOR LIVE TRADING!
+
+============================================================
+Test completed: 2025-08-04 03:15:23
+Full results saved to: quality_test_results.txt
+============================================================

@@ -1,22 +1,22 @@
+# Large AI memory files (use compressed versions)
+jarvis_ai_memory.json
+!jarvis_ai_memory.json.gz
+!jarvis_ai_memory.json_summary.json
+
+# Large training data (use compressed versions)
+million_trade_data.json
+massive_training_data.json
+!*_summary.json
+!*.gz
+
+# Trade journals (use compressed if >100MB)
+trade_journal.json
+!trade_journal.json.gz
+
+# Other large files
+*.pkl
 venv/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-.env
 *.log
-
-# Large AI memory files (too big for GitHub)
-jarvis_ai_memory.json
-jarvis_ai_memory_backup*.json
-*.pkl
-
-# Large training data files
-comprehensive_training_*.json
-massive_*.json
-million_*.json
-
-# Temporary files
-temp_*
-*.tmp
-quality_test_results.txt
+.env
