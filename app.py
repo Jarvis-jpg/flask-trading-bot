@@ -316,8 +316,20 @@ def webhook():
                     'details': market_check
                 }), 200
 
-            # If market is open, analyze the trade setup
-            analysis = analyzer.analyze_trade(trading_pair, data)
+            # PINE SCRIPT BYPASS MODE - Trust Pine Script analysis
+            pine_script_signal = data.get('confidence', 0) > 0 or data.get('action') in ['BUY', 'SELL']
+            
+            if pine_script_signal:
+                # Pine Script already did the analysis - execute directly
+                analysis = {
+                    'prediction': {'recommended': True},
+                    'confidence': data.get('confidence', 85.0),
+                    'source': 'pine_script_bypass',
+                    'market_conditions': {'status': 'analyzed_by_pine_script'}
+                }
+            else:
+                # If not from Pine Script, analyze the trade setup
+                analysis = analyzer.analyze_trade(trading_pair, data)
             
             # Check if analysis recommends the trade
             if analysis.get('prediction', {}).get('recommended', False):
