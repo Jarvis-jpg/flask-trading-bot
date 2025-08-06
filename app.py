@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+"""
+JARVIS Autonomous Trading System - Flask Application
+Fixed webhook 'pair'/'symbol' field compatibility - v1.1
+"""
 from flask import Flask, request, jsonify, render_template_string
 from trade_logic import execute_trade
 from utils.journal_logger import log_trade
