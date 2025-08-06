@@ -299,8 +299,11 @@ def webhook():
             return jsonify({'error': 'No data received'}), 400
         
         try:
+            # Handle both 'pair' and 'symbol' field names
+            trading_pair = data.get('pair') or data.get('symbol') or 'EURUSD'
+            
             # First check market status
-            market_check = analyzer.analyze_trade(data['pair'], None)
+            market_check = analyzer.analyze_trade(trading_pair, None)
             if market_check.get('status') == 'market_closed':
                 return jsonify({
                     'status': 'rejected',
@@ -309,7 +312,7 @@ def webhook():
                 }), 200
 
             # If market is open, analyze the trade setup
-            analysis = analyzer.analyze_trade(data['pair'], data)
+            analysis = analyzer.analyze_trade(trading_pair, data)
             
             # Check if analysis recommends the trade
             if analysis.get('prediction', {}).get('recommended', False):
@@ -330,7 +333,7 @@ def webhook():
                 
                 # Track trade performance for model improvement
                 analyzer.track_trade_performance({
-                    'pair': data['pair'],
+                    'pair': trading_pair,
                     'profit': trade_result.get('profit', 0),
                     'entry_price': trade_result.get('filled_price'),
                     'exit_price': None,  # Will be updated when trade is closed
