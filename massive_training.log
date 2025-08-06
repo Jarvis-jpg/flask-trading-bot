@@ -1,0 +1,12 @@
+2025-08-02 06:05:59,014 - INFO -    Target trades: 500,000
+2025-08-02 06:05:59,018 - INFO -    Currency pairs: 20
+2025-08-02 06:05:59,019 - INFO -    Training periods: 24
+2025-08-02 06:05:59,033 - INFO - Target: 500,000+ trades with 65%+ win rate
+2025-08-02 06:05:59,035 - INFO - Data: OANDA historical + real-time
+2025-08-02 06:05:59,036 - INFO - Scope: All major currency pairs
+2025-08-02 06:05:59,037 - INFO - 
+2025-08-02 06:05:59,055 - INFO - ================================================================================
+2025-08-02 06:05:59,057 - INFO - Target: 500,000 trades with 65%+ win rate
+2025-08-02 06:05:59,058 - INFO - Data source: OANDA historical and real-time
+2025-08-02 06:05:59,061 - INFO - Currency pairs: 20
+2025-08-02 06:05:59,063 - INFO - 

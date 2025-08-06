@@ -1,0 +1,50 @@
+[2025-07-20T20:59:26.652925] INFO: Environment file already exists
+[2025-07-20T20:59:26.759370] ERROR: Missing environment variables: FLASK_SECRET_KEY
+[2025-07-20T20:59:29.126262] ERROR: OANDA connection failed: 'OandaClient' object has no attribute 'get_account_summary'
+[2025-07-20T21:05:33.604314] INFO: Python 3.13.5 OK
+[2025-07-20T21:05:34.597017] INFO: Package flask OK
+[2025-07-20T21:05:36.356973] INFO: Package pandas OK
+[2025-07-20T21:05:36.358094] INFO: Package numpy OK
+[2025-07-20T21:05:36.360392] ERROR: Package scikit-learn MISSING
+[2025-07-20T21:05:38.428091] INFO: Package oandapyV20 OK
+[2025-07-20T21:05:38.430055] INFO: Package colorama OK
+[2025-07-20T21:05:38.432818] ERROR: Package python-dotenv MISSING
+[2025-07-20T21:05:38.434975] ERROR: Missing packages: scikit-learn, python-dotenv
+[2025-07-20T21:05:38.437558] INFO: Environment file already exists
+[2025-07-20T21:05:38.465384] INFO: Environment configuration validated
+[2025-07-20T21:05:38.763557] INFO: OANDA connection successful
+[2025-07-20T21:05:38.764833] INFO: Account Balance: $0.95
+[2025-07-20T21:05:38.768717] INFO: Security configuration created
+[2025-07-20T21:05:38.773204] INFO: Startup scripts created
+[2025-07-20T21:05:38.775909] INFO: Backup configuration created
+[2025-07-20T21:07:12.899205] INFO: Python 3.13.5 OK
+[2025-07-20T21:07:14.983024] INFO: Package flask OK
+[2025-07-20T21:07:18.755734] INFO: Package pandas OK
+[2025-07-20T21:07:18.761995] INFO: Package numpy OK
+[2025-07-20T21:07:18.765035] ERROR: Package scikit-learn MISSING
+[2025-07-20T21:07:21.745529] INFO: Package oandapyV20 OK
+[2025-07-20T21:07:21.748625] INFO: Package colorama OK
+[2025-07-20T21:07:21.754988] ERROR: Package python-dotenv MISSING
+[2025-07-20T21:07:21.756493] ERROR: Missing packages: scikit-learn, python-dotenv
+[2025-07-20T21:07:21.761108] INFO: Environment file already exists
+[2025-07-20T21:07:21.797183] INFO: Environment configuration validated
+[2025-07-20T21:07:22.041927] INFO: OANDA connection successful
+[2025-07-20T21:07:22.043978] INFO: Account Balance: $0.95
+[2025-07-20T21:07:22.048502] INFO: Security configuration created
+[2025-07-20T21:07:22.053864] INFO: Startup scripts created
+[2025-07-20T21:07:22.057144] INFO: Backup configuration created
+[2025-07-20T21:08:01.764915] INFO: Python 3.13.5 OK
+[2025-07-20T21:08:02.757890] INFO: Package flask OK
+[2025-07-20T21:08:04.652670] INFO: Package pandas OK
+[2025-07-20T21:08:04.653740] INFO: Package numpy OK
+[2025-07-20T21:08:08.607044] INFO: Package scikit-learn OK
+[2025-07-20T21:08:10.913187] INFO: Package oandapyV20 OK
+[2025-07-20T21:08:10.915406] INFO: Package colorama OK
+[2025-07-20T21:08:10.941587] INFO: Package python-dotenv OK
+[2025-07-20T21:08:10.942918] INFO: Environment file already exists
+[2025-07-20T21:08:10.953484] INFO: Environment configuration validated
+[2025-07-20T21:08:11.217665] INFO: OANDA connection successful
+[2025-07-20T21:08:11.218934] INFO: Account Balance: $0.95
+[2025-07-20T21:08:11.222213] INFO: Security configuration created
+[2025-07-20T21:08:11.226587] INFO: Startup scripts created
+[2025-07-20T21:08:11.231176] INFO: Backup configuration created

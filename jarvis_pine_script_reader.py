@@ -50,16 +50,34 @@ class JarvisPineScriptReader:
         self.logger = logging.getLogger(__name__)
         
     def setup_driver(self):
-        """Set up Chrome driver"""
-        self.logger.info("🚀 Setting up JARVIS Pine Script Reader...")
+        """Set up Chrome driver with advanced stealth mode"""
+        self.logger.info("🚀 Setting up JARVIS Automated Pine Script Reader...")
         
         chrome_options = Options()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
-        # Remove headless to see the chart
-        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--start-maximized")
+        
+        # Advanced stealth mode to completely avoid TradingView detection
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        chrome_options.add_argument("--disable-ipc-flooding-protection")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-renderer-backgrounding")
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation", "enable-logging"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+        
+        # Use a clean browser profile since password was reset
+        # Don't use existing profile to avoid cached login issues
+        # chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
+        # chrome_options.add_argument("--profile-directory=Default")
+        
+        # Enhanced user agent and device properties
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
         try:
             service = Service(ChromeDriverManager().install())
@@ -67,7 +85,15 @@ class JarvisPineScriptReader:
             self.driver.implicitly_wait(10)
             self.driver.set_page_load_timeout(30)
             
-            self.logger.info("✅ JARVIS Pine Script Reader initialized")
+            # Execute stealth scripts to hide automation
+            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            self.driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+                "userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            })
+            self.driver.execute_script("Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]})")
+            self.driver.execute_script("Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']})")
+            
+            self.logger.info("✅ JARVIS Pine Script Reader initialized (Stealth Mode Active)")
             return True
             
         except Exception as e:
