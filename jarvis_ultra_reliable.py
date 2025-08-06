@@ -184,8 +184,9 @@ class JarvisUltraReliable:
         """Send signal with enhanced reliability and retry logic"""
         trade_payload = {
             "action": signal['action'],
-            "symbol": "EUR_USD", 
-            "confidence": signal['confidence'],
+            "symbol": "EURUSD",  # Fixed: Remove underscore for OANDA format
+            "confidence": signal['confidence'],  # This triggers Pine Script bypass
+            "pair": "EURUSD",  # Backup field name
             "risk_percentage": 5.0,
             "stop_loss_pips": 20,
             "take_profit_pips": 40,
@@ -193,7 +194,8 @@ class JarvisUltraReliable:
             "timestamp": datetime.now().isoformat(),
             "detection_method": signal.get('detection_method', 'pine_script'),
             "automation_mode": True,
-            "retry_count": 0
+            "retry_count": 0,
+            "price": 1.0850  # Add price for OANDA
         }
         
         # Try sending signal with retry logic
@@ -222,7 +224,8 @@ class JarvisUltraReliable:
    💰 Risk: 5.0% 
    🎯 SL: 20 pips | TP: 40 pips
    📊 Total Trades: {self.signal_count}
-   ✅ Status: {result.get('message', 'Executed')}
+   ✅ Status: {result.get('status', 'executed')}
+   📝 Details: {result.get('reason', 'N/A')}
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
                     return True

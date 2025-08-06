@@ -89,10 +89,11 @@ class OandaClient:
         """Place a trade on OANDA"""
         try:
             # Format order data according to OANDA's requirements
+            trading_pair = trade_data.get('pair') or trade_data.get('symbol') or 'EURUSD'
             order_data = {
                 "order": {
                     "type": "MARKET",
-                    "instrument": trade_data['pair'],
+                    "instrument": trading_pair,
                     "units": str(trade_data['units']),  # Positive for buy, negative for sell
                     "timeInForce": "FOK",
                     "positionFill": "DEFAULT",
