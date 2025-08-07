@@ -333,8 +333,46 @@ def webhook():
             
             # Check if analysis recommends the trade
             if analysis.get('prediction', {}).get('recommended', False):
+                # Prepare OANDA trade data with all required fields
+                account_balance = 0.95  # Current account balance
+                risk_percent = data.get('risk_percentage', 5.0) / 100  # 5% risk
+                stop_loss_pips = data.get('stop_loss_pips', 20)
+                take_profit_pips = data.get('take_profit_pips', 40)
+                
+                # Get current price (simplified - using provided price or default)
+                current_price = float(data.get('price', 1.0850))
+                
+                # Calculate position size based on risk
+                pip_value = 0.0001  # Standard pip value for EURUSD
+                risk_amount = account_balance * risk_percent
+                position_size = int(risk_amount / (stop_loss_pips * pip_value))
+                
+                # Adjust units for BUY/SELL (positive for BUY, negative for SELL)
+                if data.get('action', '').upper() == 'SELL':
+                    position_size = -position_size
+                
+                # Calculate stop loss and take profit prices
+                if data.get('action', '').upper() == 'BUY':
+                    stop_loss_price = current_price - (stop_loss_pips * pip_value)
+                    take_profit_price = current_price + (take_profit_pips * pip_value)
+                else:  # SELL
+                    stop_loss_price = current_price + (stop_loss_pips * pip_value)
+                    take_profit_price = current_price - (take_profit_pips * pip_value)
+                
+                # Prepare complete OANDA trade data
+                oanda_trade_data = {
+                    'pair': trading_pair,
+                    'symbol': trading_pair,
+                    'action': data.get('action'),
+                    'units': position_size,
+                    'stop_loss': round(stop_loss_price, 5),
+                    'take_profit': round(take_profit_price, 5),
+                    'confidence': data.get('confidence', 85.0),
+                    'source': 'pine_script_automated'
+                }
+                
                 # Execute trade on OANDA
-                trade_result = oanda.place_trade(data)
+                trade_result = oanda.place_trade(oanda_trade_data)
                 
                 # Update TradingView
                 tradingview.send_trade_alert(data)
