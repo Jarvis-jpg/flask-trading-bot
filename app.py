@@ -360,9 +360,18 @@ def webhook():
                     take_profit_price = current_price - (take_profit_pips * pip_value)
                 
                 # Prepare complete OANDA trade data
+                # Convert EURUSD to EUR_USD format for OANDA
+                oanda_instrument = trading_pair
+                if trading_pair == "EURUSD":
+                    oanda_instrument = "EUR_USD"
+                elif trading_pair == "GBPUSD":
+                    oanda_instrument = "GBP_USD"
+                elif trading_pair == "USDJPY":
+                    oanda_instrument = "USD_JPY"
+                
                 oanda_trade_data = {
-                    'pair': trading_pair,
-                    'symbol': trading_pair,
+                    'pair': oanda_instrument,  # Use OANDA format
+                    'symbol': oanda_instrument,  # Use OANDA format
                     'action': data.get('action'),
                     'units': position_size,
                     'stop_loss': round(stop_loss_price, 5),
