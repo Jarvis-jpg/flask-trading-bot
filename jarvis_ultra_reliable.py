@@ -187,15 +187,15 @@ class JarvisUltraReliable:
             "symbol": "EURUSD",  # Fixed: Remove underscore for OANDA format
             "confidence": signal['confidence'],  # This triggers Pine Script bypass
             "pair": "EURUSD",  # Backup field name
-            "risk_percentage": 5.0,
-            "stop_loss_pips": 20,
-            "take_profit_pips": 40,
+            "risk_percentage": 5.0,  # Back to 5% risk as requested
+            # Remove stop_loss_pips and take_profit_pips to avoid TradingView validation issues
             "source": "ultra_reliable_automated",
             "timestamp": datetime.now().isoformat(),
             "detection_method": signal.get('detection_method', 'pine_script'),
             "automation_mode": True,
             "retry_count": 0,
-            "price": 1.0850  # Add price for OANDA
+            "price": 1.0850,  # Add price for OANDA
+            "use_default_stops": True  # Let system use default SL/TP
         }
         
         # Try sending signal with retry logic
@@ -221,8 +221,8 @@ class JarvisUltraReliable:
    📈 Action: {signal['action'].upper()}
    💱 Symbol: EUR/USD
    💪 Confidence: {signal['confidence']:.1%}
-   💰 Risk: 5.0% 
-   🎯 SL: 20 pips | TP: 40 pips
+   💰 Risk: 5.0% (Aggressive)
+   🎯 SL/TP: Using System Defaults
    📊 Total Trades: {self.signal_count}
    ✅ Status: {result.get('status', 'executed')}
    📝 Details: {result.get('reason', 'N/A')}

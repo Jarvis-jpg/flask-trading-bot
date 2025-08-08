@@ -335,9 +335,15 @@ def webhook():
             if analysis.get('prediction', {}).get('recommended', False):
                 # Prepare OANDA trade data with all required fields
                 account_balance = 0.95  # Current account balance
-                risk_percent = data.get('risk_percentage', 5.0) / 100  # 5% risk
-                stop_loss_pips = data.get('stop_loss_pips', 20)
-                take_profit_pips = data.get('take_profit_pips', 40)
+                risk_percent = data.get('risk_percentage', 5.0) / 100  # Back to 5% risk as requested
+                
+                # Use default stop/take profit if not specified (for TradingView compatibility)
+                if data.get('use_default_stops', False):
+                    stop_loss_pips = 15  # Conservative default
+                    take_profit_pips = 30  # Conservative 2:1 ratio
+                else:
+                    stop_loss_pips = data.get('stop_loss_pips', 15)
+                    take_profit_pips = data.get('take_profit_pips', 30)
                 
                 # Get current price (simplified - using provided price or default)
                 current_price = float(data.get('price', 1.0850))
