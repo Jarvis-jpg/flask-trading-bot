@@ -182,43 +182,53 @@ class JarvisUltraReliable:
     
     def send_reliable_signal(self, signal):
         """Send signal with enhanced reliability and retry logic"""
-        # Get current market conditions for adaptive stop loss
+        
+        # Add delay to prevent rapid-fire trading
+        if hasattr(self, 'last_signal_time'):
+            time_since_last = time.time() - self.last_signal_time
+            if time_since_last < 300:  # 5 minute minimum between signals
+                print(f"⏰ Rate limiting: {300 - int(time_since_last)} seconds until next signal allowed")
+                return False
+        
+        self.last_signal_time = time.time()
+        
+        # Get current market conditions for ultra-conservative stop loss
         try:
-            # Check current volatility and price levels
+            # Use much more conservative stops to avoid ALL rejections
             current_price = 1.0850  # This should be fetched from live data
             
-            # Calculate adaptive stop loss based on market conditions
-            # Use ATR-based approach for realistic stops
+            # Ultra-conservative stops based on typical forex spreads and volatility
+            # Use larger stops that TradingView will definitely accept
             if signal['action'].upper() == 'BUY':
-                # For BUY: Stop below current support
-                adaptive_sl_pips = max(8, min(25, int(abs(current_price - 1.0800) * 10000)))
-                adaptive_tp_pips = adaptive_sl_pips * 2  # 2:1 ratio
+                # For BUY: Use very wide stops to avoid rejection
+                adaptive_sl_pips = 30  # Wide enough for any market condition
+                adaptive_tp_pips = 60  # Conservative 2:1 ratio
             else:
-                # For SELL: Stop above current resistance  
-                adaptive_sl_pips = max(8, min(25, int(abs(1.0900 - current_price) * 10000)))
-                adaptive_tp_pips = adaptive_sl_pips * 2  # 2:1 ratio
+                # For SELL: Use very wide stops to avoid rejection  
+                adaptive_sl_pips = 30  # Wide enough for any market condition
+                adaptive_tp_pips = 60  # Conservative 2:1 ratio
                 
         except:
-            # Fallback to safe defaults
-            adaptive_sl_pips = 12
-            adaptive_tp_pips = 24
+            # Fallback to ultra-safe defaults
+            adaptive_sl_pips = 35
+            adaptive_tp_pips = 70
         
         trade_payload = {
             "action": signal['action'],
             "symbol": "EURUSD",
             "confidence": signal['confidence'],
             "pair": "EURUSD", 
-            "risk_percentage": 2.0,  # Moderate risk
-            "stop_loss_pips": adaptive_sl_pips,  # Adaptive based on market
-            "take_profit_pips": adaptive_tp_pips,  # Adaptive ratio
+            "risk_percentage": 1.0,  # Very low risk to avoid position size issues
+            "stop_loss_pips": adaptive_sl_pips,  # Wide stops
+            "take_profit_pips": adaptive_tp_pips,  # Wide targets
             "source": "ultra_reliable_automated",
             "timestamp": datetime.now().isoformat(),
             "detection_method": signal.get('detection_method', 'pine_script'),
             "automation_mode": True,
             "retry_count": 0,
             "price": current_price,
-            "adaptive_stops": True,  # Use market-adaptive stops
-            "validation_safe": True  # Designed to pass TradingView validation
+            "conservative_mode": True,  # Ultra-conservative settings
+            "wide_stops": True  # Specifically designed to avoid rejections
         }
         
         # Try sending signal with retry logic

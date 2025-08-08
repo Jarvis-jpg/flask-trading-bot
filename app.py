@@ -7,7 +7,25 @@ from flask import Flask, request, jsonify, render_template_string
 from trade_logic import execute_trade
 from utils.journal_logger import log_trade
 from oanda_client import OandaClient
-from tradingview_client import TradingViewClient
+f                # Use adaptive stops based on market conditions and TradingView compatibility
+                account_balance = 0.95  # Current account balance
+                risk_percent = data.get('risk_percentage', 1.0) / 100  # Very conservative risk
+                
+                # Ultra-conservative stop loss system - designed to never be rejected
+                if data.get('conservative_mode', False) or data.get('wide_stops', False):
+                    # Use very wide stops that will definitely pass validation
+                    stop_loss_pips = max(30, data.get('stop_loss_pips', 35))  # Minimum 30 pips
+                    take_profit_pips = max(60, data.get('take_profit_pips', 70))  # Minimum 60 pips
+                    print(f"🛡️ Using ultra-conservative stops: SL={stop_loss_pips} pips, TP={take_profit_pips} pips")
+                elif data.get('adaptive_stops', False):
+                    # Use the adaptive values from the signal
+                    stop_loss_pips = max(20, data.get('stop_loss_pips', 25))  # Minimum 20 pips
+                    take_profit_pips = max(40, data.get('take_profit_pips', 50))  # Minimum 40 pips
+                    print(f"📊 Using adaptive stops: SL={stop_loss_pips} pips, TP={take_profit_pips} pips")
+                else:
+                    # Fallback to safe defaults
+                    stop_loss_pips = 25  # Safe default
+                    take_profit_pips = 50  # Safe 2:1 ratiow_client import TradingViewClient
 from trade_analyzer import TradeAnalyzer
 from autonomous_trading_engine import autonomous_engine
 from enhanced_trading_strategy import trading_strategy
