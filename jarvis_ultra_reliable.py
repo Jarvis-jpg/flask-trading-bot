@@ -7,6 +7,7 @@ Enhanced with error handling and JARVIS status checking
 import time
 import requests
 import json
+import datetime
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -43,6 +44,38 @@ class JarvisUltraReliable:
                 return False
         except Exception as e:
             print(f"❌ JARVIS Health Check Failed: {e}")
+            return False
+    
+    def check_oanda_balance(self):
+        """Check OANDA account balance"""
+        try:
+            import sys
+            import os
+            sys.path.append('.')
+            from oanda_client import OandaClient
+            from dotenv import load_dotenv
+            
+            load_dotenv()
+            client = OandaClient()
+            account_info = client.get_account_info()
+            
+            balance = float(account_info.get("balance", 0))
+            margin = float(account_info.get("margin_available", 0))
+            
+            print(f"💰 OANDA Account Status:")
+            print(f"   Balance: ${balance:.2f}")
+            print(f"   Available Margin: ${margin:.2f}")
+            print(f"   Account ID: {account_info.get('id', 'Unknown')}")
+            
+            if balance < 5:
+                print(f"⚠️  LOW BALANCE WARNING: ${balance:.2f} - Trades may fail")
+                return False
+            else:
+                print(f"✅ BALANCE OK: ${balance:.2f} - Ready for trading")
+                return True
+                
+        except Exception as e:
+            print(f"❌ OANDA Balance Check Failed: {e}")
             return False
     
     def setup_browser(self):
@@ -426,6 +459,10 @@ class JarvisUltraReliable:
             if not self.check_jarvis_health():
                 print("❌ JARVIS not available. Please check system status.")
                 return False
+            
+            # Check OANDA account balance
+            if not self.check_oanda_balance():
+                print("⚠️  OANDA balance warning - continuing anyway...")
             
             # Setup browser
             if not self.setup_browser():
