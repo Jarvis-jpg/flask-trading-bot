@@ -7,7 +7,6 @@ Enhanced with error handling and JARVIS status checking
 import time
 import requests
 import json
-import datetime
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -22,6 +21,7 @@ class JarvisUltraReliable:
         self.status_url = "https://jarvis-quant-sys.onrender.com/status"
         self.signal_count = 0
         self.running = False
+        self.last_signal_time = 0  # Initialize rate limiting timer
         
     def check_jarvis_health(self):
         """Check if JARVIS is healthy before sending signals"""
@@ -251,8 +251,7 @@ class JarvisUltraReliable:
             current_price = 1.0850  # This should be fetched from live data
             
             # Get current time to adjust for market sessions
-            import datetime
-            current_hour = datetime.datetime.now().hour
+            current_hour = datetime.now().hour
             
             # Adjust stops based on market session and volatility
             if 2 <= current_hour <= 6:  # Asian session - lower volatility
@@ -385,19 +384,22 @@ class JarvisUltraReliable:
         
         self.running = True
         signal_history = []
-        last_health_check = datetime.now()
         
-        try:
-            while self.running:
-                current_time = datetime.now()
+        # Ultra-reliable monitoring with error recovery
+        while self.running:
+            try:
+                last_health_check = datetime.now()
                 
-                # Health check every 5 minutes
-                if (current_time - last_health_check).seconds > 300:
-                    if not self.check_jarvis_health():
-                        print("⚠️  JARVIS health check failed, waiting 60 seconds...")
-                        time.sleep(60)
-                        continue
-                    last_health_check = current_time
+                while self.running:
+                    current_time = datetime.now()
+                    
+                    # Health check every 5 minutes
+                    if (current_time - last_health_check).seconds > 300:
+                        if not self.check_jarvis_health():
+                            print("⚠️  JARVIS health check failed, waiting 60 seconds...")
+                            time.sleep(60)
+                            continue
+                        last_health_check = current_time
                 
                 # Detect signals
                 detected_signals = self.advanced_signal_detection()
@@ -422,17 +424,19 @@ class JarvisUltraReliable:
                 
                 # Wait before next check
                 time.sleep(25)
-                
+            
+            except Exception as inner_e:
+                print(f"❌ Critical system error: {inner_e}")
+                print("🔧 Attempting system recovery in 30 seconds...")
+                time.sleep(30)
+                if self.running:
+                    print("🔄 Restarting monitoring...")
+                    # Continue the outer while loop for recovery
+                    continue
+                    
         except KeyboardInterrupt:
             print("\n⏹️  Ultra-reliable trading stopped by user")
             self.running = False
-        except Exception as e:
-            print(f"❌ Critical system error: {e}")
-            print("🔧 Attempting system recovery in 30 seconds...")
-            time.sleep(30)
-            if self.running:
-                print("🔄 Restarting monitoring...")
-                self.ultra_monitoring_loop()
     
     def run_ultra_automated(self):
         """Run ultra-reliable automated system"""
