@@ -434,9 +434,17 @@ class JarvisUltraReliable:
                     # Continue the outer while loop for recovery
                     continue
                     
-        except KeyboardInterrupt:
-            print("\n⏹️  Ultra-reliable trading stopped by user")
-            self.running = False
+            except KeyboardInterrupt:
+                print("\n⏹️  Ultra-reliable trading stopped by user")
+                self.running = False
+                break
+            except Exception as outer_e:
+                print(f"❌ Critical system error: {outer_e}")
+                print("🔧 Attempting system recovery in 30 seconds...")
+                time.sleep(30)
+                if self.running:
+                    print("🔄 Restarting monitoring...")
+                    continue
     
     def run_ultra_automated(self):
         """Run ultra-reliable automated system"""
