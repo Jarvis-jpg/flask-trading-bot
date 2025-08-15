@@ -261,6 +261,9 @@ if buy_signal
         strategy.exit("JARVIS_LONG_EXIT", "JARVIS_LONG", 
                      stop=sl, limit=tp, 
                      alert_message='{"action":"CLOSE","symbol":"' + jarvis_symbol + '","type":"long_exit"}')
+        
+        // Send immediate alert for webhook
+        alert(alert_message, alert.freq_once_per_bar)
 
 if sell_signal
     sell_confidence = calculate_confidence(false)
@@ -284,6 +287,9 @@ if sell_signal
         strategy.exit("JARVIS_SHORT_EXIT", "JARVIS_SHORT", 
                      stop=sl, limit=tp, 
                      alert_message='{"action":"CLOSE","symbol":"' + jarvis_symbol + '","type":"short_exit"}')
+        
+        // Send immediate alert for webhook
+        alert(alert_message, alert.freq_once_per_bar)
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 // 📊 VISUAL INDICATORS
