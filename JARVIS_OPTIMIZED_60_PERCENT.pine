@@ -14,7 +14,7 @@ strategy("JARVIS OPTIMIZED - QUALITY OVER QUANTITY",
 // Based on: Enhanced EMA System + Premium Sessions + Better Confirmation
 // Compatible with: Advanced ML Backend & Risk Management System
 
-// Input Parameters - OPTIMIZED FOR QUALITY
+// Input Parameters - OPTIMIZED FOR QUALITY\n\n// Define input groups\nvar g_general = "General Settings"\nvar g_strategy = "Strategy Parameters"\nvar g_sessions = "Session Settings"\n
 webhook_url = input.string("https://flask-trading-bot.onrender.com/webhook", "Webhook URL", group=g_general)
 risk_percent = input.float(4.0, "Risk Per Trade (%)", minval=1.0, maxval=5.0, step=0.1, group=g_general)
 risk_reward_ratio = input.float(2.5, "Risk:Reward Ratio", minval=2.0, maxval=3.5, step=0.1, group=g_general)
