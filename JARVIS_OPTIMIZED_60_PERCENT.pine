@@ -1,6 +1,6 @@
 //@version=6
-strategy("JARVIS Simplified Strategy - PROVEN COMPONENTS ONLY", 
-         shorttitle="JARVIS_SIMPLE", 
+strategy("JARVIS AGGRESSIVE - 5+ TRADES/DAY", 
+         shorttitle="JARVIS_AGG", 
          overlay=true, 
          default_qty_type=strategy.percent_of_equity, 
          default_qty_value=2,
@@ -10,37 +10,36 @@ strategy("JARVIS Simplified Strategy - PROVEN COMPONENTS ONLY",
          commission_value=0.1)
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🎯 JARVIS HIGH FREQUENCY STRATEGY - AGGRESSIVE TRADING
-// Target: 5+ Trades Per Day | 55% Win Rate | 1.5:1 Risk-Reward | 2% Risk Per Trade
-// Based on: Short EMAs + Loose RSI + Momentum + Price Action
+// 🚀 JARVIS AGGRESSIVE STRATEGY - FREQUENCY OVER PERFECTION
+// Target: 5+ Trades Per Day | Quick EMA Signals | 1.5:1 Risk-Reward | 2% Risk Per Trade
+// Based on: EMA 9/21 Crossover + Loose RSI Filter + 24/7 Trading
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-// Input Parameters
+// Input Parameters - SIMPLIFIED
 var g_general = "═══════ GENERAL SETTINGS ═══════"
 webhook_url = input.string("https://jarvis-quant-sys.onrender.com/webhook", "Webhook URL", group=g_general)
 risk_percent = input.float(2.0, "Risk Per Trade (%)", minval=1.0, maxval=5.0, step=0.5, group=g_general)
 risk_reward_ratio = input.float(1.5, "Risk:Reward Ratio", minval=1.2, maxval=2.0, step=0.1, group=g_general)
 
-var g_strategy = "═══════ AGGRESSIVE STRATEGY COMPONENTS ═══════"
-// 1. Fast EMAs for Quick Signals
-ema_fast = input.int(9, "Fast EMA", minval=5, maxval=15, group=g_strategy)
-ema_slow = input.int(21, "Slow EMA", minval=15, maxval=30, group=g_strategy)
+var g_strategy = "═══════ AGGRESSIVE COMPONENTS ═══════"
+// Fast EMAs for Quick Signals
+ema_fast = input.int(9, "Fast EMA", minval=5, maxval=12, group=g_strategy)
+ema_slow = input.int(21, "Slow EMA", minval=18, maxval=25, group=g_strategy)
 
-// 2. Loose RSI Filter for More Signals
+// Loose RSI Filter (More Trades)
 rsi_period = input.int(14, "RSI Period", minval=10, maxval=20, group=g_strategy)
 rsi_min = input.int(35, "RSI Minimum for Longs", minval=30, maxval=40, group=g_strategy)
-rsi_max = input.int(65, "RSI Maximum for Shorts", minval=60, maxval=70, group=g_strategy)
-
-// 3. Reduced Session Filter for More Opportunities
-use_session_filter = input.bool(false, "Trade Only London/NY Sessions", group=g_strategy)
+rsi_max = input.int(80, "RSI Maximum for Longs", minval=70, maxval=85, group=g_strategy)
+rsi_max_short = input.int(65, "RSI Maximum for Shorts", minval=60, maxval=70, group=g_strategy)
+rsi_min_short = input.int(20, "RSI Minimum for Shorts", minval=15, maxval=30, group=g_strategy)
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📊 CORE INDICATORS (FAST & AGGRESSIVE)
+// 📊 CORE INDICATORS - SIMPLE & EFFECTIVE
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // 1. Fast EMA System for Quick Signals
-ema9 = ta.ema(close, ema_fast)
-ema21 = ta.ema(close, ema_slow)
+ema_9 = ta.ema(close, ema_fast)
+ema_21 = ta.ema(close, ema_slow)
 
 // 2. RSI for Basic Momentum (Loose Filter)
 rsi = ta.rsi(close, rsi_period)
@@ -48,66 +47,44 @@ rsi = ta.rsi(close, rsi_period)
 // 3. ATR for Position Sizing
 atr = ta.atr(14)
 
-// 4. Price Momentum Indicator
-price_momentum = close - close[3]  // 3-bar momentum
-momentum_bullish = price_momentum > 0
-momentum_bearish = price_momentum < 0
-
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🕐 SESSION FILTER (EXTENDED TRADING HOURS)
+// 🕐 24/7 TRADING (NO SESSION RESTRICTIONS)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-// Extended Trading Hours for More Opportunities
-// London Session: 07:00-18:00 GMT (Extended)
-london_session = hour >= 7 and hour <= 18
-
-// New York Session: 12:00-23:00 GMT (Extended)
-ny_session = hour >= 12 and hour <= 23
-
-// Asian Session: 00:00-10:00 GMT (Added for more trades)
-asian_session = hour >= 0 and hour <= 10
-
-// Active sessions (maximum trading time)
-active_session = london_session or ny_session or asian_session
-
-// Session condition (less restrictive)
-session_ok = not use_session_filter or active_session
+// Trade all sessions for maximum frequency
+session_ok = true  // Always trade
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🎯 SIGNAL GENERATION (AGGRESSIVE & FREQUENT)
+// 🎯 SIMPLE SIGNAL GENERATION (3 CONDITIONS ONLY)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-// Component 1: Fast EMA Trend (More Sensitive)
-ema_uptrend = ema9 > ema21  // Simple trend check
-ema_downtrend = ema9 < ema21  // Simple trend check
+// Component 1: EMA Crossover (Primary Signal) - FIXED
+ema_bullish = ema_9 > ema_21    // Removed price position requirement
+ema_bearish = ema_9 < ema_21    // Removed price position requirement
 
-// Component 2: Loose RSI Filter (Allow More Trades)
-rsi_ok_for_long = rsi >= rsi_min and rsi <= 80  // Very loose upper bound
-rsi_ok_for_short = rsi <= rsi_max and rsi >= 20  // Very loose lower bound
+// Component 2: Looser RSI Filter (Allow More Trades) - WIDENED
+rsi_ok_long = rsi >= 25 and rsi <= 85    // Widened from 35-80
+rsi_ok_short = rsi <= 75 and rsi >= 15   // Widened from 20-65
 
-// Component 3: Basic Price Action (Simple confirmation)
-bullish_candle = close > open
-bearish_candle = close < open
-
-// Component 4: Momentum Confirmation (Added for quality)
-momentum_ok_long = momentum_bullish or rsi > 50  // Either momentum OR RSI above 50
-momentum_ok_short = momentum_bearish or rsi < 50  // Either momentum OR RSI below 50
+// Component 3: Simpler Momentum (Less Restrictive)
+momentum_up = close > close[2]      // 2-bar momentum instead of 1-bar
+momentum_down = close < close[2]    // 2-bar momentum instead of 1-bar
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📈 BUY SIGNAL (AGGRESSIVE - 3 CONDITIONS ONLY)
+// 📈 BUY SIGNAL (3 SIMPLE CONDITIONS)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-buy_signal = ema_uptrend and          // 1. Fast trend up (EMA9 > EMA21)
-             rsi_ok_for_long and      // 2. RSI not extreme (35-80)
-             momentum_ok_long         // 3. Momentum OR RSI bullish
+buy_signal = ema_bullish and          // 1. EMA 9 > EMA 21 + Price above EMA 9
+             rsi_ok_long and          // 2. RSI between 35-80 (loose)
+             momentum_up              // 3. Price rising
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📉 SELL SIGNAL (AGGRESSIVE - 3 CONDITIONS ONLY)
+// 📉 SELL SIGNAL (3 SIMPLE CONDITIONS)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-sell_signal = ema_downtrend and       // 1. Fast trend down (EMA9 < EMA21)
-              rsi_ok_for_short and    // 2. RSI not extreme (20-65)
-              momentum_ok_short       // 3. Momentum OR RSI bearish
+sell_signal = ema_bearish and         // 1. EMA 9 < EMA 21 + Price below EMA 9
+              rsi_ok_short and        // 2. RSI between 20-65 (loose)
+              momentum_down           // 3. Price falling
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 // 🔧 SYMBOL FORMAT CONVERTER FOR JARVIS
@@ -127,7 +104,7 @@ convert_symbol_for_jarvis() =>
     symbol_converted
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 💰 POSITION SIZING & RISK MANAGEMENT (SIMPLIFIED)
+// 💰 POSITION SIZING & RISK MANAGEMENT (SIMPLE)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Calculate position size based on ATR stop
@@ -137,9 +114,9 @@ calculate_position_size(entry_price, stop_loss_price) =>
     position_size = risk_amount / price_diff
     position_size
 
-// Simple ATR-based stops (1.5x ATR - tighter for frequent trades)
+// Simple ATR-based stops (1.5x ATR for frequent trading)
 calculate_levels(is_buy, entry_price) =>
-    stop_distance = atr * 1.5  // 1.5x ATR stop (tighter for aggressive trading)
+    stop_distance = atr * 1.5  // 1.5x ATR stop for aggressive trading
     
     var float stop_loss = na
     var float take_profit = na
@@ -154,7 +131,7 @@ calculate_levels(is_buy, entry_price) =>
     [stop_loss, take_profit]
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🚀 TRADE EXECUTION & WEBHOOK ALERTS (SIMPLIFIED)
+// 🚀 TRADE EXECUTION & WEBHOOK ALERTS (AGGRESSIVE)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Execute BUY trades
@@ -196,44 +173,37 @@ if sell_signal
     alert(alert_message, alert.freq_once_per_bar)
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📊 VISUAL INDICATORS (SIMPLIFIED)
+// 📊 VISUAL INDICATORS (SIMPLE)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-// Plot only essential EMAs
-plot(ema9, "EMA 9", color=color.blue, linewidth=2)
-plot(ema21, "EMA 21", color=color.red, linewidth=2)
+// Plot EMAs
+plot(ema_9, "EMA 9", color=color.blue, linewidth=2)
+plot(ema_21, "EMA 21", color=color.red, linewidth=2)
 
 // Signal markers
 plotshape(buy_signal, "Buy", shape.triangleup, location.belowbar, color.green, size=size.normal)
 plotshape(sell_signal, "Sell", shape.triangledown, location.abovebar, color.red, size=size.normal)
 
-// Background color for active sessions
-bgcolor(active_session and use_session_filter ? color.new(color.blue, 95) : na, title="Active Session")
-
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📈 PERFORMANCE STATISTICS (SIMPLIFIED)
+// 📈 PERFORMANCE STATISTICS (SIMPLE)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 if barstate.islast
-    var table stats_table = table.new(position.top_right, 2, 6, bgcolor=color.white, border_width=1)
+    var table stats_table = table.new(position.top_right, 2, 5, bgcolor=color.white, border_width=1)
     
     win_rate = strategy.closedtrades > 0 ? strategy.wintrades / strategy.closedtrades * 100 : 0
-    profit_factor = strategy.grossloss > 0 ? strategy.grossprofit / strategy.grossloss : 0
     
     table.cell(stats_table, 0, 0, "JARVIS AGGRESSIVE", text_color=color.black, text_size=size.small)
     table.cell(stats_table, 1, 0, "VALUE", text_color=color.black, text_size=size.small)
     
-    table.cell(stats_table, 0, 1, "Win Rate", text_color=color.black)
-    table.cell(stats_table, 1, 1, str.tostring(win_rate, "#.#") + "%", text_color=win_rate >= 55 ? color.green : color.red)
+    table.cell(stats_table, 0, 1, "Total Trades", text_color=color.black)
+    table.cell(stats_table, 1, 1, str.tostring(strategy.closedtrades), text_color=color.black)
     
-    table.cell(stats_table, 0, 2, "Total Trades", text_color=color.black)
-    table.cell(stats_table, 1, 2, str.tostring(strategy.closedtrades), text_color=color.black)
+    table.cell(stats_table, 0, 2, "Win Rate", text_color=color.black)
+    table.cell(stats_table, 1, 2, str.tostring(win_rate, "#.#") + "%", text_color=win_rate >= 50 ? color.green : color.red)
     
-    table.cell(stats_table, 0, 3, "Profit Factor", text_color=color.black)
-    table.cell(stats_table, 1, 3, str.tostring(profit_factor, "#.##"), text_color=profit_factor >= 2.0 ? color.green : color.red)
+    table.cell(stats_table, 0, 3, "Net Profit", text_color=color.black)
+    table.cell(stats_table, 1, 3, str.tostring(strategy.netprofit, "#.##"), text_color=strategy.netprofit > 0 ? color.green : color.red)
     
-    table.cell(stats_table, 0, 4, "Net Profit", text_color=color.black)
-    table.cell(stats_table, 1, 4, str.tostring(strategy.netprofit, "#.##"), text_color=strategy.netprofit > 0 ? color.green : color.red)
-    
-    table.cell(stats_table, 0, 5, "Risk/Trade", text_color=color.black)
-    table.cell(stats_table, 1, 5, str.tostring(risk_percent) + "%", text_color=color.black)
+    table.cell(stats_table, 0, 4, "Risk/Trade", text_color=color.black)
+    table.cell(stats_table, 1, 4, str.tostring(risk_percent) + "%", text_color=color.black)
