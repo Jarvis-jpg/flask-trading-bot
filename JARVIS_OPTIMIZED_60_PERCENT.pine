@@ -10,20 +10,15 @@ strategy("JARVIS OPTIMIZED - QUALITY OVER QUANTITY",
          commission_value=0.1,
          slippage=2)
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🎯 JARVIS OPTIMIZED STRATEGY - QUALITY OVER QUANTITY
 // Target: 3-4 Quality Trades/Day | 60-65% Win Rate | 2.5:1 Risk-Reward | 1.5% Risk Per Trade
 // Based on: Enhanced EMA System + Premium Sessions + Better Confirmation
 // Compatible with: Advanced ML Backend & Risk Management System
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Input Parameters - OPTIMIZED FOR QUALITY
-var g_general = "═══════ OPTIMIZED SETTINGS ═══════"
-webhook_url = input.string("https://jarvis-quant-sys.onrender.com/webhook", "Webhook URL", group=g_general)
+webhook_url = input.string("https://flask-trading-bot.onrender.com/webhook", "Webhook URL", group=g_general)
 risk_percent = input.float(1.5, "Risk Per Trade (%)", minval=1.0, maxval=2.5, step=0.1, group=g_general)
 risk_reward_ratio = input.float(2.5, "Risk:Reward Ratio", minval=2.0, maxval=3.5, step=0.1, group=g_general)
 
-var g_strategy = "═══════ QUALITY COMPONENTS ═══════"
 // Balanced EMAs for Quality Signals
 ema_fast = input.int(21, "Fast EMA", minval=15, maxval=25, group=g_strategy)
 ema_slow = input.int(50, "Slow EMA", minval=45, maxval=55, group=g_strategy)
@@ -35,13 +30,9 @@ rsi_max = input.int(75, "RSI Maximum for Longs", minval=70, maxval=80, group=g_s
 rsi_max_short = input.int(60, "RSI Maximum for Shorts", minval=55, maxval=65, group=g_strategy)
 rsi_min_short = input.int(25, "RSI Minimum for Shorts", minval=20, maxval=30, group=g_strategy)
 
-var g_sessions = "═══════ PREMIUM SESSIONS ═══════"
 enable_session_filter = input.bool(true, "Enable Premium Sessions Only", group=g_sessions)
 enable_overlap_boost = input.bool(true, "Prioritize London/NY Overlap", group=g_sessions)
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📊 CORE INDICATORS - BALANCED & EFFECTIVE
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // 1. Balanced EMA System for Quality Signals
 ema_21 = ta.ema(close, ema_fast)
@@ -56,9 +47,6 @@ atr = ta.atr(14)
 // 4. MACD for Additional Confirmation
 [macd_line, signal_line, _] = ta.macd(close, 12, 26, 9)
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🕐 PREMIUM SESSION FILTERING (QUALITY OVER QUANTITY)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Define premium trading sessions
 london_session = not na(time(timeframe.period, "0800-1700", "GMT"))
@@ -78,9 +66,6 @@ else
 
 session_ok = session_quality >= 1
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🎯 ENHANCED SIGNAL GENERATION (4 QUALITY CONDITIONS)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Component 1: EMA Trend Alignment
 ema_bullish = ema_21 > ema_50 and close > ema_21
@@ -98,9 +83,6 @@ momentum_down = close < close[1] and close[1] < close[2]  // Stronger momentum
 macd_bullish = macd_line > signal_line and macd_line > macd_line[1]
 macd_bearish = macd_line < signal_line and macd_line < macd_line[1]
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📈 ENHANCED BUY SIGNAL (4 QUALITY CONDITIONS + SESSION)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 buy_signal = ema_bullish and          // 1. Trend alignment
              rsi_ok_long and          // 2. RSI confirmation
@@ -108,9 +90,6 @@ buy_signal = ema_bullish and          // 1. Trend alignment
              macd_bullish and         // 4. MACD confirmation
              session_ok               // 5. Premium session
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📉 ENHANCED SELL SIGNAL (4 QUALITY CONDITIONS + SESSION)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 sell_signal = ema_bearish and         // 1. Trend alignment
               rsi_ok_short and        // 2. RSI confirmation
@@ -118,9 +97,6 @@ sell_signal = ema_bearish and         // 1. Trend alignment
               macd_bearish and        // 4. MACD confirmation
               session_ok              // 5. Premium session
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🔧 SYMBOL FORMAT CONVERTER FOR JARVIS
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 convert_symbol_for_jarvis() =>
     ticker = syminfo.ticker
@@ -135,9 +111,6 @@ convert_symbol_for_jarvis() =>
       ticker == "EURGBP" ? "EUR_GBP" : ticker
     symbol_converted
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 💰 POSITION SIZING & RISK MANAGEMENT (SIMPLE)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Calculate position size based on ATR stop
 calculate_position_size(entry_price, stop_loss_price) =>
@@ -162,9 +135,6 @@ calculate_levels(is_buy, entry_price) =>
     
     [stop_loss, take_profit]
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 🚀 TRADE EXECUTION & WEBHOOK ALERTS (AGGRESSIVE)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Execute BUY trades
 if buy_signal
@@ -210,9 +180,6 @@ if sell_signal
     strategy.exit("SHORT_EXIT", "SHORT", stop=sl, limit=tp)
     alert(alert_message, alert.freq_once_per_bar)
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📊 VISUAL INDICATORS (SIMPLE)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Plot EMAs
 plot(ema_21, "EMA 21", color=color.blue, linewidth=2)
@@ -228,9 +195,6 @@ plotshape(sell_signal, "Sell", shape.triangledown, location.abovebar,
 session_color = session_quality == 3 ? color.new(color.green, 95) : session_quality == 2 ? color.new(color.yellow, 95) : na
 bgcolor(session_color)
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-// 📈 PERFORMANCE STATISTICS (SIMPLE)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 if barstate.islast
     var table stats_table = table.new(position.top_right, 2, 5, bgcolor=color.white, border_width=1)
