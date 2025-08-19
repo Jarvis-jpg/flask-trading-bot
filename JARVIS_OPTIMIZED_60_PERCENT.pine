@@ -61,9 +61,9 @@ atr = ta.atr(14)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 // Define premium trading sessions
-london_session = time(timeframe.period, "0800-1700", "GMT")
-ny_session = time(timeframe.period, "1300-2200", "GMT")
-overlap_session = time(timeframe.period, "1300-1700", "GMT")
+london_session = not na(time(timeframe.period, "0800-1700", "GMT"))
+ny_session = not na(time(timeframe.period, "1300-2200", "GMT"))
+overlap_session = not na(time(timeframe.period, "1300-1700", "GMT"))
 
 // Session quality assessment
 session_quality = 0
