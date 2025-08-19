@@ -225,8 +225,7 @@ plotshape(sell_signal, "Sell", shape.triangledown, location.abovebar,
           color=session_quality == 3 ? color.red : color.maroon, size=size.normal)
 
 // Session quality background
-session_color = session_quality == 3 ? color.new(color.green, 95) : 
-                session_quality == 2 ? color.new(color.yellow, 95) : na
+session_color = session_quality == 3 ? color.new(color.green, 95) : session_quality == 2 ? color.new(color.yellow, 95) : na
 bgcolor(session_color)
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
