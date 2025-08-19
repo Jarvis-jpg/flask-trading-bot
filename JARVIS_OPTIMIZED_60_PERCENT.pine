@@ -10,13 +10,13 @@ strategy("JARVIS OPTIMIZED - QUALITY OVER QUANTITY",
          commission_value=0.1,
          slippage=2)
 
-// Target: 3-4 Quality Trades/Day | 60-65% Win Rate | 2.5:1 Risk-Reward | 1.5% Risk Per Trade
+// Target: 3-4 Quality Trades/Day | 60-65% Win Rate | 2.5:1 Risk-Reward | 4.0% Risk Per Trade
 // Based on: Enhanced EMA System + Premium Sessions + Better Confirmation
 // Compatible with: Advanced ML Backend & Risk Management System
 
 // Input Parameters - OPTIMIZED FOR QUALITY
 webhook_url = input.string("https://flask-trading-bot.onrender.com/webhook", "Webhook URL", group=g_general)
-risk_percent = input.float(1.5, "Risk Per Trade (%)", minval=1.0, maxval=2.5, step=0.1, group=g_general)
+risk_percent = input.float(4.0, "Risk Per Trade (%)", minval=1.0, maxval=5.0, step=0.1, group=g_general)
 risk_reward_ratio = input.float(2.5, "Risk:Reward Ratio", minval=2.0, maxval=3.5, step=0.1, group=g_general)
 
 // Balanced EMAs for Quality Signals
