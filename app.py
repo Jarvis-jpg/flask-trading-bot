@@ -58,10 +58,16 @@ def webhook():
             # PineScript default format
             symbol = data.get("ticker", "EURUSD")
             action = data.get("strategy.order.action", "buy")
-            price = data.get("close", 1.0850)
+            price = float(data.get("close", 1.0850))
             strategy = data.get("strategy", "PineScript")
-            stop_loss = data.get("strategy.order.contracts", price * 0.995)  # Default 0.5% stop
-            take_profit = data.get("strategy.order.price", price * 1.005)   # Default 0.5% target
+            
+            # Calculate reasonable stop loss and take profit based on price
+            if action.lower() == "buy":
+                stop_loss = price * 0.995   # 0.5% below entry
+                take_profit = price * 1.005  # 0.5% above entry
+            else:  # sell
+                stop_loss = price * 1.005   # 0.5% above entry
+                take_profit = price * 0.995  # 0.5% below entry
         else:
             # Custom format
             required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
@@ -71,19 +77,19 @@ def webhook():
             
             symbol = data["symbol"]
             action = data["action"]
-            price = data["price"]
+            price = float(data["price"])
             strategy = data["strategy"]
-            stop_loss = data["stop_loss"]
-            take_profit = data["take_profit"]
+            stop_loss = float(data["stop_loss"])
+            take_profit = float(data["take_profit"])
 
-        position_size = calculate_position_size(float(price), float(stop_loss))
+        position_size = calculate_position_size(price, stop_loss)
         units = position_size if action.upper() == "BUY" else -position_size
 
         trade_data = {
             "symbol": symbol,
             "units": units,
-            "stop_loss": float(stop_loss),
-            "take_profit": float(take_profit)
+            "stop_loss": stop_loss,
+            "take_profit": take_profit
         }
 
         logging.info(f"Placing trade: {action} {abs(units)} units of {symbol}")
