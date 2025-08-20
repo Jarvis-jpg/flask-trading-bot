@@ -29,8 +29,8 @@ def calculate_position_size(price, stop_loss, account_balance=50, risk_percent=4
         if price_difference == 0:
             return 100
         position_size = round(risk_amount / price_difference)
-        # Cap position size for demo/small accounts  
-        return max(1000, min(position_size, 5000))
+        # Cap position size for $50 account with limited margin
+        return max(100, min(position_size, 500))  # Much smaller max for $50 account
     except Exception as e:
         logging.error(f"Error calculating position size: {e}")
         return 100
