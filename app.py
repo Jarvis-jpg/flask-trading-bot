@@ -66,25 +66,25 @@ def webhook():
                 current_price = oanda.get_current_price(oanda._format_instrument(symbol))
                 logging.info(f"Current market price for {symbol}: {current_price}")
                 
-                # Use current market price for calculations
+                # Use current market price for calculations - 2:1 risk/reward
                 if action.lower() == "buy":
-                    stop_loss = round(current_price * 0.998, 5)   # 0.2% below current
-                    take_profit = round(current_price * 1.002, 5)  # 0.2% above current
+                    stop_loss = round(current_price * 0.93, 5)   # 7% below current (risk)
+                    take_profit = round(current_price * 1.14, 5)  # 14% above current (reward)
                 else:  # sell
-                    stop_loss = round(current_price * 1.002, 5)   # 0.2% above current
-                    take_profit = round(current_price * 0.998, 5)  # 0.2% below current
+                    stop_loss = round(current_price * 1.07, 5)   # 7% above current (risk)
+                    take_profit = round(current_price * 0.86, 5)  # 14% below current (reward)
                     
                 # Use current price for position sizing too
                 price = current_price
             except Exception as e:
                 logging.warning(f"Could not get current price, using provided price: {e}")
-                # Fallback to provided price with smaller spread
+                # Fallback to provided price with 2:1 risk/reward
                 if action.lower() == "buy":
-                    stop_loss = round(price * 0.998, 5)
-                    take_profit = round(price * 1.002, 5)
+                    stop_loss = round(price * 0.93, 5)   # 7% below (risk)
+                    take_profit = round(price * 1.14, 5) # 14% above (reward)
                 else:
-                    stop_loss = round(price * 1.002, 5)
-                    take_profit = round(price * 0.998, 5)
+                    stop_loss = round(price * 1.07, 5)   # 7% above (risk)
+                    take_profit = round(price * 0.86, 5) # 14% below (reward)
         else:
             # Custom format
             required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
