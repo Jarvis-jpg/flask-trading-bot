@@ -22,7 +22,7 @@ app = Flask(__name__)
 # Initialize OANDA client
 oanda = OandaClient()
 
-def calculate_position_size(price, stop_loss, account_balance=50, risk_percent=0.5):
+def calculate_position_size(price, stop_loss, account_balance=50, risk_percent=4.0):
     try:
         risk_amount = account_balance * (risk_percent / 100)
         price_difference = abs(float(price) - float(stop_loss))
