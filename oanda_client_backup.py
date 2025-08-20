@@ -113,23 +113,9 @@ class OandaClient:
             logger.info(f"Trade placed successfully: {response}")
             return {
                 'status': 'success',
-                # Check if trade was filled or cancelled
-              if 'orderFillTransaction' in response:
-              # Check if trade was filled or cancelled
-              if 'orderFillTransaction' in response:
-                  return {
-                      'status': 'success',
-                      'order_id': response['orderFillTransaction']['id'],
-                      'filled_price': response['orderFillTransaction']['price'],
-                      'timestamp': datetime.now().isoformat()
-                  }
-              elif 'orderCancelTransaction' in response:
-                  cancel_reason = response['orderCancelTransaction'].get('reason', 'Unknown')
-                  logger.error(f"Trade cancelled: {cancel_reason}")
-                  raise Exception(f"Trade cancelled: {cancel_reason}")
-              else:
-                  logger.error(f"Unexpected response format: {response}")
-                  raise Exception("Unexpected response format")
+                'order_id': response['orderFillTransaction']['id'],
+                'filled_price': response['orderFillTransaction']['price'],
+                'timestamp': datetime.now().isoformat()
             }
             
         except V20Error as e:
@@ -232,15 +218,7 @@ class OandaClient:
             return {
                 'status': 'success',
                 'close_price': response['orderFillTransaction']['price'],
-                      'timestamp': datetime.now().isoformat()
-                  }
-              elif 'orderCancelTransaction' in response:
-                  cancel_reason = response['orderCancelTransaction'].get('reason', 'Unknown')
-                  logger.error(f"Trade cancelled: {cancel_reason}")
-                  raise Exception(f"Trade cancelled: {cancel_reason}")
-              else:
-                  logger.error(f"Unexpected response format: {response}")
-                  raise Exception("Unexpected response format")
+                'timestamp': datetime.now().isoformat()
             }
             
         except Exception as e:
@@ -265,15 +243,7 @@ class OandaClient:
                 return {
                     'status': 'success',
                     'trade_id': trade_id,
-                      'timestamp': datetime.now().isoformat()
-                  }
-              elif 'orderCancelTransaction' in response:
-                  cancel_reason = response['orderCancelTransaction'].get('reason', 'Unknown')
-                  logger.error(f"Trade cancelled: {cancel_reason}")
-                  raise Exception(f"Trade cancelled: {cancel_reason}")
-              else:
-                  logger.error(f"Unexpected response format: {response}")
-                  raise Exception("Unexpected response format")
+                    'timestamp': datetime.now().isoformat()
                 }
             
             return {'status': 'no_changes_requested'}

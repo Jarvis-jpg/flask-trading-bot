@@ -1,0 +1,8 @@
+﻿{
+  "symbol": "EUR_USD",
+  "action": "BUY", 
+  "price": "1.0900",
+  "strategy": "test",
+  "stop_loss": "1.0850",
+  "take_profit": "1.0950"
+}
