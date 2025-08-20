@@ -68,11 +68,11 @@ def webhook():
                 
                 # Use current market price for calculations
                 if action.lower() == "buy":
-                    stop_loss = round(current_price * 0.995, 5)   # 0.5% below current
-                    take_profit = round(current_price * 1.005, 5)  # 0.5% above current
+                    stop_loss = round(current_price * 0.998, 5)   # 0.2% below current
+                    take_profit = round(current_price * 1.002, 5)  # 0.2% above current
                 else:  # sell
-                    stop_loss = round(current_price * 1.005, 5)   # 0.5% above current
-                    take_profit = round(current_price * 0.995, 5)  # 0.5% below current
+                    stop_loss = round(current_price * 1.002, 5)   # 0.2% above current
+                    take_profit = round(current_price * 0.998, 5)  # 0.2% below current
                     
                 # Use current price for position sizing too
                 price = current_price
@@ -80,11 +80,11 @@ def webhook():
                 logging.warning(f"Could not get current price, using provided price: {e}")
                 # Fallback to provided price with smaller spread
                 if action.lower() == "buy":
-                    stop_loss = round(price * 0.995, 5)
-                    take_profit = round(price * 1.005, 5)
+                    stop_loss = round(price * 0.998, 5)
+                    take_profit = round(price * 1.002, 5)
                 else:
-                    stop_loss = round(price * 1.005, 5)
-                    take_profit = round(price * 0.995, 5)
+                    stop_loss = round(price * 1.002, 5)
+                    take_profit = round(price * 0.998, 5)
         else:
             # Custom format
             required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
