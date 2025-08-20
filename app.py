@@ -22,18 +22,18 @@ app = Flask(__name__)
 # Initialize OANDA client
 oanda = OandaClient()
 
-def calculate_position_size(price, stop_loss, account_balance=1000, risk_percent=1.0):
+def calculate_position_size(price, stop_loss, account_balance=50, risk_percent=0.5):
     try:
         risk_amount = account_balance * (risk_percent / 100)
         price_difference = abs(float(price) - float(stop_loss))
         if price_difference == 0:
-            return 1000
+            return 100
         position_size = round(risk_amount / price_difference)
         # Cap position size for demo/small accounts  
-        return max(1000, min(position_size, 10000))
+        return max(100, min(position_size, 500))
     except Exception as e:
         logging.error(f"Error calculating position size: {e}")
-        return 1000
+        return 100
 
 @app.route("/")
 def home():
