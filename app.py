@@ -61,13 +61,30 @@ def webhook():
             price = float(data.get("close", 1.0850))
             strategy = data.get("strategy", "PineScript")
             
-            # Calculate reasonable stop loss and take profit based on price
-            if action.lower() == "buy":
-                stop_loss = round(price * 0.995, 5)   # 0.5% below entry, 5 decimal places
-                take_profit = round(price * 1.005, 5)  # 0.5% above entry, 5 decimal places
-            else:  # sell
-                stop_loss = round(price * 1.005, 5)   # 0.5% above entry, 5 decimal places
-                take_profit = round(price * 0.995, 5)  # 0.5% below entry, 5 decimal places
+            # Get current market price for proper take profit calculation
+            try:
+                current_price = oanda.get_current_price(oanda._format_instrument(symbol))
+                logging.info(f"Current market price for {symbol}: {current_price}")
+                
+                # Use current market price for calculations
+                if action.lower() == "buy":
+                    stop_loss = round(current_price * 0.995, 5)   # 0.5% below current
+                    take_profit = round(current_price * 1.005, 5)  # 0.5% above current
+                else:  # sell
+                    stop_loss = round(current_price * 1.005, 5)   # 0.5% above current
+                    take_profit = round(current_price * 0.995, 5)  # 0.5% below current
+                    
+                # Use current price for position sizing too
+                price = current_price
+            except Exception as e:
+                logging.warning(f"Could not get current price, using provided price: {e}")
+                # Fallback to provided price with smaller spread
+                if action.lower() == "buy":
+                    stop_loss = round(price * 0.995, 5)
+                    take_profit = round(price * 1.005, 5)
+                else:
+                    stop_loss = round(price * 1.005, 5)
+                    take_profit = round(price * 0.995, 5)
         else:
             # Custom format
             required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
