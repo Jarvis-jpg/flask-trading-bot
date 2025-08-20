@@ -63,11 +63,11 @@ def webhook():
             
             # Calculate reasonable stop loss and take profit based on price
             if action.lower() == "buy":
-                stop_loss = price * 0.995   # 0.5% below entry
-                take_profit = price * 1.005  # 0.5% above entry
+                stop_loss = round(price * 0.995, 5)   # 0.5% below entry, 5 decimal places
+                take_profit = round(price * 1.005, 5)  # 0.5% above entry, 5 decimal places
             else:  # sell
-                stop_loss = price * 1.005   # 0.5% above entry
-                take_profit = price * 0.995  # 0.5% below entry
+                stop_loss = round(price * 1.005, 5)   # 0.5% above entry, 5 decimal places
+                take_profit = round(price * 0.995, 5)  # 0.5% below entry, 5 decimal places
         else:
             # Custom format
             required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
