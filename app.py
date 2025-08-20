@@ -16,7 +16,7 @@ logging.basicConfig(
 app = Flask(__name__)
 
 # Initialize OANDA client
-oanda = OandaClient(environment="live")
+oanda = OandaClient()
 
 def calculate_position_size(price, stop_loss, account_balance=25000, risk_percent=4.0):
     """Calculate position size based on risk parameters"""
