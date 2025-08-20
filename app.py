@@ -53,22 +53,40 @@ def webhook():
 
         logging.info(f"Received webhook data: {json.dumps(data, indent=2)}")
 
-        required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
-        missing_fields = [field for field in required_fields if field not in data]
-        if missing_fields:
-            return jsonify({"error": f"Missing required fields: {missing_fields}"}), 400
+        # Handle both custom format and PineScript default format
+        if "ticker" in data:
+            # PineScript default format
+            symbol = data.get("ticker", "EURUSD")
+            action = data.get("strategy.order.action", "buy")
+            price = data.get("close", 1.0850)
+            strategy = data.get("strategy", "PineScript")
+            stop_loss = data.get("strategy.order.contracts", price * 0.995)  # Default 0.5% stop
+            take_profit = data.get("strategy.order.price", price * 1.005)   # Default 0.5% target
+        else:
+            # Custom format
+            required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                return jsonify({"error": f"Missing required fields: {missing_fields}"}), 400
+            
+            symbol = data["symbol"]
+            action = data["action"]
+            price = data["price"]
+            strategy = data["strategy"]
+            stop_loss = data["stop_loss"]
+            take_profit = data["take_profit"]
 
-        position_size = calculate_position_size(float(data["price"]), float(data["stop_loss"]))
-        units = position_size if data["action"].upper() == "BUY" else -position_size
+        position_size = calculate_position_size(float(price), float(stop_loss))
+        units = position_size if action.upper() == "BUY" else -position_size
 
         trade_data = {
-            "symbol": data["symbol"],
+            "symbol": symbol,
             "units": units,
-            "stop_loss": float(data["stop_loss"]),
-            "take_profit": float(data["take_profit"])
+            "stop_loss": float(stop_loss),
+            "take_profit": float(take_profit)
         }
 
-        logging.info(f"Placing trade: {data['action']} {abs(units)} units of {data['symbol']}")
+        logging.info(f"Placing trade: {action} {abs(units)} units of {symbol}")
 
         try:
             trade_result = oanda.place_trade(trade_data)
