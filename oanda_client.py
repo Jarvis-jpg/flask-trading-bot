@@ -41,12 +41,24 @@ class OandaClient:
         if self.api_key and not self.api_key.startswith('Bearer '):
             api_key_status += " (missing Bearer)"
         logger.info(f"- API Key Status: {api_key_status}")
+    def _format_instrument(self, symbol: str) -> str:
+        """Convert symbol from EURUSD format to EUR_USD format for OANDA"""
+        if '_' in symbol:
+            return symbol  # Already in correct format
+        
+        # Common currency pairs mapping
+        if len(symbol) == 6:
+            return f"{symbol[:3]}_{symbol[3:]}"
+        
+        # Default fallback
+        return symbol
+
         if self.api_key:
             logger.info(f"- API Key Length: {len(self.api_key)} characters")
 
     def place_trade(self, trade_data: Dict) -> Dict:
         try:
-            trading_pair = trade_data.get('pair') or trade_data.get('symbol') or 'EURUSD'
+            trading_pair = self._format_instrument(trade_data.get('pair') or trade_data.get('symbol') or 'EURUSD')
             order_data = {
                 "order": {
                     "type": "MARKET",
