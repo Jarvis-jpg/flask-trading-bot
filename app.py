@@ -68,8 +68,8 @@ def webhook():
                 
                 # Use current market price for calculations - 2:1 risk/reward
                 if action.lower() == "buy":
-                    stop_loss = round(current_price * 0.93, 5)   # 7% below current (risk)
-                    take_profit = round(current_price * 1.14, 5)  # 14% above current (reward)
+                    stop_loss = round(current_price * 0.93, 5)   # EXACTLY 7% below current (FIXED)
+                    take_profit = round(current_price * 1.14, 5)  # EXACTLY 14% above current (FIXED)
                 else:  # sell
                     stop_loss = round(current_price * 1.07, 5)   # 7% above current (risk)
                     take_profit = round(current_price * 0.86, 5)  # 14% below current (reward)
