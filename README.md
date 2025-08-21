@@ -311,3 +311,5 @@ This project is provided for educational and research purposes. Use at your own 
 4. Monitor your progress at `http://localhost:5000`
 
 **Happy Trading! 🚀📈**
+
+# Redeploy with fixed 14% TP / 7% SL - 2025-08-21 05:34:03
