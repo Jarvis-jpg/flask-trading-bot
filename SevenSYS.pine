@@ -133,6 +133,8 @@ plotshape(enter_short, "SHORT", shape.triangledown, location.abovebar, color.red
 plotshape(safety_stop, "SAFETY", shape.xcross, location.absolute, color.yellow, size=size.large)
 
 // ==================== DASHBOARD ====================
+win_rate = strategy.closed_trades > 0 ? (strategy.closed_trades - strategy.losttrades) / strategy.closed_trades * 100 : 0
+
 var table dashboard = table.new(position.top_right, 3, 8, bgcolor=color.new(color.black, 85), border_width=2)
 
 if barstate.islast
@@ -167,7 +169,6 @@ if barstate.islast
     table.cell(dashboard, 1, 6, safety_stop ? "STOP" : "ACTIVE", text_color=safety_stop ? color.red : color.green)
     table.cell(dashboard, 2, 6, safety_stop ? "??" : "?", text_color=safety_stop ? color.red : color.green)
     
-    win_rate = strategy.closed_trades > 0 ? (strategy.closed_trades - strategy.losttrades) / strategy.closed_trades * 100 : 0
     table.cell(dashboard, 0, 7, "Win Rate", text_color=color.white)
     table.cell(dashboard, 1, 7, str.tostring(win_rate, "#.#") + "%", text_color=win_rate > 50 ? color.green : color.red)
     table.cell(dashboard, 2, 7, str.tostring(strategy.closed_trades), text_color=color.white)
