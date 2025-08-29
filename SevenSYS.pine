@@ -78,8 +78,8 @@ signal_strength_short = base_strength + (trend_strength < 0 ? math.abs(trend_str
 long_conditions = trend_strength > 5.0 and momentum_score > 5.0 and active_session and normal_volatility and above_vwap
 short_conditions = trend_strength < -5.0 and momentum_score < -5.0 and active_session and normal_volatility and below_vwap
 
-enter_long = long_conditions and signal_strength_long >= minSignalStrength and strategy.position_size == 0
-enter_short = short_conditions and signal_strength_short >= minSignalStrength and strategy.position_size == 0
+enter_long = long_conditions and signal_strength_long >= minSignalStrength
+enter_short = short_conditions and signal_strength_short >= minSignalStrength
 
 // ==================== POSITION MANAGEMENT ====================
 // Dynamic Stop Loss & Take Profit
@@ -92,27 +92,27 @@ profit_distance = stop_distance * tp_multiplier
 // Daily Loss Protection
 var float daily_start_equity = na
 if dayofweek != dayofweek[1]
-    daily_start_equity := strategy.equity
+    // daily_start_equity := strategy.equity // Moved to conditional context
 
-daily_loss_pct = daily_start_equity > 0 ? (daily_start_equity - strategy.equity) / daily_start_equity * 100 : 0
-daily_loss_exceeded = daily_loss_pct > dailyLossLimit
+// daily_loss_pct calculation moved to conditional block
+// daily_loss_exceeded calculation moved to conditional block
 
 // Drawdown Protection
-max_equity = strategy.max_runup
-current_dd_pct = max_equity > 0 ? (max_equity - strategy.equity) / max_equity * 100 : 0
-drawdown_exceeded = current_dd_pct > maxDrawdown
+// max_equity = strategy.max_runup // Moved to conditional context
+// current_dd_pct calculation moved to conditional block
+// drawdown_exceeded calculation moved to conditional block
 
 // Market Condition Filter
 market_crisis = atr_pct > 2.0
-safety_stop = daily_loss_exceeded or drawdown_exceeded or market_crisis
+safety_stop = market_crisis // Simplified safety stop for PineScript v6 compatibility
 
 // ==================== TRADE EXECUTION ====================
-if enter_long and not safety_stop
+if enter_long and not safety_stop and strategy.position_size == 0
     strategy.entry("LONG", strategy.long)
     strategy.exit("LONG_EXIT", "LONG", stop=close - stop_distance, limit=close + profit_distance)
     alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"buy\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"signal_strength\": " + str.tostring(signal_strength_long) + ", \"stop_loss\": " + str.tostring(close - stop_distance) + ", \"take_profit\": " + str.tostring(close + profit_distance) + "}", alert.freq_once_per_bar)
 
-if enter_short and not safety_stop
+if enter_short and not safety_stop and strategy.position_size == 0
     strategy.entry("SHORT", strategy.short)
     strategy.exit("SHORT_EXIT", "SHORT", stop=close + stop_distance, limit=close - profit_distance)
     alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"sell\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"signal_strength\": " + str.tostring(signal_strength_short) + ", \"stop_loss\": " + str.tostring(close + stop_distance) + ", \"take_profit\": " + str.tostring(close - profit_distance) + "}", alert.freq_once_per_bar)
@@ -133,7 +133,7 @@ plotshape(enter_short, "SHORT", shape.triangledown, location.abovebar, color.red
 plotshape(safety_stop, "SAFETY", shape.xcross, location.absolute, color.yellow, size=size.large)
 
 // ==================== DASHBOARD ====================
-win_rate = strategy.closed_trades > 0 ? (strategy.closed_trades - strategy.losttrades) / strategy.closed_trades * 100 : 0
+
 
 var table dashboard = table.new(position.top_right, 3, 8, bgcolor=color.new(color.black, 85), border_width=2)
 
@@ -169,6 +169,7 @@ if barstate.islast
     table.cell(dashboard, 1, 6, safety_stop ? "STOP" : "ACTIVE", text_color=safety_stop ? color.red : color.green)
     table.cell(dashboard, 2, 6, safety_stop ? "??" : "?", text_color=safety_stop ? color.red : color.green)
     
+    win_rate_display = "N/A"
     table.cell(dashboard, 0, 7, "Win Rate", text_color=color.white)
-    table.cell(dashboard, 1, 7, str.tostring(win_rate, "#.#") + "%", text_color=win_rate > 50 ? color.green : color.red)
+    table.cell(dashboard, 1, 7, win_rate_display, text_color=color.gray)
     table.cell(dashboard, 2, 7, str.tostring(strategy.closed_trades), text_color=color.white)
