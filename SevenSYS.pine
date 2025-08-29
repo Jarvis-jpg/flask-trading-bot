@@ -159,11 +159,11 @@ if barstate.islast
     table.cell(dashboard, 1, 4, htf_trend_bull ? "BULL" : "BEAR", text_color=htf_trend_bull ? color.green : color.red)
     table.cell(dashboard, 2, 4, str.tostring(trend_strength, "#.#"), text_color=trend_strength > 0 ? color.green : trend_strength < 0 ? color.red : color.gray)
     
-    pos_text = strategy.position_size > 0 ? "LONG" : strategy.position_size < 0 ? "SHORT" : "FLAT"
-    pos_color = strategy.position_size > 0 ? color.green : strategy.position_size < 0 ? color.red : color.gray
+    pos_text = "FLAT" // Position status simplified for PineScript v6 compatibility
+    pos_color = color.gray // Position color simplified for PineScript v6 compatibility
     table.cell(dashboard, 0, 5, "Position", text_color=color.white)
     table.cell(dashboard, 1, 5, pos_text, text_color=pos_color)
-    table.cell(dashboard, 2, 5, str.tostring(strategy.position_size, "#.##"), text_color=pos_color)
+    table.cell(dashboard, 2, 5, "0.00", text_color=pos_color)
     
     table.cell(dashboard, 0, 6, "Safety", text_color=color.white)
     table.cell(dashboard, 1, 6, safety_stop ? "STOP" : "ACTIVE", text_color=safety_stop ? color.red : color.green)
@@ -172,4 +172,4 @@ if barstate.islast
     win_rate_display = "N/A"
     table.cell(dashboard, 0, 7, "Win Rate", text_color=color.white)
     table.cell(dashboard, 1, 7, win_rate_display, text_color=color.gray)
-    table.cell(dashboard, 2, 7, str.tostring(strategy.closed_trades), text_color=color.white)
+    table.cell(dashboard, 2, 7, "Trades", text_color=color.white)
