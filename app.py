@@ -66,25 +66,25 @@ def webhook():
                 current_price = oanda.get_current_price(oanda._format_instrument(symbol))
                 logging.info(f"Current market price for {symbol}: {current_price}")
                 
-                # Use current market price for calculations - 2:1 risk/reward
+                # Use current market price for calculations - realistic pip-based levels
                 if action.lower() == "buy":
-                    stop_loss = round(current_price * 0.93, 5)   # EXACTLY 7% below current (FIXED)
-                    take_profit = round(current_price * 1.14, 5)  # EXACTLY 14% above current (FIXED)
+                    stop_loss = round(current_price - 0.0025, 5)   # 25 pips below (realistic stop)
+                    take_profit = round(current_price + 0.0050, 5)  # 50 pips above (2:1 reward)
                 else:  # sell
-                    stop_loss = round(current_price * 1.07, 5)   # 7% above current (risk)
-                    take_profit = round(current_price * 0.86, 5)  # 14% below current (reward)
+                    stop_loss = round(current_price + 0.0025, 5)   # 25 pips above (realistic stop)
+                    take_profit = round(current_price - 0.0050, 5)  # 50 pips below (2:1 reward)
                     
                 # Use current price for position sizing too
                 price = current_price
             except Exception as e:
                 logging.warning(f"Could not get current price, using provided price: {e}")
-                # Fallback to provided price with 2:1 risk/reward
+                # Fallback to provided price with realistic pip-based levels
                 if action.lower() == "buy":
-                    stop_loss = round(price * 0.93, 5)   # 7% below (risk)
-                    take_profit = round(price * 1.14, 5) # 14% above (reward)
+                    stop_loss = round(price - 0.0025, 5)   # 25 pips below (realistic stop)
+                    take_profit = round(price + 0.0050, 5) # 50 pips above (2:1 reward)
                 else:
-                    stop_loss = round(price * 1.07, 5)   # 7% above (risk)
-                    take_profit = round(price * 0.86, 5) # 14% below (reward)
+                    stop_loss = round(price + 0.0025, 5)   # 25 pips above (realistic stop)
+                    take_profit = round(price - 0.0050, 5) # 50 pips below (2:1 reward)
         else:
             # Custom format
             required_fields = ["symbol", "action", "price", "strategy", "stop_loss", "take_profit"]
