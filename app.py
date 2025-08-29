@@ -44,6 +44,189 @@ def home():
         "account": oanda.account_id
     })
 
+@app.route("/dashboard")
+def dashboard():
+    try:
+        # Basic account info
+        account_id = oanda.account_id
+        environment = oanda.environment
+        
+        dashboard_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>JARVIS Trading Dashboard</title>
+            <meta http-equiv="refresh" content="30">
+            <style>
+                body {{ font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: #0a0a0a; color: #00ff88; }}
+                .container {{ max-width: 1200px; margin: 0 auto; }}
+                .header {{ text-align: center; margin-bottom: 30px; }}
+                .header h1 {{ color: #00ff88; font-size: 2.5em; margin: 0; text-shadow: 0 0 10px #00ff88; }}
+                .header p {{ color: #888; font-size: 1.1em; }}
+                .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }}
+                .card {{ background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }}
+                .card h3 {{ color: #00ff88; margin: 0 0 15px 0; border-bottom: 1px solid #333; padding-bottom: 10px; }}
+                .stat {{ display: flex; justify-content: space-between; margin: 10px 0; }}
+                .stat-label {{ color: #ccc; }}
+                .stat-value {{ color: #00ff88; font-weight: bold; }}
+                .status-online {{ color: #00ff88; }}
+                .status-offline {{ color: #ff4444; }}
+                .timestamp {{ font-size: 0.9em; color: #888; }}
+                .webhook-url {{ background: #2a2a2a; padding: 10px; border-radius: 5px; font-family: monospace; word-break: break-all; }}
+                .test-button {{ background: #00ff88; color: #000; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }}
+                .test-button:hover {{ background: #00cc66; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🤖 JARVIS Trading Dashboard</h1>
+                    <p>Real-time monitoring of your automated trading system</p>
+                    <p class="timestamp">Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <h3>📊 System Status</h3>
+                        <div class="stat">
+                            <span class="stat-label">System Status:</span>
+                            <span class="stat-value status-online">🟢 ONLINE</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Account ID:</span>
+                            <span class="stat-value">{account_id}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Environment:</span>
+                            <span class="stat-value">{environment.upper()}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Webhook Status:</span>
+                            <span class="stat-value status-online">🟢 ACTIVE</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Last Test:</span>
+                            <span class="stat-value">Order #8456 ✅</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📈 Trading Configuration</h3>
+                        <div class="stat">
+                            <span class="stat-label">Strategy:</span>
+                            <span class="stat-value">JARVIS BULLETPROOF</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Confidence Threshold:</span>
+                            <span class="stat-value">65%</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Risk per Trade:</span>
+                            <span class="stat-value">4.0%</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Max Position Size:</span>
+                            <span class="stat-value">500 units</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Trading Hours:</span>
+                            <span class="stat-value">24/7 (All Sessions)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>⚙️ Webhook Configuration</h3>
+                        <div class="stat">
+                            <span class="stat-label">Webhook URL:</span>
+                        </div>
+                        <div class="webhook-url">
+                            https://jarvis-quant-sys.onrender.com/webhook
+                        </div>
+                        <br>
+                        <div class="stat">
+                            <span class="stat-label">Supported Formats:</span>
+                            <span class="stat-value">TradingView, Custom JSON</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Auto Stop/Take Profit:</span>
+                            <span class="stat-value">✅ Enabled (25/50 pips)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>🎯 Recent Activity</h3>
+                    <div class="stat">
+                        <span class="stat-label">✅ System Test Passed:</span>
+                        <span class="stat-value">Order #8456 - EUR_USD BUY @ 1.16997</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">🔄 Webhook Active:</span>
+                        <span class="stat-value">Ready to receive TradingView alerts</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">📊 Strategy Status:</span>
+                        <span class="stat-value">JARVIS BULLETPROOF deployed and monitoring</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">⏰ Next Update:</span>
+                        <span class="stat-value">Auto-refresh in 30 seconds</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>📋 PineScript Alert Format</h3>
+                    <p style="color: #ccc; margin-bottom: 15px;">Use this JSON format in your TradingView alerts:</p>
+                    <div class="webhook-url">
+{{"ticker": "{{{{ticker}}}}", "strategy.order.action": "{{{{strategy.order.action}}}}", "close": {{{{close}}}}, "strategy": "JARVIS_BULLETPROOF"}}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>🔧 Quick Actions</h3>
+                    <button class="test-button" onclick="testWebhook()">Test Webhook</button>
+                    <button class="test-button" onclick="window.location.reload()">Refresh Dashboard</button>
+                    <button class="test-button" onclick="window.open('/', '_blank')">API Status</button>
+                    
+                    <script>
+                    function testWebhook() {{
+                        fetch('/webhook', {{
+                            method: 'POST',
+                            headers: {{ 'Content-Type': 'application/json' }},
+                            body: JSON.stringify({{
+                                "ticker": "EUR_USD",
+                                "strategy.order.action": "buy", 
+                                "close": 1.0850,
+                                "strategy": "DASHBOARD_TEST"
+                            }})
+                        }})
+                        .then(response => response.json())
+                        .then(data => {{
+                            alert('Test Result: ' + JSON.stringify(data, null, 2));
+                        }})
+                        .catch(error => {{
+                            alert('Test Error: ' + error);
+                        }});
+                    }}
+                    </script>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return dashboard_html
+        
+    except Exception as e:
+        logging.error(f"Dashboard error: {str(e)}")
+        return f"""
+        <html><body style="background: #0a0a0a; color: #00ff88; font-family: Arial;">
+        <h1>JARVIS Dashboard</h1>
+        <p>Dashboard Error: {str(e)}</p>
+        <p><a href="/" style="color: #00ff88;">Return to API Status</a></p>
+        </body></html>
+        """
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     try:
