@@ -91,8 +91,8 @@ profit_distance = stop_distance * tp_multiplier
 // ==================== SAFETY NETS ====================
 // Daily Loss Protection
 var float daily_start_equity = na
-if dayofweek != dayofweek[1]
-    // daily_start_equity := strategy.equity // Moved to conditional context
+// if dayofweek != dayofweek[1]
+//     daily_start_equity := strategy.equity // Moved to conditional context
 
 // daily_loss_pct calculation moved to conditional block
 // daily_loss_exceeded calculation moved to conditional block
