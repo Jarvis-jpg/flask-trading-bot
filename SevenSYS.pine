@@ -17,7 +17,7 @@ ema50 = ta.ema(close, 50)
 ema200 = ta.ema(close, 200)
 
 // Higher Timeframe Trend
-htf_trend = request.security(syminfo.tickerid, "4h", ta.ema(close, 21))
+htf_trend = request.security(syminfo.tickerid, "240", ta.ema(close, 21))
 
 // Momentum Oscillators
 rsi = ta.rsi(close, 14)
