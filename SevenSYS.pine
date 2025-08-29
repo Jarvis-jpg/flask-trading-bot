@@ -1,0 +1,173 @@
+﻿//@version=5
+strategy("SevenSYS - Military Grade Trading System", shorttitle="SevenSYS", 
+         overlay=true, default_qty_type=strategy.percent_of_equity, 
+         default_qty_value=2, pyramiding=0, calc_on_every_tick=true)
+
+// ==================== RISK MANAGEMENT ====================
+riskPerTrade = input.float(2.0, "Risk Per Trade (%)", minval=0.5, maxval=5.0, step=0.1)
+maxDrawdown = input.float(10.0, "Max Drawdown Stop (%)", minval=5.0, maxval=20.0, step=1.0)
+dailyLossLimit = input.float(5.0, "Daily Loss Limit (%)", minval=2.0, maxval=10.0, step=0.5)
+minSignalStrength = input.float(75.0, "Minimum Signal Strength", minval=60.0, maxval=95.0, step=1.0)
+
+// ==================== TECHNICAL INDICATORS ====================
+// Multi-Timeframe EMAs (Institutional Standard)
+ema8 = ta.ema(close, 8)
+ema21 = ta.ema(close, 21)
+ema50 = ta.ema(close, 50)
+ema200 = ta.ema(close, 200)
+
+// Higher Timeframe Trend
+htf_trend = request.security(syminfo.tickerid, "4h", ta.ema(close, 21))
+
+// Momentum Oscillators
+rsi = ta.rsi(close, 14)
+[macdLine, signalLine, histogram] = ta.macd(close, 12, 26, 9)
+stoch = ta.stoch(close, high, low, 14)
+
+// Volume & Price Action
+volume_ma = ta.sma(volume, 20)
+vwap = ta.vwap
+atr = ta.atr(14)
+
+// ==================== SESSION ANALYSIS ====================
+asian_session = time(timeframe.period, "0000-0800", "Asia/Tokyo")
+london_session = time(timeframe.period, "0800-1600", "Europe/London")
+ny_session = time(timeframe.period, "1300-2200", "America/New_York")
+
+london_ny_overlap = not na(london_session) and not na(ny_session)
+active_session = not na(asian_session) or not na(london_session) or not na(ny_session)
+
+session_score = london_ny_overlap ? 10.0 : not na(ny_session) ? 8.0 : not na(london_session) ? 7.0 : not na(asian_session) ? 5.0 : 0.0
+
+// ==================== TREND ANALYSIS ====================
+// Multi-Timeframe Trend Alignment
+ema_bull_aligned = ema8 > ema21 and ema21 > ema50 and ema50 > ema200
+ema_bear_aligned = ema8 < ema21 and ema21 < ema50 and ema50 < ema200
+htf_trend_bull = close > htf_trend
+htf_trend_bear = close < htf_trend
+
+trend_strength = ema_bull_aligned and htf_trend_bull ? 10.0 : ema_bear_aligned and htf_trend_bear ? -10.0 : ema8 > ema21 and htf_trend_bull ? 7.0 : ema8 < ema21 and htf_trend_bear ? -7.0 : 0.0
+
+// ==================== MOMENTUM ANALYSIS ====================
+rsi_bullish = rsi > 45 and rsi < 75
+rsi_bearish = rsi < 55 and rsi > 25
+macd_bullish = macdLine > signalLine and histogram > histogram[1]
+macd_bearish = macdLine < signalLine and histogram < histogram[1]
+stoch_neutral = stoch > 20 and stoch < 80
+
+momentum_score = rsi_bullish and macd_bullish and stoch_neutral ? 10.0 : rsi_bearish and macd_bearish and stoch_neutral ? -10.0 : rsi_bullish and macd_bullish ? 7.0 : rsi_bearish and macd_bearish ? -7.0 : 0.0
+
+// ==================== VOLUME & PRICE ACTION ====================
+volume_bullish = volume > volume_ma and close > open
+volume_bearish = volume > volume_ma and close < open
+above_vwap = close > vwap
+below_vwap = close < vwap
+
+pa_score = volume_bullish and above_vwap ? 8.0 : volume_bearish and below_vwap ? -8.0 : volume > volume_ma ? 5.0 : 0.0
+
+// ==================== VOLATILITY FILTER ====================
+atr_pct = atr / close * 100
+normal_volatility = atr_pct > 0.03 and atr_pct < 1.5
+
+// ==================== SIGNAL STRENGTH CALCULATION ====================
+base_strength = 50.0
+signal_strength_long = base_strength + (trend_strength > 0 ? trend_strength * 2.0 : 0) + (momentum_score > 0 ? momentum_score * 1.5 : 0) + session_score + (pa_score > 0 ? pa_score * 1.5 : 0)
+signal_strength_short = base_strength + (trend_strength < 0 ? math.abs(trend_strength) * 2.0 : 0) + (momentum_score < 0 ? math.abs(momentum_score) * 1.5 : 0) + session_score + (pa_score < 0 ? math.abs(pa_score) * 1.5 : 0)
+
+// ==================== ENTRY CONDITIONS ====================
+long_conditions = trend_strength > 5.0 and momentum_score > 5.0 and active_session and normal_volatility and above_vwap
+short_conditions = trend_strength < -5.0 and momentum_score < -5.0 and active_session and normal_volatility and below_vwap
+
+enter_long = long_conditions and signal_strength_long >= minSignalStrength and strategy.position_size == 0
+enter_short = short_conditions and signal_strength_short >= minSignalStrength and strategy.position_size == 0
+
+// ==================== POSITION MANAGEMENT ====================
+// Dynamic Stop Loss & Take Profit
+atr_multiplier = atr_pct > 0.8 ? 1.2 : atr_pct > 0.4 ? 1.5 : 2.0
+stop_distance = atr * atr_multiplier
+tp_multiplier = math.abs(trend_strength) > 8 ? 3.5 : math.abs(trend_strength) > 5 ? 2.8 : 2.0
+profit_distance = stop_distance * tp_multiplier
+
+// ==================== SAFETY NETS ====================
+// Daily Loss Protection
+var float daily_start_equity = na
+if dayofweek != dayofweek[1]
+    daily_start_equity := strategy.equity
+
+daily_loss_pct = daily_start_equity > 0 ? (daily_start_equity - strategy.equity) / daily_start_equity * 100 : 0
+daily_loss_exceeded = daily_loss_pct > dailyLossLimit
+
+// Drawdown Protection
+max_equity = strategy.max_runup
+current_dd_pct = max_equity > 0 ? (max_equity - strategy.equity) / max_equity * 100 : 0
+drawdown_exceeded = current_dd_pct > maxDrawdown
+
+// Market Condition Filter
+market_crisis = atr_pct > 2.0
+safety_stop = daily_loss_exceeded or drawdown_exceeded or market_crisis
+
+// ==================== TRADE EXECUTION ====================
+if enter_long and not safety_stop
+    strategy.entry("LONG", strategy.long)
+    strategy.exit("LONG_EXIT", "LONG", stop=close - stop_distance, limit=close + profit_distance)
+    alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"buy\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"signal_strength\": " + str.tostring(signal_strength_long) + ", \"stop_loss\": " + str.tostring(close - stop_distance) + ", \"take_profit\": " + str.tostring(close + profit_distance) + "}", alert.freq_once_per_bar)
+
+if enter_short and not safety_stop
+    strategy.entry("SHORT", strategy.short)
+    strategy.exit("SHORT_EXIT", "SHORT", stop=close + stop_distance, limit=close - profit_distance)
+    alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"sell\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"signal_strength\": " + str.tostring(signal_strength_short) + ", \"stop_loss\": " + str.tostring(close + stop_distance) + ", \"take_profit\": " + str.tostring(close - profit_distance) + "}", alert.freq_once_per_bar)
+
+// Emergency Exit
+if safety_stop and strategy.position_size != 0
+    strategy.close_all(comment="SAFETY_STOP")
+    alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"close_all\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"reason\": \"safety_stop\"}", alert.freq_once_per_bar)
+
+// ==================== VISUAL INDICATORS ====================
+plot(ema21, "EMA 21", color=color.orange, linewidth=2)
+plot(ema50, "EMA 50", color=color.blue, linewidth=2)
+plot(ema200, "EMA 200", color=color.red, linewidth=3)
+plot(vwap, "VWAP", color=color.purple, linewidth=2)
+
+plotshape(enter_long, "LONG", shape.triangleup, location.belowbar, color.green, size=size.normal)
+plotshape(enter_short, "SHORT", shape.triangledown, location.abovebar, color.red, size=size.normal)
+plotshape(safety_stop, "SAFETY", shape.xcross, location.absolute, color.yellow, size=size.large)
+
+// ==================== DASHBOARD ====================
+var table dashboard = table.new(position.top_right, 3, 8, bgcolor=color.new(color.black, 85), border_width=2)
+
+if barstate.islast
+    table.cell(dashboard, 0, 0, "SevenSYS", text_color=color.white, text_size=size.large, bgcolor=color.new(color.blue, 70))
+    table.cell(dashboard, 1, 0, "MILITARY", text_color=color.white, text_size=size.large, bgcolor=color.new(color.blue, 70))
+    table.cell(dashboard, 2, 0, "GRADE", text_color=color.white, text_size=size.large, bgcolor=color.new(color.blue, 70))
+    
+    table.cell(dashboard, 0, 1, "LONG Signal", text_color=color.white)
+    table.cell(dashboard, 1, 1, str.tostring(signal_strength_long, "#.#"), text_color=signal_strength_long >= minSignalStrength ? color.green : color.gray)
+    table.cell(dashboard, 2, 1, signal_strength_long >= minSignalStrength ? "READY" : "WAIT", text_color=signal_strength_long >= minSignalStrength ? color.green : color.gray)
+    
+    table.cell(dashboard, 0, 2, "SHORT Signal", text_color=color.white)
+    table.cell(dashboard, 1, 2, str.tostring(signal_strength_short, "#.#"), text_color=signal_strength_short >= minSignalStrength ? color.red : color.gray)
+    table.cell(dashboard, 2, 2, signal_strength_short >= minSignalStrength ? "READY" : "WAIT", text_color=signal_strength_short >= minSignalStrength ? color.red : color.gray)
+    
+    current_session = london_ny_overlap ? "LN-NY" : not na(ny_session) ? "NY" : not na(london_session) ? "LONDON" : not na(asian_session) ? "ASIAN" : "CLOSED"
+    table.cell(dashboard, 0, 3, "Session", text_color=color.white)
+    table.cell(dashboard, 1, 3, current_session, text_color=active_session ? color.green : color.red)
+    table.cell(dashboard, 2, 3, str.tostring(session_score, "#.#"), text_color=session_score > 5 ? color.green : color.gray)
+    
+    table.cell(dashboard, 0, 4, "HTF Trend", text_color=color.white)
+    table.cell(dashboard, 1, 4, htf_trend_bull ? "BULL" : "BEAR", text_color=htf_trend_bull ? color.green : color.red)
+    table.cell(dashboard, 2, 4, str.tostring(trend_strength, "#.#"), text_color=trend_strength > 0 ? color.green : trend_strength < 0 ? color.red : color.gray)
+    
+    pos_text = strategy.position_size > 0 ? "LONG" : strategy.position_size < 0 ? "SHORT" : "FLAT"
+    pos_color = strategy.position_size > 0 ? color.green : strategy.position_size < 0 ? color.red : color.gray
+    table.cell(dashboard, 0, 5, "Position", text_color=color.white)
+    table.cell(dashboard, 1, 5, pos_text, text_color=pos_color)
+    table.cell(dashboard, 2, 5, str.tostring(strategy.position_size, "#.##"), text_color=pos_color)
+    
+    table.cell(dashboard, 0, 6, "Safety", text_color=color.white)
+    table.cell(dashboard, 1, 6, safety_stop ? "STOP" : "ACTIVE", text_color=safety_stop ? color.red : color.green)
+    table.cell(dashboard, 2, 6, safety_stop ? "⚠️" : "✅", text_color=safety_stop ? color.red : color.green)
+    
+    win_rate = strategy.closed_trades > 0 ? strategy.wintrades / strategy.closed_trades * 100 : 0
+    table.cell(dashboard, 0, 7, "Win Rate", text_color=color.white)
+    table.cell(dashboard, 1, 7, str.tostring(win_rate, "#.#") + "%", text_color=win_rate > 50 ? color.green : color.red)
+    table.cell(dashboard, 2, 7, str.tostring(strategy.closed_trades), text_color=color.white)

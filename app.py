@@ -39,7 +39,7 @@ def calculate_position_size(price, stop_loss, account_balance=50, risk_percent=4
 def home():
     return jsonify({
         "status": "online",
-        "service": "JARVIS Trading System",
+        "service": "SevenSYS Military Trading System",
         "environment": oanda.environment,
         "account": oanda.account_id
     })
@@ -55,7 +55,7 @@ def dashboard():
         <!DOCTYPE html>
         <html>
         <head>
-            <title>JARVIS Trading Dashboard</title>
+            <title>SevenSYS Military Trading Dashboard</title>
             <meta http-equiv="refresh" content="30">
             <style>
                 body {{ font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: #0a0a0a; color: #00ff88; }}
@@ -80,7 +80,7 @@ def dashboard():
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🤖 JARVIS Trading Dashboard</h1>
+                    <h1>🎖️ SevenSYS Military Trading Dashboard</h1>
                     <p>Real-time monitoring of your automated trading system</p>
                     <p class="timestamp">Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
                 </div>
@@ -114,7 +114,7 @@ def dashboard():
                         <h3>📈 Trading Configuration</h3>
                         <div class="stat">
                             <span class="stat-label">Strategy:</span>
-                            <span class="stat-value">JARVIS BULLETPROOF</span>
+                            <span class="stat-value">SevenSYS MILITARY GRADE</span>
                         </div>
                         <div class="stat">
                             <span class="stat-label">Confidence Threshold:</span>
@@ -166,7 +166,7 @@ def dashboard():
                     </div>
                     <div class="stat">
                         <span class="stat-label">📊 Strategy Status:</span>
-                        <span class="stat-value">JARVIS BULLETPROOF deployed and monitoring</span>
+                        <span class="stat-value">SevenSYS MILITARY GRADE deployed and monitoring</span>
                     </div>
                     <div class="stat">
                         <span class="stat-label">⏰ Next Update:</span>
@@ -178,7 +178,7 @@ def dashboard():
                     <h3>📋 PineScript Alert Format</h3>
                     <p style="color: #ccc; margin-bottom: 15px;">Use this JSON format in your TradingView alerts:</p>
                     <div class="webhook-url">
-{{"ticker": "{{{{ticker}}}}", "strategy.order.action": "{{{{strategy.order.action}}}}", "close": {{{{close}}}}, "strategy": "JARVIS_BULLETPROOF"}}
+{{"ticker": "{{{{ticker}}}}", "strategy.order.action": "{{{{strategy.order.action}}}}", "close": {{{{close}}}}, "strategy": "SevenSYS"}}
                     </div>
                 </div>
                 
@@ -221,7 +221,7 @@ def dashboard():
         logging.error(f"Dashboard error: {str(e)}")
         return f"""
         <html><body style="background: #0a0a0a; color: #00ff88; font-family: Arial;">
-        <h1>JARVIS Dashboard</h1>
+        <h1>SevenSYS Dashboard</h1>
         <p>Dashboard Error: {str(e)}</p>
         <p><a href="/" style="color: #00ff88;">Return to API Status</a></p>
         </body></html>
@@ -320,7 +320,7 @@ if __name__ == "__main__":
     print(f"  - Mode: {oanda.environment.upper()}")
     print(f"  - API URL: {oanda.api_url}")
 
-    print("\nStarting Jarvis Trading Bot...")
+    print("\nStarting SevenSYS Military Trading Bot...")
     print("Routes configured:")
     print("  - GET  /")
     print("  - POST /webhook")
