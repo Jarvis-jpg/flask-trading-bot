@@ -7,7 +7,7 @@ strategy("SevenSYS - Military Grade Trading System", shorttitle="SevenSYS",
 riskPerTrade = input.float(2.0, "Risk Per Trade (%)", minval=0.5, maxval=5.0, step=0.1)
 maxDrawdown = input.float(10.0, "Max Drawdown Stop (%)", minval=5.0, maxval=20.0, step=1.0)
 dailyLossLimit = input.float(5.0, "Daily Loss Limit (%)", minval=2.0, maxval=10.0, step=0.5)
-minSignalStrength = input.float(75.0, "Minimum Signal Strength", minval=60.0, maxval=95.0, step=1.0)
+minSignalStrength = input.float(55.0, "Minimum Signal Strength", minval=50.0, maxval=80.0, step=1.0)
 
 // ==================== TECHNICAL INDICATORS ====================
 // Multi-Timeframe EMAs (Institutional Standard)
@@ -49,8 +49,8 @@ htf_trend_bear = close < htf_trend
 trend_strength = ema_bull_aligned and htf_trend_bull ? 10.0 : ema_bear_aligned and htf_trend_bear ? -10.0 : ema8 > ema21 and htf_trend_bull ? 7.0 : ema8 < ema21 and htf_trend_bear ? -7.0 : 0.0
 
 // ==================== MOMENTUM ANALYSIS ====================
-rsi_bullish = rsi > 45 and rsi < 75
-rsi_bearish = rsi < 55 and rsi > 25
+rsi_bullish = rsi > 40 and rsi < 80
+rsi_bearish = rsi < 60 and rsi > 20
 macd_bullish = macdLine > signalLine and histogram > histogram[1]
 macd_bearish = macdLine < signalLine and histogram < histogram[1]
 stoch_neutral = stoch > 20 and stoch < 80
@@ -67,7 +67,7 @@ pa_score = volume_bullish and above_vwap ? 8.0 : volume_bearish and below_vwap ?
 
 // ==================== VOLATILITY FILTER ====================
 atr_pct = atr / close * 100
-normal_volatility = atr_pct > 0.03 and atr_pct < 1.5
+normal_volatility = atr_pct > 0.01 and atr_pct < 2.5
 
 // ==================== SIGNAL STRENGTH CALCULATION ====================
 base_strength = 50.0
@@ -75,11 +75,18 @@ signal_strength_long = base_strength + (trend_strength > 0 ? trend_strength * 2.
 signal_strength_short = base_strength + (trend_strength < 0 ? math.abs(trend_strength) * 2.0 : 0) + (momentum_score < 0 ? math.abs(momentum_score) * 1.5 : 0) + session_score + (pa_score < 0 ? math.abs(pa_score) * 1.5 : 0)
 
 // ==================== ENTRY CONDITIONS ====================
-long_conditions = trend_strength > 5.0 and momentum_score > 5.0 and active_session and normal_volatility and above_vwap
-short_conditions = trend_strength < -5.0 and momentum_score < -5.0 and active_session and normal_volatility and below_vwap
+long_conditions = trend_strength > 3.0 and momentum_score > 3.0 and active_session and normal_volatility and above_vwap
+short_conditions = trend_strength < -3.0 and momentum_score < -3.0 and active_session and normal_volatility and below_vwap
 
 enter_long = long_conditions and signal_strength_long >= minSignalStrength
-enter_short = short_conditions and signal_strength_short >= minSignalStrength
+
+// Simplified backup conditions for more trades
+simple_long = ema8 > ema21 and close > vwap and rsi > 45 and active_session
+simple_short = ema8 < ema21 and close < vwap and rsi < 55 and active_session
+
+// Use backup conditions if main conditions are too strict
+enter_long := enter_long or (simple_long and signal_strength_long >= 50.0)
+enter_short := enter_short or (simple_short and signal_strength_short >= 50.0)
 
 // ==================== POSITION MANAGEMENT ====================
 // Dynamic Stop Loss & Take Profit
