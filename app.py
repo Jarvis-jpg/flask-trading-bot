@@ -79,14 +79,20 @@ def webhook():
         position_size = calculate_position_size(price, stop_loss, account_balance=45.0, risk_percent=2.0)
         units = position_size if action.lower() == "buy" else -position_size
         
+        # Convert symbol to OANDA format (EURUSD -> EUR_USD)
+        oanda_symbol = symbol
+        if len(symbol) == 6 and '_' not in symbol:
+            # Convert EURUSD to EUR_USD
+            oanda_symbol = symbol[:3] + '_' + symbol[3:]
+        
         trade_data = {
-            "symbol": symbol,
+            "symbol": oanda_symbol,
             "units": units,
             "stop_loss": round(float(stop_loss), 5),  # Round to 5 decimal places for OANDA
             "take_profit": round(float(take_profit), 5)  # Round to 5 decimal places for OANDA
         }
 
-        logging.info(f"Placing trade: {action} {abs(units)} units of {symbol}")
+        logging.info(f"Placing trade: {action} {abs(units)} units of {symbol} -> {oanda_symbol}")
         
         trade_result = oanda.place_trade(trade_data)
         
