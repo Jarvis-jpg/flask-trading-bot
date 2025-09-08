@@ -62,6 +62,19 @@ def webhook():
             missing = [k for k, v in {"symbol": symbol, "action": action, "price": price, "stop_loss": stop_loss, "take_profit": take_profit}.items() if not v]
             return jsonify({"error": f"Missing required fields: {missing}"}), 400
 
+        # Validate stop loss direction
+        price_float = float(price)
+        stop_loss_float = float(stop_loss)
+        
+        if action.lower() == "buy" and stop_loss_float >= price_float:
+            return jsonify({
+                "error": f"Invalid stop loss for BUY: SL {stop_loss_float} must be below entry {price_float}"
+            }), 400
+        elif action.lower() == "sell" and stop_loss_float <= price_float:
+            return jsonify({
+                "error": f"Invalid stop loss for SELL: SL {stop_loss_float} must be above entry {price_float}"
+            }), 400
+
         # Calculate position size (conservative for small account)
         position_size = calculate_position_size(price, stop_loss, account_balance=45.0, risk_percent=2.0)
         units = position_size if action.lower() == "buy" else -position_size
@@ -69,8 +82,8 @@ def webhook():
         trade_data = {
             "symbol": symbol,
             "units": units,
-            "stop_loss": float(stop_loss),
-            "take_profit": float(take_profit)
+            "stop_loss": round(float(stop_loss), 5),  # Round to 5 decimal places for OANDA
+            "take_profit": round(float(take_profit), 5)  # Round to 5 decimal places for OANDA
         }
 
         logging.info(f"Placing trade: {action} {abs(units)} units of {symbol}")
