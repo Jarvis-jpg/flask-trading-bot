@@ -138,6 +138,7 @@ class OandaClient:
         """Add stop loss and take profit to an existing trade using SevenSYS distance calculations"""
         try:
             import oandapyV20.endpoints.trades as trades
+            import oandapyV20.endpoints.orders as orders
             
             # Get the actual fill price
             trade_details = trades.TradeDetails(accountID=self.account_id, tradeID=trade_id)
@@ -170,27 +171,31 @@ class OandaClient:
             
             # Add Stop Loss
             sl_data = {
-                "stopLoss": {
+                "order": {
+                    "type": "STOP_LOSS",
+                    "tradeID": str(trade_id),
                     "price": str(new_stop_loss),
                     "timeInForce": "GTC"
                 }
             }
             
-            r_sl = trades.TradeUpdate(accountID=self.account_id, tradeID=trade_id, data=sl_data)
-            self.client.request(r_sl)
-            logger.info(f"Stop Loss added: {new_stop_loss}")
+            sl_request = orders.OrderCreate(accountID=self.account_id, data=sl_data)
+            sl_response = self.client.request(sl_request)
+            logger.info(f"Stop Loss order created: {sl_response}")
             
             # Add Take Profit
             tp_data = {
-                "takeProfit": {
+                "order": {
+                    "type": "TAKE_PROFIT",
+                    "tradeID": str(trade_id),
                     "price": str(new_take_profit),
                     "timeInForce": "GTC"
                 }
             }
             
-            r_tp = trades.TradeUpdate(accountID=self.account_id, tradeID=trade_id, data=tp_data)
-            self.client.request(r_tp)
-            logger.info(f"Take Profit added: {new_take_profit}")
+            tp_request = orders.OrderCreate(accountID=self.account_id, data=tp_data)
+            tp_response = self.client.request(tp_request)
+            logger.info(f"Take Profit order created: {tp_response}")
             
             return True
             

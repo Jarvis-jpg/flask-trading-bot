@@ -51,12 +51,23 @@ def webhook():
             
         logging.info(f"Received webhook data: {json.dumps(data, indent=2)}")
 
-        # Extract data from TradingView webhook format
-        symbol = data.get("ticker") or data.get("symbol", "")
-        action = data.get("strategy.order.action") or data.get("action", "")
-        price = data.get("close") or data.get("price", 0)
-        stop_loss = data.get("stop_loss", 0)
-        take_profit = data.get("take_profit", 0)
+        # Handle both JARVIS Live format and TradingView SevenSYS format
+        if 'pair' in data and 'action' in data and 'entry' in data:
+            # JARVIS Live Pine Script format
+            symbol = data.get("pair", "").upper()
+            action = data.get("action", "").lower()  
+            price = data.get("entry", 0)
+            stop_loss = data.get("stop_loss", 0)
+            take_profit = data.get("take_profit", 0)
+            logging.info(f"JARVIS Live format detected: {symbol} {action}")
+        else:
+            # TradingView SevenSYS format (fallback)
+            symbol = data.get("ticker") or data.get("symbol", "")
+            action = data.get("strategy.order.action") or data.get("action", "")
+            price = data.get("close") or data.get("price", 0)
+            stop_loss = data.get("stop_loss", 0)
+            take_profit = data.get("take_profit", 0)
+            logging.info(f"TradingView SevenSYS format detected: {symbol} {action}")
         
         if not all([symbol, action, price, stop_loss, take_profit]):
             missing = [k for k, v in {"symbol": symbol, "action": action, "price": price, "stop_loss": stop_loss, "take_profit": take_profit}.items() if not v]
