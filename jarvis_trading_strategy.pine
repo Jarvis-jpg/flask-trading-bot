@@ -1,0 +1,331 @@
+//@version=6
+strategy("JARVIS Trading Bot Strategy", 
+         shorttitle="JARVIS", 
+         overlay=true, 
+         default_qty_type=strategy.percent_of_equity, 
+         default_qty_value=5,
+         currency=currency.USD,
+         initial_capital=200,
+         commission_type=strategy.commission.percent,
+         commission_value=0.1)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🎯 JARVIS TRADING STRATEGY - HIGH PRECISION FOREX BOT
+// Target: 70% Win Rate | 2:1 Risk-Reward | 5% Risk Per Trade
+// Optimized for: EUR/USD, GBP/USD, USD/JPY, USD/CHF, AUD/USD, USD/CAD, NZD/USD, EUR/GBP
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Input Parameters
+var g_general = "═══════ GENERAL SETTINGS ═══════"
+webhook_url = input.string("http://localhost:5000/webhook", "Webhook URL", group=g_general)
+risk_percent = input.float(5.0, "Risk Per Trade (%)", minval=1.0, maxval=10.0, step=0.5, group=g_general)
+risk_reward_ratio = input.float(2.0, "Risk:Reward Ratio", minval=1.5, maxval=5.0, step=0.1, group=g_general)
+
+var g_indicators = "═══════ TECHNICAL INDICATORS ═══════"
+// Moving Averages
+ema_fast = input.int(12, "Fast EMA Period", minval=5, maxval=50, group=g_indicators)
+ema_slow = input.int(26, "Slow EMA Period", minval=20, maxval=100, group=g_indicators)
+sma_trend = input.int(50, "Trend SMA Period", minval=20, maxval=200, group=g_indicators)
+
+// RSI Settings
+rsi_period = input.int(14, "RSI Period", minval=5, maxval=30, group=g_indicators)
+rsi_oversold = input.int(30, "RSI Oversold Level", minval=20, maxval=40, group=g_indicators)
+rsi_overbought = input.int(70, "RSI Overbought Level", minval=60, maxval=80, group=g_indicators)
+
+// MACD Settings
+macd_fast = input.int(12, "MACD Fast Length", minval=5, maxval=20, group=g_indicators)
+macd_slow = input.int(26, "MACD Slow Length", minval=20, maxval=50, group=g_indicators)
+macd_signal = input.int(9, "MACD Signal Length", minval=5, maxval=15, group=g_indicators)
+
+// Bollinger Bands
+bb_period = input.int(20, "Bollinger Bands Period", minval=10, maxval=50, group=g_indicators)
+bb_std = input.float(2.0, "Bollinger Bands Std Dev", minval=1.5, maxval=3.0, step=0.1, group=g_indicators)
+
+var g_filters = "═══════ TRADE FILTERS ═══════"
+use_volume_filter = input.bool(false, "Use Volume Filter", group=g_filters)
+volume_threshold = input.float(1.2, "Volume Threshold Multiplier", minval=1.0, maxval=3.0, step=0.1, group=g_filters)
+use_session_filter = input.bool(false, "Trade Only During Active Sessions", group=g_filters)
+min_confidence = input.float(0.65, "Minimum Confidence Score", minval=0.6, maxval=0.95, step=0.05, group=g_filters)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📊 TECHNICAL INDICATORS CALCULATION
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Moving Averages
+ema_12 = ta.ema(close, ema_fast)
+ema_26 = ta.ema(close, ema_slow)
+sma_50 = ta.sma(close, sma_trend)
+
+// RSI
+rsi = ta.rsi(close, rsi_period)
+
+// MACD
+[macd_line, signal_line, macd_histogram] = ta.macd(close, macd_fast, macd_slow, macd_signal)
+
+// Bollinger Bands
+[bb_upper, bb_middle, bb_lower] = ta.bb(close, bb_period, bb_std)
+
+// ATR for volatility
+atr = ta.atr(14)
+
+// Volume Analysis
+volume_ma = ta.sma(volume, 20)
+volume_surge = volume > volume_ma * volume_threshold
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🕐 SESSION FILTERS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// London Session: 08:00-17:00 GMT
+london_session = hour >= 8 and hour <= 17
+
+// New York Session: 13:00-22:00 GMT  
+ny_session = hour >= 13 and hour <= 22
+
+// Tokyo Session: 00:00-09:00 GMT
+tokyo_session = hour >= 0 and hour <= 9
+
+// Active trading sessions
+active_session = london_session or ny_session or (tokyo_session and (syminfo.ticker == "USDJPY" or syminfo.ticker == "AUDUSD"))
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🎯 SIGNAL GENERATION - OPTIMIZED FOR 70% WIN RATE
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Trend Analysis
+strong_uptrend = ema_12 > ema_26 and ema_26 > sma_50 and close > sma_50
+strong_downtrend = ema_12 < ema_26 and ema_26 < sma_50 and close < sma_50
+sideways_market = math.abs(ema_12 - ema_26) < atr * 0.5
+
+// Momentum Signals
+bullish_momentum = macd_line > signal_line and macd_histogram > macd_histogram[1]
+bearish_momentum = macd_line < signal_line and macd_histogram < macd_histogram[1]
+
+// RSI Conditions (avoiding extremes for higher win rate)
+rsi_bullish = rsi > 40 and rsi < 65 and rsi > rsi[1]
+rsi_bearish = rsi < 60 and rsi > 35 and rsi < rsi[1]
+
+// Bollinger Band Mean Reversion (High probability setups)
+bb_squeeze = (bb_upper - bb_lower) < atr * 2
+bb_expansion = (bb_upper - bb_lower) > atr * 3
+price_near_middle = math.abs(close - bb_middle) < atr * 0.5
+
+// Volume Confirmation
+volume_confirmed = not use_volume_filter or volume_surge
+
+// Session Filter
+session_ok = not use_session_filter or active_session
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📈 BUY SIGNAL LOGIC - Optimized for High Win Rate
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Primary Buy Conditions
+buy_trend_ok = strong_uptrend or (not sideways_market and ema_12 > ema_26)
+buy_momentum_ok = bullish_momentum and rsi_bullish
+buy_price_action = close > open and close > close[1]
+buy_bb_condition = close > bb_middle and (close < bb_upper or bb_expansion)
+
+// Advanced Buy Filters for Higher Accuracy
+buy_pullback = close[2] < ema_12[2] and close[1] > ema_12[1] and close > ema_12  // Pullback to EMA
+buy_breakout = close > ta.highest(high, 5)[1] and volume_surge  // Breakout with volume
+buy_support_bounce = low <= bb_lower[1] and close > bb_lower  // Bounce off support
+
+// Combined Buy Signal
+buy_signal = buy_trend_ok and buy_momentum_ok and buy_price_action and buy_bb_condition and 
+             (buy_pullback or buy_breakout or buy_support_bounce) and 
+             volume_confirmed and session_ok
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📉 SELL SIGNAL LOGIC - Optimized for High Win Rate
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Primary Sell Conditions
+sell_trend_ok = strong_downtrend or (not sideways_market and ema_12 < ema_26)
+sell_momentum_ok = bearish_momentum and rsi_bearish
+sell_price_action = close < open and close < close[1]
+sell_bb_condition = close < bb_middle and (close > bb_lower or bb_expansion)
+
+// Advanced Sell Filters for Higher Accuracy
+sell_pullback = close[2] > ema_12[2] and close[1] < ema_12[1] and close < ema_12  // Pullback to EMA
+sell_breakdown = close < ta.lowest(low, 5)[1] and volume_surge  // Breakdown with volume
+sell_resistance_reject = high >= bb_upper[1] and close < bb_upper  // Rejection at resistance
+
+// Combined Sell Signal
+sell_signal = sell_trend_ok and sell_momentum_ok and sell_price_action and sell_bb_condition and 
+              (sell_pullback or sell_breakdown or sell_resistance_reject) and 
+              volume_confirmed and session_ok
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🎲 CONFIDENCE SCORING SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+calculate_confidence(is_buy) =>
+    confidence = 0.0
+    
+    // Base confidence from trend strength
+    if is_buy
+        confidence += strong_uptrend ? 0.25 : (ema_12 > ema_26 ? 0.15 : 0.0)
+        confidence += rsi > 45 and rsi < 65 ? 0.15 : 0.0
+        confidence += macd_line > signal_line ? 0.15 : 0.0
+        confidence += close > bb_middle ? 0.10 : 0.0
+        confidence += volume_surge ? 0.10 : 0.0
+        confidence += active_session ? 0.10 : 0.0
+        confidence += buy_pullback ? 0.05 : 0.0
+        confidence += buy_breakout ? 0.10 : 0.0
+    else
+        confidence += strong_downtrend ? 0.25 : (ema_12 < ema_26 ? 0.15 : 0.0)
+        confidence += rsi < 55 and rsi > 35 ? 0.15 : 0.0
+        confidence += macd_line < signal_line ? 0.15 : 0.0
+        confidence += close < bb_middle ? 0.10 : 0.0
+        confidence += volume_surge ? 0.10 : 0.0
+        confidence += active_session ? 0.10 : 0.0
+        confidence += sell_pullback ? 0.05 : 0.0
+        confidence += sell_breakdown ? 0.10 : 0.0
+    
+    confidence
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 💰 POSITION SIZING & RISK MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Calculate position size based on risk percentage
+calculate_position_size(entry_price, stop_loss_price) =>
+    risk_amount = strategy.equity * (risk_percent / 100)
+    price_diff = math.abs(entry_price - stop_loss_price)
+    position_size = risk_amount / price_diff
+    position_size
+
+// Dynamic stop loss and take profit calculation
+calculate_levels(is_buy, entry_price) =>
+    atr_multiplier = 1.5
+    stop_distance = atr * atr_multiplier
+    
+    var float stop_loss = na
+    var float take_profit = na
+    
+    if is_buy
+        stop_loss := entry_price - stop_distance
+        take_profit := entry_price + (stop_distance * risk_reward_ratio)
+    else
+        stop_loss := entry_price + stop_distance
+        take_profit := entry_price - (stop_distance * risk_reward_ratio)
+    
+    [stop_loss, take_profit]
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 🚀 TRADE EXECUTION & WEBHOOK ALERTS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Execute trades with confidence filter
+if buy_signal
+    buy_confidence = calculate_confidence(true)
+    if buy_confidence >= min_confidence
+        [sl, tp] = calculate_levels(true, close)
+        pos_size = calculate_position_size(close, sl)
+        
+        // Create webhook alert message
+        alert_message = '{"pair":"' + syminfo.ticker + 
+                       '","action":"buy"' + 
+                       ',"entry":' + str.tostring(close) + 
+                       ',"stop_loss":' + str.tostring(sl) + 
+                       ',"take_profit":' + str.tostring(tp) + 
+                       ',"confidence":' + str.tostring(buy_confidence) + 
+                       ',"strategy":"JARVIS_MultiSignal"' + 
+                       ',"risk_reward":' + str.tostring(risk_reward_ratio) + 
+                       ',"position_size":' + str.tostring(pos_size) + 
+                       ',"timestamp":"' + str.tostring(time) + '"}'
+        
+        strategy.entry("JARVIS_LONG", strategy.long, qty=pos_size, 
+                      alert_message=alert_message)
+        strategy.exit("JARVIS_LONG_EXIT", "JARVIS_LONG", 
+                     stop=sl, limit=tp, 
+                     alert_message='{"action":"close","pair":"' + syminfo.ticker + '","type":"long_exit"}')
+
+if sell_signal
+    sell_confidence = calculate_confidence(false)
+    if sell_confidence >= min_confidence
+        [sl, tp] = calculate_levels(false, close)
+        pos_size = calculate_position_size(close, sl)
+        
+        // Create webhook alert message
+        alert_message = '{"pair":"' + syminfo.ticker + 
+                       '","action":"sell"' + 
+                       ',"entry":' + str.tostring(close) + 
+                       ',"stop_loss":' + str.tostring(sl) + 
+                       ',"take_profit":' + str.tostring(tp) + 
+                       ',"confidence":' + str.tostring(sell_confidence) + 
+                       ',"strategy":"JARVIS_MultiSignal"' + 
+                       ',"risk_reward":' + str.tostring(risk_reward_ratio) + 
+                       ',"position_size":' + str.tostring(pos_size) + 
+                       ',"timestamp":"' + str.tostring(time) + '"}'
+        
+        strategy.entry("JARVIS_SHORT", strategy.short, qty=pos_size, 
+                      alert_message=alert_message)
+        strategy.exit("JARVIS_SHORT_EXIT", "JARVIS_SHORT", 
+                     stop=sl, limit=tp, 
+                     alert_message='{"action":"close","pair":"' + syminfo.ticker + '","type":"short_exit"}')
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📊 VISUAL INDICATORS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+// Plot EMAs
+plot(ema_12, "EMA 12", color=color.blue, linewidth=2)
+plot(ema_26, "EMA 26", color=color.red, linewidth=2)
+plot(sma_50, "SMA 50", color=color.yellow, linewidth=3)
+
+// Plot Bollinger Bands
+plot(bb_upper, "BB Upper", color=color.gray, linewidth=1)
+plot(bb_middle, "BB Middle", color=color.orange, linewidth=1)
+plot(bb_lower, "BB Lower", color=color.gray, linewidth=1)
+
+// Signal Markers
+plotshape(buy_signal and calculate_confidence(true) >= min_confidence, 
+         "Buy Signal", shape.triangleup, location.belowbar, color.green, size=size.normal)
+plotshape(sell_signal and calculate_confidence(false) >= min_confidence, 
+         "Sell Signal", shape.triangledown, location.abovebar, color.red, size=size.normal)
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 📈 PERFORMANCE STATISTICS TABLE
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+if barstate.islast
+    var table stats_table = table.new(position.top_right, 3, 8, bgcolor=color.white, border_width=1)
+    
+    win_rate = strategy.wintrades / strategy.closedtrades * 100
+    profit_factor = strategy.grossprofit / strategy.grossloss
+    avg_win = strategy.grossprofit / strategy.wintrades
+    avg_loss = strategy.grossloss / strategy.losstrades
+    
+    table.cell(stats_table, 0, 0, "JARVIS STATS", text_color=color.black, text_size=size.normal)
+    table.cell(stats_table, 1, 0, "VALUE", text_color=color.black, text_size=size.normal)
+    table.cell(stats_table, 2, 0, "TARGET", text_color=color.black, text_size=size.normal)
+    
+    table.cell(stats_table, 0, 1, "Win Rate", text_color=color.black)
+    table.cell(stats_table, 1, 1, str.tostring(win_rate, "#.##") + "%", text_color=win_rate >= 70 ? color.green : color.red)
+    table.cell(stats_table, 2, 1, "70%", text_color=color.black)
+    
+    table.cell(stats_table, 0, 2, "Profit Factor", text_color=color.black)
+    table.cell(stats_table, 1, 2, str.tostring(profit_factor, "#.##"), text_color=profit_factor >= 2.0 ? color.green : color.red)
+    table.cell(stats_table, 2, 2, "2.0+", text_color=color.black)
+    
+    table.cell(stats_table, 0, 3, "Total Trades", text_color=color.black)
+    table.cell(stats_table, 1, 3, str.tostring(strategy.closedtrades), text_color=color.black)
+    table.cell(stats_table, 2, 3, "100+", text_color=color.black)
+    
+    table.cell(stats_table, 0, 4, "Net Profit", text_color=color.black)
+    table.cell(stats_table, 1, 4, str.tostring(strategy.netprofit, "#.##"), text_color=strategy.netprofit > 0 ? color.green : color.red)
+    table.cell(stats_table, 2, 4, "Positive", text_color=color.black)
+    
+    table.cell(stats_table, 0, 5, "Max Drawdown", text_color=color.black)
+    table.cell(stats_table, 1, 5, str.tostring(strategy.max_drawdown, "#.##"), text_color=color.red)
+    table.cell(stats_table, 2, 5, "<15%", text_color=color.black)
+    
+    table.cell(stats_table, 0, 6, "Avg Win/Loss", text_color=color.black)
+    table.cell(stats_table, 1, 6, str.tostring(avg_win/avg_loss, "#.##"), text_color=color.black)
+    table.cell(stats_table, 2, 6, "2:1", text_color=color.black)
+    
+    table.cell(stats_table, 0, 7, "Risk Per Trade", text_color=color.black)
+    table.cell(stats_table, 1, 7, str.tostring(risk_percent) + "%", text_color=color.black)
+    table.cell(stats_table, 2, 7, "5%", text_color=color.black)

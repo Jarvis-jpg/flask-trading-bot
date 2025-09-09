@@ -14,12 +14,13 @@ except ImportError as e:
     sys.exit(1)
 
 try:
-    from oanda_config import OANDA_API_KEY, OANDA_ACCOUNT_ID
+    from oanda_config import OANDA_API_KEY, OANDA_ACCOUNT_ID, OANDA_ENVIRONMENT
 except ImportError:
     # Fallback if specific variables aren't defined
     print("Using OANDA config fallback...")
     OANDA_API_KEY = "e9e9a0366a2b21ebbb03b965301f0182-ea0448d5fc88dd622b361855758d7f3e"
     OANDA_ACCOUNT_ID = "001-001-12623605-001"
+    OANDA_ENVIRONMENT = "live"  # Use live environment
 
 import pandas as pd
 
@@ -34,7 +35,7 @@ def test_oanda_integration():
         oanda_data = OandaHistoricalData(
             api_key=OANDA_API_KEY,
             account_id=OANDA_ACCOUNT_ID,
-            environment="practice"
+            environment=OANDA_ENVIRONMENT
         )
         print("✅ OANDA API initialized successfully")
     except Exception as e:
@@ -124,7 +125,7 @@ def compare_with_simulation():
     oanda_data = OandaHistoricalData(
         api_key=OANDA_API_KEY,
         account_id=OANDA_ACCOUNT_ID,
-        environment="practice"
+        environment=OANDA_ENVIRONMENT
     )
     
     # Get OANDA data sample

@@ -109,6 +109,16 @@ class OandaClient:
             response = self.client.request(r)
             
             logger.info(f"Trade placed successfully: {response}")
+            
+            # Now try to add TP/SL based on actual fill price
+            if response.get('orderFillTransaction'):
+                trade_id = response['orderFillTransaction']['tradeOpened']['tradeID']
+                
+                logger.info(f"Adding TP/SL to trade {trade_id}")
+                
+                self.add_tp_sl_to_trade(trade_id, trade_data['symbol'], trade_data['close_price'], 
+                                       trade_data['stop_loss'], trade_data['take_profit'], trade_data['units'])
+            
             return {
                 'status': 'success',
                 'order_id': response['orderFillTransaction']['id'],
@@ -122,6 +132,81 @@ class OandaClient:
         except Exception as e:
             logger.error(f"Error placing trade: {str(e)}")
             raise
+
+    def add_tp_sl_to_trade(self, trade_id: str, symbol: str, close_price: float, 
+                          stop_loss: float, take_profit: float, units: int) -> bool:
+        """Add stop loss and take profit to an existing trade using SevenSYS distance calculations"""
+        try:
+            import oandapyV20.endpoints.trades as trades
+            
+            # Get the actual fill price
+            trade_details = trades.TradeDetails(accountID=self.account_id, tradeID=trade_id)
+            trade_response = self.client.request(trade_details)
+            fill_price = float(trade_response['trade']['price'])
+            
+            # Calculate distances from SevenSYS close price
+            if units > 0:  # Long position
+                sl_distance = close_price - stop_loss
+                tp_distance = take_profit - close_price
+                
+                # Apply distances to actual fill price
+                new_stop_loss = fill_price - sl_distance
+                new_take_profit = fill_price + tp_distance
+            else:  # Short position
+                sl_distance = stop_loss - close_price
+                tp_distance = close_price - take_profit
+                
+                # Apply distances to actual fill price
+                new_stop_loss = fill_price + sl_distance
+                new_take_profit = fill_price - tp_distance
+            
+            # Round to 5 decimal places
+            new_stop_loss = round(new_stop_loss, 5)
+            new_take_profit = round(new_take_profit, 5)
+            
+            logger.info(f"Adding TP/SL to trade {trade_id}: SL={new_stop_loss}, TP={new_take_profit}")
+            logger.info(f"Fill price: {fill_price}, Close price: {close_price}")
+            logger.info(f"SL distance: {sl_distance:.5f}, TP distance: {tp_distance:.5f}")
+            
+            # Add Stop Loss
+            sl_data = {
+                "stopLoss": {
+                    "price": str(new_stop_loss),
+                    "timeInForce": "GTC"
+                }
+            }
+            
+            r_sl = trades.TradeUpdate(accountID=self.account_id, tradeID=trade_id, data=sl_data)
+            self.client.request(r_sl)
+            logger.info(f"Stop Loss added: {new_stop_loss}")
+            
+            # Add Take Profit
+            tp_data = {
+                "takeProfit": {
+                    "price": str(new_take_profit),
+                    "timeInForce": "GTC"
+                }
+            }
+            
+            r_tp = trades.TradeUpdate(accountID=self.account_id, tradeID=trade_id, data=tp_data)
+            self.client.request(r_tp)
+            logger.info(f"Take Profit added: {new_take_profit}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to add TP/SL to trade {trade_id}: {str(e)}")
+            return False
+            
+            r_tp = trades.TradeUpdate(accountID=self.account_id, tradeID=trade_id, data=tp_data)
+            self.client.request(r_tp)
+            logger.info(f"Take Profit added: {take_profit}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to add TP/SL to trade {trade_id}: {e}")
+            return False
 
     def get_current_price(self, pair: str) -> Dict:
         """Get current price for a currency pair"""

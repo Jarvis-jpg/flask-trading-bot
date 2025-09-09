@@ -22,6 +22,9 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+# Suppress verbose OANDA API logging
+logging.getLogger('oandapyV20').setLevel(logging.WARNING)
+
 class OandaHistoricalData:
     """
     OANDA Historical Data Provider for AI Training
@@ -130,7 +133,7 @@ class OandaHistoricalData:
             # Cache the data
             self.data_cache[cache_key] = df
             
-            print(f"✅ Fetched {len(df)} candles for {instrument}")
+            print(f"🔗 {instrument}: {len(df)} candles fetched successfully")
             return df
             
         except Exception as e:
@@ -193,8 +196,8 @@ class OandaHistoricalData:
             # Volatility score
             df['volatility_score'] = df['atr'] / df['close']
             
-            # Fill NaN values
-            df = df.fillna(method='bfill').fillna(method='ffill')
+            # Fill NaN values using new pandas syntax
+            df = df.bfill().ffill()
             
             # Normalize values that might be extreme
             df['trend_strength'] = df['trend_strength'].clip(0, 0.01)  # Cap at 1%
@@ -260,8 +263,8 @@ class OandaHistoricalData:
                 df['volume'] = abs(df['price_change']) * 1000000  # Synthetic volume
             df['volume_sma'] = df['volume'].rolling(window=20).mean()
             
-            # Fill NaN values
-            df = df.fillna(method='bfill').fillna(method='ffill')
+            # Fill NaN values using new pandas syntax
+            df = df.bfill().ffill()
             
             # Normalize extreme values
             df['trend_strength'] = df['trend_strength'].clip(0, 0.01)

@@ -62,51 +62,18 @@ def webhook():
             missing = [k for k, v in {"symbol": symbol, "action": action, "price": price, "stop_loss": stop_loss, "take_profit": take_profit}.items() if not v]
             return jsonify({"error": f"Missing required fields: {missing}"}), 400
 
-        # Log SevenSYS TP/SL values for analysis
-        price_float = float(price)
-        stop_loss_float = float(stop_loss) 
-        take_profit_float = float(take_profit)
-        
-        logging.info(f"SevenSYS Signal Analysis:")
-        logging.info(f"  Action: {action}")
-        logging.info(f"  Entry (close): {price_float}")
-        logging.info(f"  Stop Loss: {stop_loss_float}")
-        logging.info(f"  Take Profit: {take_profit_float}")
-        
-        # Calculate distances for validation
-        sl_distance = abs(stop_loss_float - price_float)
-        tp_distance = abs(take_profit_float - price_float)
-        tp_sl_ratio = tp_distance / sl_distance if sl_distance > 0 else 0
-        
-        logging.info(f"  SL Distance: {sl_distance:.5f} ({sl_distance * 10000:.1f} pips)")
-        logging.info(f"  TP Distance: {tp_distance:.5f} ({tp_distance * 10000:.1f} pips)")
-        logging.info(f"  Risk/Reward: 1:{tp_sl_ratio:.2f}")
-        
-        # Warning for extremely large TP/SL distances (but don't reject)
-        if sl_distance * 10000 > 200:  # More than 200 pips
-            logging.warning(f"Large stop loss: {sl_distance * 10000:.1f} pips - check SevenSYS settings")
-        if tp_distance * 10000 > 800:  # More than 800 pips  
-            logging.warning(f"Large take profit: {tp_distance * 10000:.1f} pips - check SevenSYS settings")
-
         # Calculate position size (conservative for small account)
         position_size = calculate_position_size(price, stop_loss, account_balance=45.0, risk_percent=2.0)
         units = position_size if action.lower() == "buy" else -position_size
         
-        # Convert symbol to OANDA format (EURUSD -> EUR_USD)
-        oanda_symbol = symbol
-        if len(symbol) == 6 and '_' not in symbol:
-            # Convert EURUSD to EUR_USD
-            oanda_symbol = symbol[:3] + '_' + symbol[3:]
-        
         trade_data = {
-            "symbol": oanda_symbol,
+            "symbol": symbol,
             "units": units,
-            "close_price": price_float,  # Original SevenSYS close price
-            "stop_loss": round(stop_loss_float, 5),  # Round to 5 decimal places for OANDA
-            "take_profit": round(take_profit_float, 5)  # Round to 5 decimal places for OANDA
+            "stop_loss": float(stop_loss),
+            "take_profit": float(take_profit)
         }
 
-        logging.info(f"Placing trade: {action} {abs(units)} units of {symbol} -> {oanda_symbol}")
+        logging.info(f"Placing trade: {action} {abs(units)} units of {symbol}")
         
         trade_result = oanda.place_trade(trade_data)
         

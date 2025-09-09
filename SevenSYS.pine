@@ -7,7 +7,7 @@ strategy("SevenSYS - Military Grade Trading System", shorttitle="SevenSYS",
 riskPerTrade = input.float(2.0, "Risk Per Trade (%)", minval=0.5, maxval=5.0, step=0.1)
 maxDrawdown = input.float(10.0, "Max Drawdown Stop (%)", minval=5.0, maxval=20.0, step=1.0)
 dailyLossLimit = input.float(5.0, "Daily Loss Limit (%)", minval=2.0, maxval=10.0, step=0.5)
-minSignalStrength = input.float(55.0, "Minimum Signal Strength", minval=50.0, maxval=80.0, step=1.0)
+minSignalStrength = input.float(52.0, "Minimum Signal Strength", minval=50.0, maxval=80.0, step=1.0)
 
 // ==================== TECHNICAL INDICATORS ====================
 // Multi-Timeframe EMAs (Institutional Standard)
@@ -75,10 +75,11 @@ signal_strength_long = base_strength + (trend_strength > 0 ? trend_strength * 2.
 signal_strength_short = base_strength + (trend_strength < 0 ? math.abs(trend_strength) * 2.0 : 0) + (momentum_score < 0 ? math.abs(momentum_score) * 1.5 : 0) + session_score + (pa_score < 0 ? math.abs(pa_score) * 1.5 : 0)
 
 // ==================== ENTRY CONDITIONS ====================
-long_conditions = trend_strength > 3.0 and momentum_score > 3.0 and active_session and normal_volatility and above_vwap
-short_conditions = trend_strength < -3.0 and momentum_score < -3.0 and active_session and normal_volatility and below_vwap
+long_conditions = trend_strength > 1.0 and momentum_score > 1.0 and active_session and normal_volatility and above_vwap
+short_conditions = trend_strength < -1.0 and momentum_score < -1.0 and active_session and normal_volatility and below_vwap
 
 enter_long = long_conditions and signal_strength_long >= minSignalStrength
+enter_short = short_conditions and signal_strength_short >= minSignalStrength
 
 // Simplified backup conditions for more trades
 simple_long = ema8 > ema21 and close > vwap and rsi > 45 and active_session
@@ -111,7 +112,7 @@ var float daily_start_equity = na
 
 // Market Condition Filter
 market_crisis = atr_pct > 2.0
-safety_stop = market_crisis // Simplified safety stop for PineScript v6 compatibility
+safety_stop = market_crisis or (strategy.equity < strategy.initial_capital * 0.9) // Simplified safety stop for PineScript v6 compatibility
 
 // ==================== TRADE EXECUTION ====================
 if enter_long and not safety_stop and strategy.position_size == 0
@@ -130,14 +131,15 @@ if safety_stop and strategy.position_size != 0
     alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"close_all\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"reason\": \"safety_stop\"}", alert.freq_once_per_bar)
 
 // ==================== VISUAL INDICATORS ====================
-plot(ema21, "EMA 21", color=color.orange, linewidth=2)
-plot(ema50, "EMA 50", color=color.blue, linewidth=2)
-plot(ema200, "EMA 200", color=color.red, linewidth=3)
-plot(vwap, "VWAP", color=color.purple, linewidth=2)
+plot(ema21, "EMA 21", color=color.orange, linewidth=4)
+plot(ema50, "EMA 50", color=color.blue, linewidth=4)
+plot(ema200, "EMA 200", color=color.red, linewidth=4)
+plot(vwap, "VWAP", color=color.purple, linewidth=4)
 
 plotshape(enter_long, "LONG", shape.triangleup, location.belowbar, color.green, size=size.normal)
 plotshape(enter_short, "SHORT", shape.triangledown, location.abovebar, color.red, size=size.normal)
-plotshape(safety_stop, "SAFETY", shape.xcross, location.absolute, color.yellow, size=size.large)
+plotshape(safety_stop, "SAFETY", shape.xcross, location.belowbar, color.yellow, size=size.normal)
+plot(safety_stop ? close * 0.95 : na, "Crisis Safety Line", color=color.red, linewidth=3, style=plot.style_line)
 
 // ==================== DASHBOARD ====================
 
@@ -145,9 +147,9 @@ plotshape(safety_stop, "SAFETY", shape.xcross, location.absolute, color.yellow, 
 var table dashboard = table.new(position.top_right, 3, 8, bgcolor=color.new(color.black, 85), border_width=2)
 
 if barstate.islast
-    table.cell(dashboard, 0, 0, "SevenSYS", text_color=color.white, text_size=size.large, bgcolor=color.new(color.blue, 70))
-    table.cell(dashboard, 1, 0, "MILITARY", text_color=color.white, text_size=size.large, bgcolor=color.new(color.blue, 70))
-    table.cell(dashboard, 2, 0, "GRADE", text_color=color.white, text_size=size.large, bgcolor=color.new(color.blue, 70))
+    table.cell(dashboard, 0, 0, "SevenSYS", text_color=color.white, text_size=size.small, bgcolor=color.new(color.blue, 70))
+    table.cell(dashboard, 1, 0, "MILITARY", text_color=color.white, text_size=size.small, bgcolor=color.new(color.blue, 70))
+    table.cell(dashboard, 2, 0, "GRADE", text_color=color.white, text_size=size.small, bgcolor=color.new(color.blue, 70))
     
     table.cell(dashboard, 0, 1, "LONG Signal", text_color=color.white)
     table.cell(dashboard, 1, 1, str.tostring(signal_strength_long, "#.#"), text_color=signal_strength_long >= minSignalStrength ? color.green : color.gray)
@@ -174,7 +176,7 @@ if barstate.islast
     
     table.cell(dashboard, 0, 6, "Safety", text_color=color.white)
     table.cell(dashboard, 1, 6, safety_stop ? "STOP" : "ACTIVE", text_color=safety_stop ? color.red : color.green)
-    table.cell(dashboard, 2, 6, safety_stop ? "??" : "?", text_color=safety_stop ? color.red : color.green)
+    table.cell(dashboard, 2, 6, safety_stop ? "DANGER" : "SECURE", text_color=safety_stop ? color.red : color.green)
     
     win_rate_display = "N/A"
     table.cell(dashboard, 0, 7, "Win Rate", text_color=color.white)

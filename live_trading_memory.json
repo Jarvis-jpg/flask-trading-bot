@@ -1,0 +1,97 @@
+{
+  "system_info": {
+    "created": "2025-09-07T19:37:04.705515",
+    "last_updated": "2025-09-08T05:38:44.691814",
+    "trading_mode": "live",
+    "system_version": "2.0"
+  },
+  "live_statistics": {
+    "total_webhook_alerts": 1,
+    "total_trades_attempted": 1,
+    "total_trades_executed": 0,
+    "total_trades_cancelled": 0,
+    "total_wins": 0,
+    "total_losses": 0,
+    "total_profit_loss": -7.783900000000003,
+    "current_balance": 42.2161,
+    "live_win_rate": 0.0,
+    "best_trade": 0.0,
+    "worst_trade": 0.0,
+    "account_currency": "USD",
+    "margin_used": 0.0,
+    "margin_available": 42.2161,
+    "unrealized_pl": 0.0,
+    "open_positions": 2,
+    "open_trades": 0
+  },
+  "webhook_alerts": [
+    {
+      "timestamp": "2025-09-07T19:37:04.717579",
+      "source": "TradingView",
+      "pair": "EURUSD",
+      "action": "buy",
+      "entry": 1.0856,
+      "stop_loss": 1.0806,
+      "take_profit": 1.0956,
+      "confidence": 0.75,
+      "raw_data": {
+        "pair": "EURUSD",
+        "action": "buy",
+        "entry": 1.0856,
+        "stop_loss": 1.0806,
+        "take_profit": 1.0956,
+        "confidence": 0.75,
+        "strategy": "JARVIS",
+        "timestamp": "2025-09-07T14:30:00Z"
+      }
+    }
+  ],
+  "trade_attempts": [
+    {
+      "timestamp": "2025-09-07T19:37:04.738695",
+      "pair": "EUR_USD",
+      "action": "unknown",
+      "entry": 0,
+      "stop_loss": 1.0806,
+      "take_profit": 1.0956,
+      "position_size": 10000,
+      "analysis": {
+        "prediction": {
+          "recommended": true,
+          "confidence": 0.72
+        },
+        "market_conditions": {
+          "trend_strength": 0.65,
+          "session": "london",
+          "volatility": "normal"
+        }
+      },
+      "ai_confidence": 0.72,
+      "recommended": true
+    }
+  ],
+  "executed_trades": [],
+  "cancelled_trades": [],
+  "system_decisions": [],
+  "daily_summaries": {},
+  "balance_syncs": [
+    {
+      "timestamp": "2025-09-07T19:50:55.912521",
+      "sync_type": "oanda_balance_sync",
+      "old_balance": 50.0,
+      "new_balance": 43.1061,
+      "balance_change": -6.893900000000002,
+      "unrealized_pl": 0.0,
+      "sync_reason": "manual_sync"
+    },
+    {
+      "timestamp": "2025-09-08T05:37:07.491180",
+      "sync_type": "oanda_balance_sync",
+      "old_balance": 43.1061,
+      "new_balance": 42.2161,
+      "balance_change": -0.8900000000000006,
+      "unrealized_pl": 0.0,
+      "sync_reason": "manual_sync"
+    }
+  ]
+}
