@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-09-15T00:06:23.725008",
+  "settings": {
+    "news_bias": 0.0,
+    "major_event_mode": false,
+    "risk_per_trade": 1.5,
+    "min_signal_strength": 55.0,
+    "news_filter": false,
+    "recommendation": "NEUTRAL - Mixed or limited news impact"
+  },
+  "impact_events": [],
+  "last_bias": 0.0,
+  "api_status": "active"
+}

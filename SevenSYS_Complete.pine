@@ -1,0 +1,359 @@
+//@version=6
+strategy("SevenSYS - Complete Trading System", shorttitle="SevenSYS", 
+         overlay=true, default_qty_type=strategy.percent_of_equity, 
+         default_qty_value=2, pyramiding=0, calc_on_every_tick=true)
+
+// ==================== COMPLETE SEVENSYS WITH NEWS INTEGRATION ====================
+// Combines all fixes, filters, strategies, and real-time news sentiment
+// Fixed RSI logic, proper trend alignment, news-based signal enhancement
+
+// ==================== NEWS INTEGRATION INPUTS ====================
+news_bias = input.float(0.0, "News Sentiment Bias", minval=-20.0, maxval=20.0, step=1.0, 
+                       tooltip="Set based on current market news: Trump election +15, Fed cuts +8, etc.")
+news_filter = input.bool(true, "Enable News Filter", tooltip="Prevents counter-trend trades during strong news")
+major_event_mode = input.bool(false, "Major Event Mode", tooltip="Enable during elections, Fed meetings, major events")
+auto_news_update = input.bool(false, "Auto News Updates", tooltip="Enable if using automated news feed")
+
+// ==================== RISK MANAGEMENT ====================
+riskPerTrade = input.float(1.5, "Risk Per Trade (%)", minval=0.5, maxval=3.0, step=0.1)
+base_risk = major_event_mode ? 1.0 : riskPerTrade
+maxDrawdown = input.float(10.0, "Max Drawdown Stop (%)", minval=5.0, maxval=15.0, step=1.0)
+dailyLossLimit = input.float(4.0, "Daily Loss Limit (%)", minval=2.0, maxval=8.0, step=0.5)
+minSignalStrength = input.float(35.0, "Minimum Signal Strength", minval=25.0, maxval=65.0, step=1.0)
+
+// ==================== TECHNICAL INDICATORS ====================
+ema8 = ta.ema(close, 8)
+ema21 = ta.ema(close, 21)
+ema50 = ta.ema(close, 50)
+ema200 = ta.ema(close, 200)
+
+// Higher timeframe trend
+htf_trend = request.security(syminfo.tickerid, "240", ta.ema(close, 21))
+
+// Momentum indicators
+rsi = ta.rsi(close, 14)
+[macdLine, signalLine, histogram] = ta.macd(close, 12, 26, 9)
+stoch = ta.stoch(close, high, low, 14)
+
+// Volume and price action
+volume_ma = ta.sma(volume, 20)
+vwap = ta.vwap
+atr = ta.atr(14)
+
+// Additional confirmation indicators
+[bb_middle, bb_upper, bb_lower] = ta.bb(close, 20, 2)
+// ADX calculation using available functions
+di_plus = ta.rma(math.max(high - high[1], 0), 14)
+di_minus = ta.rma(math.max(low[1] - low, 0), 14)
+adx = ta.rma(math.abs(di_plus - di_minus) / (di_plus + di_minus) * 100, 14)
+
+// ==================== SESSION ANALYSIS ====================
+london_session = time(timeframe.period, "0800-1600", "Europe/London")
+ny_session = time(timeframe.period, "1300-2200", "America/New_York")
+asian_session = time(timeframe.period, "2200-0600", "Asia/Tokyo")
+london_ny_overlap = not na(london_session) and not na(ny_session)
+active_session = not na(london_session) or not na(ny_session) or not na(asian_session)
+
+// Premium session weighting
+session_quality = london_ny_overlap ? 3.0 : (not na(london_session) or not na(ny_session)) ? 2.0 : not na(asian_session) ? 1.5 : 1.0
+
+// ==================== ADVANCED TREND ANALYSIS ====================
+// Multiple EMA alignment checks
+ema_bull_weak = ema8 > ema21 and close > ema21
+ema_bull_medium = ema8 > ema21 and ema21 > ema50 and close > ema21
+ema_bull_strong = ema8 > ema21 and ema21 > ema50 and ema50 > ema200 and close > ema8
+ema_bull_very_strong = ema_bull_strong and (ema8 - ema200) / ema200 > 0.02
+
+ema_bear_weak = ema8 < ema21 and close < ema21
+ema_bear_medium = ema8 < ema21 and ema21 < ema50 and close < ema21
+ema_bear_strong = ema8 < ema21 and ema21 < ema50 and ema50 < ema200 and close < ema8
+ema_bear_very_strong = ema_bear_strong and (ema200 - ema8) / ema200 > 0.02
+
+// Higher timeframe confirmation
+htf_trend_bull = close > htf_trend * 0.998
+htf_trend_bear = close < htf_trend * 1.002
+htf_trend_strong = math.abs(close - htf_trend) / htf_trend > 0.01
+
+// Base trend strength calculation
+base_trend_strength = ema_bull_very_strong and htf_trend_bull ? 20.0 : ema_bull_strong and htf_trend_bull ? 15.0 : ema_bull_medium and htf_trend_bull ? 10.0 : ema_bull_weak and htf_trend_bull ? 5.0 : ema_bear_very_strong and htf_trend_bear ? -20.0 : ema_bear_strong and htf_trend_bear ? -15.0 : ema_bear_medium and htf_trend_bear ? -10.0 : ema_bear_weak and htf_trend_bear ? -5.0 : 0.0
+
+// NEWS-ENHANCED TREND: Apply news bias to trend strength
+news_trend_multiplier = news_filter ? (1.0 + (news_bias * 0.05)) : 1.0
+trend_strength = base_trend_strength * news_trend_multiplier
+
+// ==================== FIXED MOMENTUM ANALYSIS ====================
+// CRITICAL FIX: Proper RSI thresholds (was the main error causing counter-trend trades)
+rsi_oversold = rsi < 30
+rsi_undersold = rsi > 30 and rsi < 40
+rsi_neutral_low = rsi >= 40 and rsi < 50
+rsi_neutral_high = rsi >= 50 and rsi < 60
+rsi_overbought_low = rsi >= 60 and rsi < 70
+rsi_overbought = rsi >= 70
+
+// FIXED RSI CONDITIONS (was rsi < 60 for bearish - COMPLETELY WRONG!)
+rsi_bullish_confirmed = rsi > 45 and rsi < 75
+rsi_bearish_confirmed = rsi < 55 and rsi > 25
+rsi_very_bullish = rsi > 60 and rsi < 80
+rsi_very_bearish = rsi < 40 and rsi > 20
+
+// MACD analysis
+macd_bullish_basic = macdLine > signalLine
+macd_bearish_basic = macdLine < signalLine
+macd_bullish_strong = macd_bullish_basic and histogram > 0 and histogram > histogram[1]
+macd_bearish_strong = macd_bearish_basic and histogram < 0 and histogram < histogram[1]
+macd_divergence_bull = macdLine > macdLine[5] and close < close[5]
+macd_divergence_bear = macdLine < macdLine[5] and close > close[5]
+
+// Stochastic analysis
+stoch_oversold = stoch < 20
+stoch_overbought = stoch > 80
+stoch_bullish = stoch > 25 and stoch < 75 and stoch > stoch[1]
+stoch_bearish = stoch > 25 and stoch < 75 and stoch < stoch[1]
+
+// Combined momentum score
+base_momentum_score = (rsi_very_bullish and macd_bullish_strong and stoch_bullish) ? 20.0 : (rsi_bullish_confirmed and macd_bullish_strong) ? 15.0 : (rsi_bullish_confirmed and macd_bullish_basic and stoch_bullish) ? 10.0 : (rsi_bullish_confirmed and macd_bullish_basic) ? 8.0 : (rsi_neutral_high and macd_bullish_basic) ? 5.0 : (rsi_very_bearish and macd_bearish_strong and stoch_bearish) ? -20.0 : (rsi_bearish_confirmed and macd_bearish_strong) ? -15.0 : (rsi_bearish_confirmed and macd_bearish_basic and stoch_bearish) ? -10.0 : (rsi_bearish_confirmed and macd_bearish_basic) ? -8.0 : (rsi_neutral_low and macd_bearish_basic) ? -5.0 : 0.0
+
+// NEWS-ENHANCED MOMENTUM: Apply news sentiment
+news_momentum_boost = news_filter ? news_bias * 0.4 : 0.0
+momentum_score = base_momentum_score + news_momentum_boost
+
+// ==================== VOLUME & PRICE ACTION ANALYSIS ====================
+volume_weak = volume < volume_ma * 0.8
+volume_normal = volume >= volume_ma * 0.8 and volume < volume_ma * 1.5
+volume_strong = volume >= volume_ma * 1.5 and volume < volume_ma * 2.5
+volume_very_strong = volume >= volume_ma * 2.5
+
+// Price action relative to VWAP
+vwap_bull_weak = close > vwap and close < vwap * 1.001
+vwap_bull_strong = close > vwap * 1.001
+vwap_bear_weak = close < vwap and close > vwap * 0.999
+vwap_bear_strong = close < vwap * 0.999
+
+// Candlestick patterns
+bullish_candle = close > open
+bearish_candle = close < open
+doji = math.abs(close - open) / (high - low) < 0.1
+hammer = (close > open) and ((high - close) / (close - open) < 0.3) and ((open - low) / (close - open) > 2.0)
+shooting_star = (close < open) and ((close - low) / (open - close) < 0.3) and ((high - open) / (open - close) > 2.0)
+
+// Bollinger Band position
+bb_squeeze = (bb_upper - bb_lower) / close < 0.02
+bb_expansion = (bb_upper - bb_lower) / close > 0.05
+above_bb_middle = close > bb_middle
+below_bb_middle = close < bb_middle
+
+// Price action score
+base_pa_score = (volume_very_strong and bullish_candle and vwap_bull_strong and above_bb_middle) ? 15.0 : (volume_strong and bullish_candle and vwap_bull_strong) ? 12.0 : (volume_strong and bullish_candle and vwap_bull_weak) ? 8.0 : (volume_normal and bullish_candle and above_bb_middle) ? 5.0 : (volume_very_strong and bearish_candle and vwap_bear_strong and below_bb_middle) ? -15.0 : (volume_strong and bearish_candle and vwap_bear_strong) ? -12.0 : (volume_strong and bearish_candle and vwap_bear_weak) ? -8.0 : (volume_normal and bearish_candle and below_bb_middle) ? -5.0 : 0.0
+
+pa_score = base_pa_score
+
+// ==================== VOLATILITY & MARKET CONDITIONS ====================
+atr_pct = atr / close * 100
+low_volatility = atr_pct < 0.5
+normal_volatility = atr_pct >= 0.5 and atr_pct <= 2.0
+high_volatility = atr_pct > 2.0 and atr_pct <= 4.0
+extreme_volatility = atr_pct > 4.0
+
+// ADX trend strength
+adx_weak_trend = adx < 20
+adx_moderate_trend = adx >= 20 and adx < 30
+adx_strong_trend = adx >= 30 and adx < 50
+adx_very_strong_trend = adx >= 50
+
+// Market condition assessment
+trending_market = adx_strong_trend or adx_very_strong_trend
+choppy_market = adx_weak_trend and high_volatility
+ranging_market = adx_weak_trend and normal_volatility
+
+// ==================== NEWS-ENHANCED SIGNAL STRENGTH ====================
+// Base signal strength adjusted for major events
+base_strength = major_event_mode ? 35.0 : 25.0
+
+// News-based signal modifications
+news_boost_long = news_bias > 0 ? news_bias * 1.8 : 0
+news_boost_short = news_bias < 0 ? math.abs(news_bias) * 1.8 : 0
+news_penalty_long = news_bias < -0.5 ? math.abs(news_bias) * 0.8 : 0
+news_penalty_short = news_bias > 0.5 ? news_bias * 0.8 : 0
+
+// Comprehensive signal strength calculation
+signal_strength_long = base_strength + (trend_strength > 0 ? trend_strength * 1.6 : 0) + (momentum_score > 0 ? momentum_score * 1.4 : 0) + (pa_score > 0 ? pa_score * 1.2 : 0) + (session_quality * 4.0) + (trending_market ? 8.0 : ranging_market ? 3.0 : 0) + news_boost_long - news_penalty_long
+
+signal_strength_short = base_strength + (trend_strength < 0 ? math.abs(trend_strength) * 1.6 : 0) + (momentum_score < 0 ? math.abs(momentum_score) * 1.4 : 0) + (pa_score < 0 ? math.abs(pa_score) * 1.2 : 0) + (session_quality * 4.0) + (trending_market ? 8.0 : ranging_market ? 3.0 : 0) + news_boost_short - news_penalty_short
+
+// ==================== COMPREHENSIVE ENTRY CONDITIONS ====================
+// Technical requirements for long trades - RELAXED FOR MORE OPPORTUNITIES
+long_trend_ok = trend_strength > 0.5 and (ema_bull_weak or close > ema21) and htf_trend_bull
+long_momentum_ok = momentum_score > -5.0 and (rsi_bullish_confirmed or rsi > 40) and (macd_bullish_basic or macdLine > macdLine[1])
+long_pa_ok = pa_score >= -5.0 and (above_bb_middle or close > vwap)
+long_market_ok = (trending_market or ranging_market) and not extreme_volatility and active_session
+
+// Technical requirements for short trades - RELAXED FOR MORE OPPORTUNITIES
+short_trend_ok = trend_strength < -0.5 and (ema_bear_weak or close < ema21) and htf_trend_bear
+short_momentum_ok = momentum_score < 5.0 and (rsi_bearish_confirmed or rsi < 60) and (macd_bearish_basic or macdLine < macdLine[1])
+short_pa_ok = pa_score <= 5.0 and (below_bb_middle or close < vwap)
+short_market_ok = (trending_market or ranging_market) and not extreme_volatility and active_session
+
+// News filter conditions
+news_allows_long = not news_filter or news_bias >= -0.4
+news_allows_short = not news_filter or news_bias <= 0.4
+
+// Strong signal conditions - MADE MORE ACHIEVABLE
+long_strong = (ema_bull_medium or ema_bull_strong) and trend_strength > 5.0 and momentum_score > 5.0 and pa_score > 0.0 and active_session and signal_strength_long >= minSignalStrength
+
+short_strong = (ema_bear_medium or ema_bear_strong) and trend_strength < -5.0 and momentum_score < -5.0 and pa_score < 0.0 and active_session and signal_strength_short >= minSignalStrength
+
+// Regular signal conditions - SAME AS ABOVE
+long_regular = long_trend_ok and long_momentum_ok and long_pa_ok and long_market_ok and signal_strength_long >= minSignalStrength
+
+short_regular = short_trend_ok and short_momentum_ok and short_pa_ok and short_market_ok and signal_strength_short >= minSignalStrength
+
+// Final entry signals with news integration
+enter_long = (long_strong or long_regular) and news_allows_long and not choppy_market
+enter_short = (short_strong or short_regular) and news_allows_short and not choppy_market
+
+// ==================== DYNAMIC POSITION MANAGEMENT ====================
+// ATR-based stops adjusted for volatility and news events
+base_atr_mult = major_event_mode ? 3.5 : 2.5
+volatility_mult = high_volatility ? 1.3 : extreme_volatility ? 1.6 : 1.0
+news_mult = math.abs(news_bias) > 10 ? 1.2 : 1.0
+
+atr_multiplier = base_atr_mult * volatility_mult * news_mult
+stop_distance = atr * atr_multiplier
+
+// Dynamic take profit based on trend strength and news
+base_tp_mult = 2.5
+trend_tp_boost = math.abs(trend_strength) > 15 ? 1.4 : math.abs(trend_strength) > 10 ? 1.2 : 1.0
+news_tp_boost = math.abs(news_bias) > 8 ? 1.3 : 1.0
+
+tp_multiplier = base_tp_mult * trend_tp_boost * news_tp_boost
+profit_distance = stop_distance * tp_multiplier
+
+// ==================== COMPREHENSIVE SAFETY SYSTEMS ====================
+// Multiple safety triggers
+high_impact_news = math.abs(news_bias) > 12
+market_crisis = extreme_volatility or (atr_pct > 3.0)
+equity_protection = strategy.equity < strategy.initial_capital * (major_event_mode ? 0.92 : 0.88)
+daily_loss_hit = strategy.netprofit < -dailyLossLimit
+max_dd_hit = (strategy.initial_capital - strategy.equity) / strategy.initial_capital * 100 > maxDrawdown
+
+safety_stop = market_crisis or equity_protection or daily_loss_hit or max_dd_hit
+
+// Emergency conditions
+emergency_stop = extreme_volatility and high_impact_news and choppy_market
+
+// ==================== TRADE EXECUTION ====================
+if enter_long and not safety_stop and not emergency_stop and strategy.position_size == 0
+    strategy.entry("LONG", strategy.long)
+    strategy.exit("LONG_EXIT", "LONG", stop=close - stop_distance, limit=close + profit_distance)
+    alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"buy\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"signal_strength\": " + str.tostring(signal_strength_long) + ", \"news_bias\": " + str.tostring(news_bias) + ", \"trend_strength\": " + str.tostring(trend_strength) + ", \"stop_loss\": " + str.tostring(close - stop_distance) + ", \"take_profit\": " + str.tostring(close + profit_distance) + "}", alert.freq_once_per_bar)
+
+if enter_short and not safety_stop and not emergency_stop and strategy.position_size == 0
+    strategy.entry("SHORT", strategy.short)
+    strategy.exit("SHORT_EXIT", "SHORT", stop=close + stop_distance, limit=close - profit_distance)
+    alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"sell\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"signal_strength\": " + str.tostring(signal_strength_short) + ", \"news_bias\": " + str.tostring(news_bias) + ", \"trend_strength\": " + str.tostring(trend_strength) + ", \"stop_loss\": " + str.tostring(close + stop_distance) + ", \"take_profit\": " + str.tostring(close - profit_distance) + "}", alert.freq_once_per_bar)
+
+// Emergency exit conditions
+if (safety_stop or emergency_stop) and strategy.position_size != 0
+    strategy.close_all(comment="SAFETY_STOP")
+    alert("{\"ticker\": \"" + syminfo.ticker + "\", \"strategy.order.action\": \"close_all\", \"close\": " + str.tostring(close) + ", \"strategy\": \"SevenSYS\", \"reason\": \"safety_stop\", \"news_bias\": " + str.tostring(news_bias) + "}", alert.freq_once_per_bar)
+
+// ==================== COMPREHENSIVE VISUAL SYSTEM ====================
+// EMA plots with dynamic colors
+plot(ema8, "EMA 8", color=trend_strength > 10 ? color.lime : trend_strength > 0 ? color.green : trend_strength < -10 ? color.red : color.gray, linewidth=1)
+plot(ema21, "EMA 21", color=color.orange, linewidth=2)
+plot(ema50, "EMA 50", color=color.blue, linewidth=2)
+plot(ema200, "EMA 200", color=color.red, linewidth=2)
+plot(vwap, "VWAP", color=color.purple, linewidth=2)
+
+// Entry signals with news indication
+plotshape(enter_long, "LONG ENTRY", shape.triangleup, location.belowbar, 
+         news_bias > 5 ? color.lime : color.green, size=size.normal)
+plotshape(enter_short, "SHORT ENTRY", shape.triangledown, location.abovebar, 
+         news_bias < -5 ? color.red : color.maroon, size=size.normal)
+
+// News and safety indicators
+plotshape(math.abs(news_bias) > 8, "HIGH IMPACT NEWS", shape.diamond, location.abovebar, 
+         color.yellow, size=size.small)
+plotshape(safety_stop, "SAFETY STOP", shape.xcross, location.belowbar, 
+         color.orange, size=size.normal)
+plotshape(emergency_stop, "EMERGENCY", shape.xcross, location.abovebar, 
+         color.red, size=size.large)
+
+// Signal strength indicators
+plotshape(signal_strength_long >= minSignalStrength and long_trend_ok, "LONG READY", 
+         shape.circle, location.belowbar, color.lime, size=size.tiny)
+plotshape(signal_strength_short >= minSignalStrength and short_trend_ok, "SHORT READY", 
+         shape.circle, location.abovebar, color.red, size=size.tiny)
+
+// ==================== ADVANCED DASHBOARD SYSTEM ====================
+var table dashboard = table.new(position.top_right, 4, 12, bgcolor=color.new(color.black, 85), border_width=2)
+
+if barstate.islast
+    // Header
+    table.cell(dashboard, 0, 0, "SevenSYS", text_color=color.white, text_size=size.normal, bgcolor=color.new(color.blue, 70))
+    table.cell(dashboard, 1, 0, "COMPLETE", text_color=color.white, text_size=size.normal, bgcolor=color.new(color.green, 70))
+    table.cell(dashboard, 2, 0, "NEWS+AI", text_color=color.white, text_size=size.normal, bgcolor=color.new(color.yellow, 70))
+    table.cell(dashboard, 3, 0, "ACTIVE", text_color=color.white, text_size=size.normal, bgcolor=color.new(color.lime, 70))
+    
+    // Signal strengths
+    table.cell(dashboard, 0, 1, "LONG Signal", text_color=color.white)
+    table.cell(dashboard, 1, 1, str.tostring(signal_strength_long, "#.0"), text_color=signal_strength_long >= minSignalStrength ? color.green : color.gray)
+    table.cell(dashboard, 2, 1, signal_strength_long >= minSignalStrength ? "READY" : "WAIT", text_color=signal_strength_long >= minSignalStrength ? color.green : color.gray)
+    table.cell(dashboard, 3, 1, long_trend_ok ? "✓" : "✗", text_color=long_trend_ok ? color.green : color.red)
+    
+    table.cell(dashboard, 0, 2, "SHORT Signal", text_color=color.white)
+    table.cell(dashboard, 1, 2, str.tostring(signal_strength_short, "#.0"), text_color=signal_strength_short >= minSignalStrength ? color.red : color.gray)
+    table.cell(dashboard, 2, 2, signal_strength_short >= minSignalStrength ? "READY" : "WAIT", text_color=signal_strength_short >= minSignalStrength ? color.red : color.gray)
+    table.cell(dashboard, 3, 2, short_trend_ok ? "✓" : "✗", text_color=short_trend_ok ? color.green : color.red)
+    
+    // News analysis
+    table.cell(dashboard, 0, 3, "News Bias", text_color=color.white)
+    table.cell(dashboard, 1, 3, str.tostring(news_bias, "#.0"), text_color=news_bias > 3 ? color.green : news_bias < -3 ? color.red : color.gray)
+    table.cell(dashboard, 2, 3, news_bias > 8 ? "V.BULL" : news_bias > 3 ? "BULL" : news_bias < -8 ? "V.BEAR" : news_bias < -3 ? "BEAR" : "NEUTRAL", text_color=news_bias > 3 ? color.green : news_bias < -3 ? color.red : color.gray)
+    table.cell(dashboard, 3, 3, news_filter ? "ON" : "OFF", text_color=news_filter ? color.green : color.gray)
+    
+    // Technical analysis
+    table.cell(dashboard, 0, 4, "Trend", text_color=color.white)
+    table.cell(dashboard, 1, 4, str.tostring(trend_strength, "#.0"), text_color=trend_strength > 5 ? color.green : trend_strength < -5 ? color.red : color.gray)
+    table.cell(dashboard, 2, 4, trend_strength > 15 ? "V.STRONG" : trend_strength > 5 ? "STRONG" : trend_strength < -15 ? "V.WEAK" : trend_strength < -5 ? "WEAK" : "NEUTRAL", text_color=trend_strength > 5 ? color.green : trend_strength < -5 ? color.red : color.gray)
+    table.cell(dashboard, 3, 4, trending_market ? "TREND" : ranging_market ? "RANGE" : "CHOP", text_color=trending_market ? color.green : ranging_market ? color.yellow : color.red)
+    
+    table.cell(dashboard, 0, 5, "Momentum", text_color=color.white)
+    table.cell(dashboard, 1, 5, str.tostring(momentum_score, "#.0"), text_color=momentum_score > 5 ? color.green : momentum_score < -5 ? color.red : color.gray)
+    table.cell(dashboard, 2, 5, rsi_very_bullish ? "RSI+" : rsi_bullish_confirmed ? "RSI✓" : rsi_very_bearish ? "RSI-" : rsi_bearish_confirmed ? "RSI✗" : "RSI~", text_color=rsi_bullish_confirmed ? color.green : rsi_bearish_confirmed ? color.red : color.gray)
+    table.cell(dashboard, 3, 5, macd_bullish_strong ? "MACD+" : macd_bullish_basic ? "MACD✓" : macd_bearish_strong ? "MACD-" : macd_bearish_basic ? "MACD✗" : "MACD~", text_color=macd_bullish_basic ? color.green : macd_bearish_basic ? color.red : color.gray)
+    
+    // Market conditions
+    table.cell(dashboard, 0, 6, "Session", text_color=color.white)
+    table.cell(dashboard, 1, 6, str.tostring(session_quality, "#.0"), text_color=session_quality >= 2.5 ? color.green : session_quality >= 1.5 ? color.yellow : color.gray)
+    table.cell(dashboard, 2, 6, london_ny_overlap ? "PRIME" : active_session ? "ACTIVE" : "CLOSED", text_color=london_ny_overlap ? color.green : active_session ? color.yellow : color.gray)
+    table.cell(dashboard, 3, 6, str.tostring(session_quality * 4, "#.0"), text_color=color.blue)
+    
+    table.cell(dashboard, 0, 7, "Volatility", text_color=color.white)
+    table.cell(dashboard, 1, 7, str.tostring(atr_pct, "#.##") + "%", text_color=normal_volatility ? color.green : high_volatility ? color.yellow : color.red)
+    table.cell(dashboard, 2, 7, extreme_volatility ? "EXTREME" : high_volatility ? "HIGH" : normal_volatility ? "NORMAL" : "LOW", text_color=normal_volatility ? color.green : high_volatility ? color.yellow : color.red)
+    table.cell(dashboard, 3, 7, str.tostring(adx, "#.0"), text_color=adx_strong_trend ? color.green : adx_moderate_trend ? color.yellow : color.red)
+    
+    // Risk management
+    table.cell(dashboard, 0, 8, "Risk Mode", text_color=color.white)
+    table.cell(dashboard, 1, 8, str.tostring(riskPerTrade, "#.#") + "%", text_color=color.yellow)
+    table.cell(dashboard, 2, 8, major_event_mode ? "MAJOR" : "NORMAL", text_color=major_event_mode ? color.orange : color.gray)
+    table.cell(dashboard, 3, 8, str.tostring(atr_multiplier, "#.#"), text_color=color.blue)
+    
+    // Safety systems
+    table.cell(dashboard, 0, 9, "Safety", text_color=color.white)
+    table.cell(dashboard, 1, 9, safety_stop ? "STOP" : "ACTIVE", text_color=safety_stop ? color.red : color.green)
+    table.cell(dashboard, 2, 9, emergency_stop ? "EMERGENCY" : market_crisis ? "CRISIS" : "SECURE", text_color=emergency_stop ? color.red : market_crisis ? color.orange : color.green)
+    table.cell(dashboard, 3, 9, equity_protection ? "EQUITY!" : daily_loss_hit ? "DAILY!" : "OK", text_color=equity_protection or daily_loss_hit ? color.red : color.green)
+    
+    // Trade filters
+    table.cell(dashboard, 0, 10, "Filters", text_color=color.white)
+    table.cell(dashboard, 1, 10, news_allows_long and news_allows_short ? "BOTH" : news_allows_long ? "LONG" : news_allows_short ? "SHORT" : "BLOCKED", text_color=news_allows_long and news_allows_short ? color.green : color.yellow)
+    table.cell(dashboard, 2, 10, choppy_market ? "CHOP" : "CLEAN", text_color=choppy_market ? color.red : color.green)
+    table.cell(dashboard, 3, 10, bb_squeeze ? "SQUEEZE" : bb_expansion ? "EXPAND" : "NORMAL", text_color=bb_expansion ? color.green : bb_squeeze ? color.orange : color.gray)
+    
+    // Performance metrics
+    table.cell(dashboard, 0, 11, "Performance", text_color=color.white)
+    table.cell(dashboard, 1, 11, str.tostring(strategy.netprofit, "#.##"), text_color=strategy.netprofit > 0 ? color.green : color.red)
+    table.cell(dashboard, 2, 11, "Trades: " + str.tostring(strategy.closedtrades), text_color=color.blue)
+    table.cell(dashboard, 3, 11, "Win: " + str.tostring(strategy.wintrades) + "/" + str.tostring(strategy.closedtrades), text_color=strategy.wintrades > strategy.losstrades ? color.green : color.red)
