@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""
+SEVENSYS PINE SCRIPT CRITICAL ANALYSIS
+Identifying logic errors causing wrong trades when price is trending up
+"""
+
+def analyze_sevensys_logic_errors():
+    print("🚨 SEVENSYS PINE SCRIPT CRITICAL ANALYSIS")
+    print("=" * 70)
+    
+    print("📊 ANALYZING WHY SELLS TRIGGER WHEN PRICE IS TRENDING UP:")
+    print()
+    
+    print("🔍 CRITICAL LOGIC ERROR #1: CONFLICTING TREND CONDITIONS")
+    print("-" * 50)
+    print("Current Logic:")
+    print("   trend_strength = ema_bull_aligned and htf_trend_bull ? 10.0 :")
+    print("                    ema_bear_aligned and htf_trend_bear ? -10.0 :")  
+    print("                    ema8 > ema21 and htf_trend_bull ? 7.0 :")
+    print("                    ema8 < ema21 and htf_trend_bear ? -7.0 : 0.0")
+    print()
+    print("❌ PROBLEM: The script can assign negative trend_strength even in uptrends!")
+    print("   • If EMAs are not fully aligned but price > higher timeframe trend")
+    print("   • The 'ema8 < ema21 and htf_trend_bear' condition can trigger false bearish signals")
+    print("   • This causes SELL signals when price is actually moving UP")
+    print()
+    
+    print("🔍 CRITICAL LOGIC ERROR #2: BACKUP CONDITIONS OVERRIDE")
+    print("-" * 50)
+    print("Current Logic:")
+    print("   simple_short = ema8 < ema21 and close < vwap and rsi < 55 and active_session")
+    print("   enter_short := enter_short or (simple_short and signal_strength_short >= 50.0)")
+    print()
+    print("❌ PROBLEM: Backup conditions are TOO SIMPLE and can override trend analysis!")
+    print("   • Only checks ema8 < ema21 (short-term pullback)")
+    print("   • Ignores overall uptrend from longer-term EMAs")
+    print("   • RSI < 55 is NOT bearish enough (should be < 30 for real bearish)")
+    print("   • Can trigger SELL in middle of uptrend during minor pullbacks")
+    print()
+    
+    print("🔍 CRITICAL LOGIC ERROR #3: MOMENTUM SCORING CONFLICT")
+    print("-" * 50)
+    print("Current Logic:")
+    print("   rsi_bearish = rsi < 60 and rsi > 20")
+    print("   momentum_score = rsi_bearish and macd_bearish and stoch_neutral ? -10.0")
+    print()
+    print("❌ PROBLEM: RSI < 60 is NOT bearish!")
+    print("   • RSI < 60 includes neutral zones (40-60)")
+    print("   • Should be RSI < 30 for true bearish signals")
+    print("   • This creates false bearish momentum in uptrends")
+    print()
+    
+    print("🔍 CRITICAL LOGIC ERROR #4: SIGNAL STRENGTH CALCULATION")
+    print("-" * 50)
+    print("Current Logic:")
+    print("   signal_strength_short = base_strength + (trend_strength < 0 ? math.abs(trend_strength) * 2.0 : 0)")
+    print()
+    print("❌ PROBLEM: ANY negative trend_strength gets amplified!")
+    print("   • Even small negative values (-1.0) get doubled to strong signals")
+    print("   • Should require strong bearish confirmation (< -5.0)")
+    print("   • Creates premature SELL signals in minor corrections")
+    print()
+    
+    print("🔍 CRITICAL LOGIC ERROR #5: VWAP DEPENDENCY")
+    print("-" * 50)
+    print("Current Logic:")
+    print("   short_conditions = ... and below_vwap")
+    print("   simple_short = ... and close < vwap")
+    print()
+    print("❌ PROBLEM: Price can be below VWAP temporarily in uptrends!")
+    print("   • VWAP resets daily and may lag in strong trends")
+    print("   • Temporary moves below VWAP ≠ trend reversal")
+    print("   • Should use longer-term moving averages for trend confirmation")
+    print()
+    
+    print("=" * 70)
+    print("🛠️ CRITICAL FIXES REQUIRED:")
+    print("=" * 70)
+    
+    print("1. ✅ FIX TREND STRENGTH CALCULATION:")
+    print("   • Require ALL EMAs aligned for strong signals")
+    print("   • Add buffer zones to prevent whipsaws")
+    print("   • Weight longer-term EMAs more heavily")
+    print()
+    
+    print("2. ✅ FIX RSI THRESHOLDS:")
+    print("   • Change rsi_bearish to rsi < 30 (truly oversold)")
+    print("   • Change rsi_bullish to rsi > 70 (truly overbought)")
+    print("   • Add RSI divergence detection")
+    print()
+    
+    print("3. ✅ FIX BACKUP CONDITIONS:")
+    print("   • Remove or make much more restrictive")
+    print("   • Require multiple confirmations")
+    print("   • Add trend direction filter")
+    print()
+    
+    print("4. ✅ FIX SIGNAL STRENGTH THRESHOLDS:")
+    print("   • Increase minimum signal strength to 60+ for shorts")
+    print("   • Require stronger bearish confirmation")
+    print("   • Add trend momentum filters")
+    print()
+    
+    print("5. ✅ ADD TREND PROTECTION:")
+    print("   • Disable counter-trend trades")
+    print("   • Add higher timeframe trend filter")
+    print("   • Require multiple timeframe confirmation")
+    print()
+    
+    print("=" * 70)
+    print("🚨 IMMEDIATE ACTION REQUIRED:")
+    print("1. DISABLE SevenSYS until logic is fixed")
+    print("2. REVIEW all recent SELL trades - likely false signals")
+    print("3. IMPLEMENT fixes before re-enabling")
+    print("4. TEST extensively before live trading")
+    print("=" * 70)
+
+def create_fixed_conditions():
+    print("\n💡 PROPOSED FIX - UPDATED SEVENSYS CONDITIONS:")
+    print("=" * 70)
+    
+    print("// FIXED TREND ANALYSIS")
+    print("ema_strong_bull = ema8 > ema21 and ema21 > ema50 and ema50 > ema200 and close > ema8")
+    print("ema_strong_bear = ema8 < ema21 and ema21 < ema50 and ema50 < ema200 and close < ema8")
+    print()
+    print("trend_strength = ema_strong_bull and htf_trend_bull ? 10.0 :")
+    print("                 ema_strong_bear and htf_trend_bear ? -10.0 :")
+    print("                 ema8 > ema21 and close > ema50 ? 5.0 :")
+    print("                 ema8 < ema21 and close < ema50 ? -5.0 : 0.0")
+    print()
+    
+    print("// FIXED RSI CONDITIONS")
+    print("rsi_strong_bullish = rsi > 70 and rsi < 90")
+    print("rsi_strong_bearish = rsi < 30 and rsi > 10")
+    print("rsi_neutral = rsi > 30 and rsi < 70")
+    print()
+    
+    print("// FIXED ENTRY CONDITIONS")
+    print("long_conditions = ema_strong_bull and rsi_neutral and above_vwap and macd_bullish")
+    print("short_conditions = ema_strong_bear and rsi_neutral and below_vwap and macd_bearish")
+    print()
+    
+    print("// REMOVE DANGEROUS BACKUP CONDITIONS")
+    print("// simple_long and simple_short REMOVED to prevent false signals")
+    print()
+    
+    print("// HIGHER SIGNAL STRENGTH REQUIREMENTS")
+    print("enter_long = long_conditions and signal_strength_long >= 65.0")
+    print("enter_short = short_conditions and signal_strength_short >= 65.0")
+    print()
+    
+    print("=" * 70)
+
+if __name__ == "__main__":
+    analyze_sevensys_logic_errors()
+    create_fixed_conditions()

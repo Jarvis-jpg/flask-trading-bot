@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-09-12T10:06:09.145761",
+  "sentiment_bias": -0.09836065573770492,
+  "settings": {
+    "news_bias": 0.0,
+    "major_event_mode": false,
+    "risk_per_trade": 1.5,
+    "min_signal_strength": 55.0,
+    "recommendation": "NEUTRAL - Normal market conditions"
+  },
+  "latest_news": [
+    {
+      "source": {
+        "id": null,
+        "name": "Yahoo Entertainment"
+      },
+      "author": "Fatima Gulzar",
+      "title": "Korea Zinc And Lockheed Martin Forge Strategic Partnership",
+      "description": "Lockheed Martin Corporation (NYSE:LMT) is among the 10 Best Space Exploration Stocks to Buy Now. Korea Zinc, the world\u2019s largest zinc smelter, signed a...",
+      "url": "https://finance.yahoo.com/news/korea-zinc-lockheed-martin-forge-150544924.html",
+      "urlToImage": "https://media.zenfs.com/en/insidermonkey.com/aacc145ec3a87c8c02490b859abfa4f7",
+      "publishedAt": "2025-09-11T15:05:44Z",
+      "content": "Lockheed Martin Corporation (NYSE:LMT) is among the 10 Best Space Exploration Stocks to Buy Now. Korea Zinc, the worlds largest zinc smelter, signed a memorandum of understanding with Lockheed Martin\u2026 [+1701 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "The Local Germany"
+      },
+      "author": "Paul Krantz",
+      "title": "'Laugh to keep from crying': How German gender politics threaten an American's ability to stay",
+      "description": "A ban on gendered language in schools in a German state has prevented an American graduate student from completing their degree programme. Speaking to The Local, they share how policy changes in Germany and the US threaten their life here.",
+      "url": "https://www.thelocal.de/20250911/laugh-to-keep-from-crying-how-german-gender-politics-threaten-an-americans-ability-to-stay",
+      "urlToImage": "https://assets.thelocal.com/cdn-cgi/rs:fit:1200/quality:75/plain/https://apiwp.thelocal.com/wp-content/uploads/2025/09/watermarks-logo-IMG_9384.jpg@webp",
+      "publishedAt": "2025-09-11T15:05:40Z",
+      "content": "A ban on gendered language in schools in a German state has prevented an American graduate student from completing their degree programme. Speaking to The Local, they share how policy changes in Germ\u2026 [+6998 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "PCMag.com"
+      },
+      "author": "Andrew Gebhart",
+      "title": "Why Apple Opened Its Keynote With the HomePod...But Said Nothing About It",
+      "description": "Amid the buzz of Apple\u2019s iPhone 17 launch event, the smart home took a backseat\u2014aside from one subtle hint. Let\u2019s unpack what that means.\nIn a blink-and-you'll-miss-it moment, Apple's iPhone 17 launch event started with a shot of the HomePod. As a longtime sm\u2026",
+      "url": "https://uk.pcmag.com/smart-home/160028/why-apple-opened-its-keynote-with-the-homepodbut-said-nothing-about-it",
+      "urlToImage": "",
+      "publishedAt": "2025-09-11T15:05:39Z",
+      "content": "In a blink-and-you'll-miss-it moment, Apple's iPhone 17 launch event started with a shot of the HomePod. As a longtime smart home buff, I got excited. I wondered if that tease meant Apple had some su\u2026 [+3626 chars]"
+    }
+  ]
+}

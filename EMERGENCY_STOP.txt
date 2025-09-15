@@ -1,0 +1,5 @@
+EMERGENCY STOP ACTIVATED
+Reason: Critical Pine script errors causing inappropriate trades
+Time: 2024-12-20
+Status: SYSTEM DISABLED
+Action Required: Apply SevenSYS_EMERGENCY_FIXED.pine

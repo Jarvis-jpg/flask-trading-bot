@@ -1,0 +1,13 @@
+2025-09-09 17:18:56,215 - memory_logger - INFO - Database initialized successfully
+2025-09-09 17:21:06,995 - memory_logger - INFO - Database initialized successfully
+2025-09-09 17:21:07,394 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-09-09 17:21:07,398 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-09 17:21:07,406 - werkzeug - INFO -  * Restarting with stat
+2025-09-09 17:21:08,685 - memory_logger - INFO - Database initialized successfully
+2025-09-09 17:21:08,813 - werkzeug - WARNING -  * Debugger is active!
+2025-09-09 17:21:08,826 - werkzeug - INFO -  * Debugger PIN: 140-638-836
+2025-09-09 17:21:35,690 - werkzeug - INFO - 127.0.0.1 - - [09/Sep/2025 17:21:35] "GET /?id=7ab7666f-7d66-4d2c-92f7-343a43b035e1&vscodeBrowserReqId=1757456495652 HTTP/1.1" 200 -
+2025-09-10 16:49:49,264 - werkzeug - INFO - 127.0.0.1 - - [10/Sep/2025 16:49:48] "GET /?id=8c63e091-db21-464e-a5dc-303eac5ddeb7&vscodeBrowserReqId=1757540986267 HTTP/1.1" 200 -
+2025-09-10 17:19:35,123 - memory_logger - INFO - Database initialized successfully
+2025-09-10 17:23:39,592 - memory_logger - INFO - Database initialized successfully
