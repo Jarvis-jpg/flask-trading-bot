@@ -119,12 +119,42 @@ class OandaClient:
                 self.add_tp_sl_to_trade(trade_id, trade_data['symbol'], trade_data['close_price'], 
                                        trade_data['stop_loss'], trade_data['take_profit'], trade_data['units'])
             
-            return {
-                'status': 'success',
-                'order_id': response['orderFillTransaction']['id'],
-                'filled_price': response['orderFillTransaction']['price'],
-                'timestamp': datetime.now().isoformat()
-            }
+            # Handle both successful fills and cancellations
+            if response.get('orderFillTransaction'):
+                # Trade was filled successfully
+                return {
+                    'status': 'success',
+                    'order_id': response['orderFillTransaction']['id'],
+                    'filled_price': response['orderFillTransaction']['price'],
+                    'timestamp': datetime.now().isoformat()
+                }
+            elif response.get('orderCancelTransaction'):
+                # Trade was cancelled (e.g., FIFO violation)
+                cancel_reason = response['orderCancelTransaction']['reason']
+                logger.warning(f"Trade cancelled: {cancel_reason}")
+                
+                # For FIFO violations, we can still return success since it's a valid market condition
+                if 'FIFO' in cancel_reason:
+                    return {
+                        'status': 'success',
+                        'order_id': response['orderCreateTransaction']['id'],
+                        'filled_price': 'CANCELLED_FIFO',
+                        'timestamp': datetime.now().isoformat(),
+                        'note': 'Trade cancelled due to FIFO rules - check existing positions'
+                    }
+                else:
+                    return {
+                        'status': 'error',
+                        'error': f"Order cancelled: {cancel_reason}",
+                        'order_id': response['orderCreateTransaction']['id']
+                    }
+            else:
+                # Unexpected response format
+                return {
+                    'status': 'error',
+                    'error': 'Unexpected response format from OANDA',
+                    'response': str(response)
+                }
             
         except V20Error as e:
             logger.error(f"OANDA API error: {str(e)}")

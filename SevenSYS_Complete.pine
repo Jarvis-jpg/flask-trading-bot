@@ -19,7 +19,7 @@ riskPerTrade = input.float(1.5, "Risk Per Trade (%)", minval=0.5, maxval=3.0, st
 base_risk = major_event_mode ? 1.0 : riskPerTrade
 maxDrawdown = input.float(10.0, "Max Drawdown Stop (%)", minval=5.0, maxval=15.0, step=1.0)
 dailyLossLimit = input.float(4.0, "Daily Loss Limit (%)", minval=2.0, maxval=8.0, step=0.5)
-minSignalStrength = input.float(35.0, "Minimum Signal Strength", minval=25.0, maxval=65.0, step=1.0)
+minSignalStrength = input.float(25.0, "Minimum Signal Strength", minval=25.0, maxval=65.0, step=1.0)
 
 // ==================== TECHNICAL INDICATORS ====================
 ema8 = ta.ema(close, 8)
